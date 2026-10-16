@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import content from '../content/pt.json';
 import type { Message } from '../scripts/parse-message';
-import { addAnother, dayKey, fillPlan, type Plan } from './plan';
+import { dayKey, fillPlan, type Plan } from './plan';
 
 const messages = content.messages as Message[];
 const bookNames = Object.fromEntries(content.books.map((b) => [b.slug, b.name]));
@@ -112,12 +112,10 @@ export default function App() {
     });
   }
 
-  // UC-04: show a message not seen recently, and remember it.
-  async function showAnother() {
-    const saved = await AsyncStorage.getItem('plan');
-    const [plan, id] = addAnother(saved ? JSON.parse(saved) : {}, messages.map((m) => m.id), new Date());
-    await AsyncStorage.setItem('plan', JSON.stringify(plan));
-    setMessage(messages.find((m) => m.id === id));
+  // UC-04: show a different, random message.
+  function showAnother() {
+    const others = messages.filter((m) => m !== message);
+    setMessage(others[Math.floor(Math.random() * others.length)]);
   }
 
   // UC-06: title, body, signature and link through the system share sheet.

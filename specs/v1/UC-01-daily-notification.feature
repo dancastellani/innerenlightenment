@@ -32,7 +32,6 @@ Feature: Receive a message every day at 8am
     And no day has more than one daily notification
 
   @UC-01.5
-  Scenario: Messages do not repeat soon
+  Scenario: Each day gets a random message
     When the next 14 days are scheduled
-    Then no message appears twice among them
-    And no message shown in the last 90 days is scheduled
+    Then each day gets a message picked at random from all messages

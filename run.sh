@@ -13,7 +13,7 @@ case "$1" in
     # Runs the unit tests and the specs, each with its own summary, and fails if either fails.
     status=0
     node --test scripts/*.test.ts mobile/*.test.ts || status=1
-    npx cucumber-js specs/ops --import 'specs/ops/steps/*.ts' --tags 'not @pending' || status=1
+    npx cucumber-js specs/ops --import 'specs/ops/steps/*.ts' --tags 'not @pending' --format pretty || status=1
     exit $status
     ;;
   export)    node scripts/export-fonteviva.ts content/pt.json ;;

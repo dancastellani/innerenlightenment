@@ -14,4 +14,12 @@ jobs:
         with:
           node-version: 24
       - run: npm ci
-      - run: ./run.sh test
+      - run: ./run.sh test 2>&1 | tee test-report.txt
+        shell: bash
+      # Shows the test report on the workflow run's page on GitHub, also when a test failed.
+      - if: always()
+        run: |
+          echo '## Test report' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          cat test-report.txt >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

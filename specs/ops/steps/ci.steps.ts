@@ -22,8 +22,17 @@ Then('the {string} workflow runs on every pull request and every push to main', 
 });
 
 Then('it runs {string}', function (this: World, command: string) {
-  assert.ok(this.workflow.includes(`run: ${command}\n`), `missing "run: ${command}"`);
+  assert.ok(this.workflow.includes(`run: ${command}`), `missing "run: ${command}"`);
 });
+
+Then(
+  "the {string} workflow writes the test output to the run's summary, also when a test failed",
+  function (this: World, name: string) {
+    this.workflow = workflow(name);
+    assert.match(this.workflow, /- if: always\(\)\n/);
+    assert.match(this.workflow, /cat test-report.txt >> "\$GITHUB_STEP_SUMMARY"/);
+  },
+);
 
 Then('the {string} workflow is started by hand', function (this: World, name: string) {
   this.workflow = workflow(name);

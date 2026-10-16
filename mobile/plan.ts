@@ -1,4 +1,5 @@
 // Which message is shown on which day: { '2026-10-16': 861, ... }.
+// Extra messages asked for with "Another message" are kept as '2026-10-16 +1', '2026-10-16 +2', ...
 // Kept on the phone so notifications, the home screen and "no repeats" all agree.
 export type Plan = Record<string, number>;
 
@@ -22,9 +23,21 @@ export function fillPlan(plan: Plan, ids: number[], today: Date, days = 14, keep
   for (let i = 0; i <= days; i++) {
     const day = dayKey(addDays(i));
     if (result[day] !== undefined) continue;
-    const used = new Set(Object.values(result));
-    const unused = ids.filter((id) => !used.has(id));
-    result[day] = unused[Math.floor(random() * unused.length)];
+    result[day] = pickUnused(result, ids, random);
   }
   return result;
+}
+
+// UC-04: a message not shown in the last 90 days (the plan only keeps those days), recorded for today.
+export function addAnother(plan: Plan, ids: number[], today: Date, random = Math.random): [Plan, number] {
+  const day = dayKey(today);
+  const count = Object.keys(plan).filter((key) => key.startsWith(`${day} +`)).length;
+  const id = pickUnused(plan, ids, random);
+  return [{ ...plan, [`${day} +${count + 1}`]: id }, id];
+}
+
+function pickUnused(plan: Plan, ids: number[], random: () => number): number {
+  const used = new Set(Object.values(plan));
+  const unused = ids.filter((id) => !used.has(id));
+  return unused[Math.floor(random() * unused.length)];
 }

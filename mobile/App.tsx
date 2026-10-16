@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Button, Linking, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import content from '../content/pt.json';
 import type { Message } from '../scripts/parse-message';
-import { dayKey, fillPlan, type Plan } from './plan';
+import { addAnother, dayKey, fillPlan, type Plan } from './plan';
 
 const messages = content.messages as Message[];
 const bookNames = Object.fromEntries(content.books.map((b) => [b.slug, b.name]));
@@ -41,6 +41,7 @@ async function scheduleDays(): Promise<Plan> {
   const now = new Date();
   let scheduled = 0;
   for (const [day, id] of Object.entries(plan).sort()) {
+    if (day.length !== 10) continue; // skip extra messages like '2026-10-16 +1'
     const [year, month, date] = day.split('-').map(Number);
     const at = new Date(year, month - 1, date, HOUR);
     const message = messages.find((m) => m.id === id);
@@ -72,6 +73,21 @@ export default function App() {
     if (found) setMessage(found);
   }, [tapped]);
 
+  // UC-04: show a message not seen recently, and remember it.
+  async function showAnother() {
+    const saved = await AsyncStorage.getItem('plan');
+    const [plan, id] = addAnother(saved ? JSON.parse(saved) : {}, messages.map((m) => m.id), new Date());
+    await AsyncStorage.setItem('plan', JSON.stringify(plan));
+    setMessage(messages.find((m) => m.id === id));
+  }
+
+  // UC-06: title, body, signature and link through the system share sheet.
+  function share() {
+    if (!message) return;
+    const text = [message.title, ...message.paragraphs, message.signature, message.url].filter(Boolean).join('\n\n');
+    Share.share({ message: text });
+  }
+
   // For testing: the same notification in 10 seconds instead of waiting for 06:00.
   async function sendTest() {
     if (!message) return;
@@ -95,6 +111,11 @@ export default function App() {
         </Text>
       ))}
       {message.signature && <Text style={styles.signature}>{message.signature}</Text>}
+      <View style={styles.actions}>
+        <Button title="Another message" onPress={showAnother} />
+        <Button title="Share" onPress={share} />
+        <Button title="Open on fonteviva.org" onPress={() => Linking.openURL(message.url)} />
+      </View>
       <View style={styles.test}>
         <Button title="Test notification in 10 seconds" onPress={sendTest} />
       </View>
@@ -108,5 +129,6 @@ const styles = StyleSheet.create({
   title: { fontSize: 26, fontWeight: 'bold', marginBottom: 16 },
   paragraph: { fontSize: 18, lineHeight: 28, marginBottom: 12 },
   signature: { fontSize: 18, fontStyle: 'italic', textAlign: 'right', marginTop: 8 },
+  actions: { gap: 12, marginTop: 24 },
   test: { marginTop: 32 },
 });

@@ -53,7 +53,10 @@ async function save() {
 }
 
 const todo = source.messages.filter((m) => !done.some((d) => d.id === m.id));
-console.error(`${done.length} already translated, ${todo.length} to go`);
+const skipped = done.length;
+let translated = 0;
+let failed = 0;
+console.error(`${skipped} skipped (already translated), ${todo.length} to translate`);
 
 for (let i = 0; i < todo.length; i += BATCH_SIZE) {
   const batch = todo.slice(i, i + BATCH_SIZE);
@@ -61,11 +64,15 @@ for (let i = 0; i < todo.length; i += BATCH_SIZE) {
   for (const original of batch) {
     const t = translations.find((t) => t.id === original.id);
     if (!t || t.paragraphs.length !== original.paragraphs.length) {
-      console.error(`warning: skipping ${original.url}, translation missing or paragraph count differs`);
+      console.error(`warning: failed ${original.url}, translation missing or paragraph count differs`);
+      failed++;
       continue;
     }
     done.push({ ...original, title: t.title, paragraphs: t.paragraphs, note: t.note });
+    translated++;
   }
   await save();
-  console.error(`${done.length}/${source.messages.length} translated`);
+  console.error(`batch ${i / BATCH_SIZE + 1}/${Math.ceil(todo.length / BATCH_SIZE)}: ${translated} translated, ${failed} failed`);
 }
+
+console.error(`done: ${translated} translated, ${skipped} skipped, ${failed} failed; ${done.length}/${source.messages.length} in ${output}`);

@@ -10,6 +10,7 @@
 import { copyFileSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Message } from './parse-message.ts';
+import { originalLink } from '../mobile/language.ts';
 
 type Content = { language: string; books: { slug: string; name: string }[]; messages: Message[] };
 // translationDisclaimer is shown on translated messages, so every language but Portuguese (the original) has one.
@@ -108,7 +109,7 @@ class Website {
       signature: signature(message),
       note: message.note ? `<p class="note">${escapeHtml(message.note)}</p>` : '',
       translationDisclaimer: labels.translationDisclaimer ? `<p class="translation">${labels.translationDisclaimer}</p>` : '',
-      url: escapeHtml(message.url),
+      url: escapeHtml(originalLink(message.url, content.language)),
       readOriginal: labels.readOriginal,
       credit: this.render('credit', {}),
     });

@@ -3,12 +3,8 @@
 Usage: python -m scripts.export_fonteviva [output-path]   (default: content/pt.json)
 """
 
-from __future__ import annotations
-
 import json
 import sys
-import time
-import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -17,37 +13,23 @@ from scripts.parse_message import parse_message, to_text
 API = "https://fonteviva.org/wp-json/wp/v2"
 
 
-def get_json(url: str) -> tuple[list, dict]:
+def get_json(url):
     request = urllib.request.Request(url, headers={"User-Agent": "innerenlightenment-export"})
-    for attempt in range(1, 5):
-        try:
-            with urllib.request.urlopen(request, timeout=60) as response:
-                return json.load(response), dict(response.headers)
-        except urllib.error.HTTPError as error:
-            if attempt == 4 or error.code < 500:
-                raise
-        except urllib.error.URLError:
-            if attempt == 4:
-                raise
-        time.sleep(2**attempt)
-    raise AssertionError("unreachable")
+    with urllib.request.urlopen(request, timeout=60) as response:
+        return json.load(response), int(response.headers.get("X-WP-TotalPages", 1))
 
 
-def fetch_all(path: str) -> list[dict]:
-    items: list[dict] = []
-    separator = "&" if "?" in path else "?"
-    page = 1
-    while True:
-        data, headers = get_json(f"{API}/{path}{separator}per_page=100&page={page}")
+def fetch_all(path):
+    items, page, total_pages = [], 1, 1
+    while page <= total_pages:
+        data, total_pages = get_json(f"{API}/{path}&per_page=100&page={page}")
         items.extend(data)
-        total_pages = int({k.lower(): v for k, v in headers.items()}.get("x-wp-totalpages", 1))
         print(f"{path}: page {page}/{total_pages}", file=sys.stderr)
-        if page >= total_pages:
-            return items
         page += 1
+    return items
 
 
-def main() -> None:
+def main():
     output = Path(sys.argv[1] if len(sys.argv) > 1 else "content/pt.json")
 
     categories = fetch_all("categories?_fields=id,name,slug,count")

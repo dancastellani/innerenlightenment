@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { dayKey, fillPlan } from './plan.ts';
+import { addAnother, dayKey, fillPlan } from './plan.ts';
 
 const ids = Array.from({ length: 724 }, (_, i) => i + 1);
 const today = new Date(2026, 9, 16, 12, 0);
@@ -28,4 +28,13 @@ test('UC-01.5: no repeats within the plan, and days older than 90 days are forgo
 
 test('dayKey uses local date', () => {
   assert.equal(dayKey(new Date(2026, 0, 5, 23, 59)), '2026-01-05');
+});
+
+test('UC-04.1, UC-04.2: another message is new and is remembered so it does not repeat', () => {
+  const plan = fillPlan({}, ids, today);
+  const [after, id] = addAnother(plan, ids, today);
+  assert.ok(!Object.values(plan).includes(id));
+  assert.equal(after['2026-10-16 +1'], id);
+  const [, next] = addAnother(after, ids, today);
+  assert.notEqual(next, id);
 });

@@ -9,6 +9,10 @@ if [ -z "$major" ] || [ "$major" -lt 24 ]; then
 fi
 
 case "$1" in
+  setup)
+    # Installs everything needed for development: Cucumber at the root and the app's packages.
+    npm ci && cd mobile && npm ci
+    ;;
   test)
     # Runs the unit tests and the specs, each with its own summary, and fails if either fails.
     status=0
@@ -38,7 +42,8 @@ case "$1" in
   *)
     echo "Usage: ./run.sh <command>"
     echo
-    echo "  test              run the tests and the specs in specs/ops (run npm install once first)"
+    echo "  setup             install the packages for the tests and the app (run this first)"
+    echo "  test              run the tests and the specs in specs/ops"
     echo "  export            download all messages from fonteviva.org into content/pt.json"
     echo "  translate [lang]  translate content/pt.json into content/<lang>.json (default en, needs GEMINI_API_KEY)"
     echo "  app               start the app; scan the QR code with Expo Go on your phone"

@@ -173,7 +173,7 @@ Then('notifications are scheduled for the next {int} days', function (days: numb
 });
 ```
 
-`{int}` captures a number from the sentence, so one step definition serves every scenario that uses the same wording. `this` is shared between the steps of one scenario. Step definitions are written along with the code each scenario covers. The operational specs in `specs/ops/` (export, `run.sh`, CI checks) already run this way, as part of `./run.sh test` (after `npm install`) and on every PR. Results are reported by tag (`@OP-01.1`). Flows that need a real phone, like tapping a notification, may later use an on-device tool such as Maestro, still named by scenario ID.
+`{int}` captures a number from the sentence, so one step definition serves every scenario that uses the same wording. `this` is shared between the steps of one scenario. Step definitions are written along with the code each scenario covers. The operational specs in `specs/ops/` (export, `run.sh`, CI checks) already run this way, as part of `./run.sh test` (after `./run.sh setup`) and on every PR. Results are reported by tag (`@OP-01.1`). Flows that need a real phone, like tapping a notification, may later use an on-device tool such as Maestro, still named by scenario ID.
 
 ## The app: Expo and React Native (planned)
 

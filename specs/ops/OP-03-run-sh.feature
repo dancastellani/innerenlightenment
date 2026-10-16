@@ -34,3 +34,10 @@ Feature: Run common tasks with run.sh
     When I run "./run.sh build production"
     Then it succeeds
     And it starts an Expo build of the Android app with the "production" profile
+
+  @OP-03.6
+  Scenario: The setup command installs the packages for the tests and the app
+    Given npm and Expo are replaced by stand-ins, so nothing is installed or built
+    When I run "./run.sh setup"
+    Then it succeeds
+    And it runs "npm ci" in the repository and in the app

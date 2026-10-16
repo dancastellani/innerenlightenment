@@ -4,12 +4,13 @@ How a change goes from an idea to `main`, and the commands you need along the wa
 
 ## Setup
 
-1. Install [Node.js 24](https://nodejs.org/) or newer. Check with `node --version`.
+1. Install [Node.js 24](https://nodejs.org/) or newer. Check with `node --version`. With [nvm](https://github.com/nvm-sh/nvm), `nvm use` picks the version in `.nvmrc`.
 2. Clone the repo: `git clone https://github.com/dancastellani/innerenlightenment.git`
-3. Install Cucumber, used to run the specs: `npm install`
+3. Install the packages: `./run.sh setup`. It runs `npm ci` at the root (Cucumber, for the specs) and in `mobile/` (the app).
 4. Run the tests and the specs: `./run.sh test`
+5. For previews and app builds, sign in to Expo once: `npx eas-cli@latest login`.
 
-The scripts themselves only use what ships with Node; Cucumber is the one development dependency.
+The scripts themselves only use what ships with Node; Cucumber is the one development dependency. `mobile/.npmrc` lets the two eas-cli packages that need install scripts run them (newer npm blocks them by default), so you don't have to change your own npm settings.
 
 ## `run.sh`
 
@@ -18,6 +19,7 @@ The scripts themselves only use what ships with Node; Cucumber is the one develo
 | Command | What it does |
 |---|---|
 | `./run.sh` | Lists the commands |
+| `./run.sh setup` | Installs the packages for the tests and the app (`npm ci` at the root and in `mobile/`) |
 | `./run.sh test` | Runs the tests (`node --test scripts/*.test.ts mobile/*.test.ts`), then the specs in `specs/ops/` with Cucumber |
 | `./run.sh export` | Downloads all messages from fonteviva.org into `content/pt.json` |
 | `./run.sh translate [lang]` | Translates `content/pt.json` into `content/<lang>.json` (default `en`) with Gemini; needs `GEMINI_API_KEY` |

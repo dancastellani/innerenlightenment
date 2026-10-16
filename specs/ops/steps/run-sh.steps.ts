@@ -26,7 +26,7 @@ Given("Cucumber is replaced by a stand-in, so these specs don't start themselves
 });
 
 Given('npm and Expo are replaced by stand-ins, so nothing is installed or built', async function (this: World) {
-  await fakeCommand(this, 'npm', 'echo "stand-in npm $@"');
+  await fakeCommand(this, 'npm', 'echo "stand-in npm $@ in $(pwd)"');
   await fakeCommand(this, 'npx', 'echo "stand-in npx $@"');
 });
 
@@ -58,4 +58,10 @@ Then('it starts Cucumber on {string}', function (this: World, folder: string) {
 Then('it starts an Expo build of the Android app with the {string} profile', function (this: World, profile: string) {
   const command = `stand-in npx --yes eas-cli@latest build --platform android --profile ${profile}`;
   assert.ok(this.result.output.includes(command), this.result.output);
+});
+
+Then('it runs {string} in the repository and in the app', function (this: World, command: string) {
+  const root = process.cwd();
+  assert.ok(this.result.output.includes(`stand-in ${command} in ${root}\n`), this.result.output);
+  assert.ok(this.result.output.includes(`stand-in ${command} in ${join(root, 'mobile')}\n`), this.result.output);
 });

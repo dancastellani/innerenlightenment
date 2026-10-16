@@ -10,7 +10,7 @@ How a change goes from an idea to `main`, and the commands you need along the wa
 4. Run the tests and the specs: `npm test`
 5. For previews and app builds, sign in to Expo once: `npx eas-cli@latest login`.
 
-The scripts themselves only use what ships with Node; Cucumber is the one development dependency. `mobile/.npmrc` lets the two eas-cli packages that need install scripts run them (newer npm blocks them by default), so you don't have to change your own npm settings.
+The scripts themselves only use what ships with Node. The tests have two development dependencies: Cucumber runs the specs, and [Playwright](https://playwright.dev/) (`playwright-core`, the library without browser downloads) opens the built website in your installed Google Chrome for the website specs that need a browser. Install [Google Chrome](https://www.google.com/chrome/) if you don't have it; GitHub's test machines already do. To use another Chrome or Chromium, set `CHROME_PATH` to its executable. `mobile/.npmrc` lets the two eas-cli packages that need install scripts run them (newer npm blocks them by default), so you don't have to change your own npm settings.
 
 ## `run.sh`
 

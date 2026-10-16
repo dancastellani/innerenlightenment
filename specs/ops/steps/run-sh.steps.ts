@@ -14,7 +14,7 @@ async function fakeCommand(world: World, name: string, script: string) {
   const dir = await mkdtemp(join(tmpdir(), `${name}-`));
   await writeFile(join(dir, name), `#!/bin/sh\n${script}\n`);
   await chmod(join(dir, name), 0o755);
-  world.path = `${dir}:${process.env.PATH}`;
+  world.path = `${dir}:${world.path ?? process.env.PATH}`;
 }
 
 Given('the installed Node is version {int}', async function (this: World, version: number) {
@@ -22,6 +22,11 @@ Given('the installed Node is version {int}', async function (this: World, versio
 });
 
 Given("Cucumber is replaced by a stand-in, so these specs don't start themselves", async function (this: World) {
+  await fakeCommand(this, 'npx', 'echo "stand-in npx $@"');
+});
+
+Given('npm and Expo are replaced by stand-ins, so nothing is installed or built', async function (this: World) {
+  await fakeCommand(this, 'npm', 'echo "stand-in npm $@ in $(pwd)"');
   await fakeCommand(this, 'npx', 'echo "stand-in npx $@"');
 });
 
@@ -48,4 +53,15 @@ Then('it reports that no test failed', function (this: World) {
 
 Then('it starts Cucumber on {string}', function (this: World, folder: string) {
   assert.ok(this.result.output.includes(`stand-in npx cucumber-js ${folder} `), this.result.output);
+});
+
+Then('it starts an Expo build of the Android app with the {string} profile', function (this: World, profile: string) {
+  const command = `stand-in npx --yes eas-cli@latest build --platform android --profile ${profile}`;
+  assert.ok(this.result.output.includes(command), this.result.output);
+});
+
+Then('it runs {string} in the repository and in the app', function (this: World, command: string) {
+  const root = process.cwd();
+  assert.ok(this.result.output.includes(`stand-in ${command} in ${root}\n`), this.result.output);
+  assert.ok(this.result.output.includes(`stand-in ${command} in ${join(root, 'mobile')}\n`), this.result.output);
 });

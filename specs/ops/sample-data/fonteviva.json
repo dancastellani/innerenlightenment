@@ -1,0 +1,33 @@
+{
+ "categories": [
+  { "id": 1, "name": "Sem categoria", "slug": "sem-categoria", "count": 0 },
+  { "id": 5, "name": "Fonte Viva", "slug": "fonte-viva", "count": 1 },
+  { "id": 7, "name": "Vinha de Luz", "slug": "vinha-de-luz", "count": 2 }
+ ],
+ "posts": [
+  {
+   "id": 1485,
+   "slug": "brilhe-vossa-luz",
+   "link": "https://fonteviva.org/vinha-de-luz/brilhe-vossa-luz/",
+   "title": { "rendered": "Brilhe vossa luz" },
+   "categories": [7],
+   "content": { "rendered": "<div class=\"fonte\"><p class=\"capitulo\">Pref&aacute;cio</p><p class=\"livro\">Livro: Vinha de Luz</p><p class=\"espirito\">Emmanuel</p><p class=\"autor\">Francisco C&#226;ndido Xavier</p></div><div class=\"article\"><p>&#8220;Assim resplande&ccedil;a a vossa luz diante dos homens.&#8221;</p><p>Segundo par&aacute;grafo.</p><p class=\"assinatura\">Emmanuel</p><p>Pedro Leopoldo, 25 de novembro de 1951.</p></div>" }
+  },
+  {
+   "id": 1486,
+   "slug": "o-caminho",
+   "link": "https://fonteviva.org/vinha-de-luz/o-caminho/",
+   "title": { "rendered": "O caminho" },
+   "categories": [7],
+   "content": { "rendered": "<div class=\"fonte\"><p class=\"capitulo\">Cap&iacute;tulo 1</p><p class=\"livro\">Livro: Vinha de Luz</p><p class=\"espirito\">Emmanuel</p><p class=\"autor\">Francisco C&#226;ndido Xavier</p></div><div class=\"article\"><p>Primeiro par&aacute;grafo.</p><p class=\"assinatura\">Emmanuel</p></div>" }
+  },
+  {
+   "id": 2001,
+   "slug": "a-fonte",
+   "link": "https://fonteviva.org/fonte-viva/a-fonte/",
+   "title": { "rendered": "A fonte" },
+   "categories": [5],
+   "content": { "rendered": "<div class=\"fonte\"><p class=\"capitulo\">Cap&iacute;tulo 1</p><p class=\"livro\">Livro: Fonte Viva</p><p class=\"espirito\">Emmanuel</p><p class=\"autor\">Francisco C&#226;ndido Xavier</p></div><div class=\"article\"><p>&Aacute;gua viva.</p><p class=\"assinatura\">Emmanuel</p></div>" }
+  }
+ ]
+}

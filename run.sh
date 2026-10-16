@@ -10,11 +10,13 @@ fi
 
 case "$1" in
   test)   node --test scripts/*.test.ts ;;
+  specs)  npx cucumber-js specs/ops --import 'specs/ops/steps/*.ts' --tags 'not @pending' ;;
   export) node scripts/export-fonteviva.ts content/pt.json ;;
   *)
     echo "Usage: ./run.sh <command>"
     echo
     echo "  test     run the tests"
+    echo "  specs    run the specs in specs/ops (run npm install once first)"
     echo "  export   download all messages from fonteviva.org into content/pt.json"
     ;;
 esac

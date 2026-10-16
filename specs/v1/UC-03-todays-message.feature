@@ -3,9 +3,9 @@ Feature: See today's message when I open the app
 
   @UC-03.1
   Scenario: Home shows the same message as the notification
-    Given today's notification announced message "pao-nosso/7"
+    Given today's notification announced message A
     When I open the app
-    Then the home screen shows message "pao-nosso/7"
+    Then the home screen shows message A
 
   @UC-03.2
   Scenario: Message layout

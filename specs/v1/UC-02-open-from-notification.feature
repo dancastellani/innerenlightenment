@@ -3,9 +3,10 @@ Feature: Open today's message from the notification
 
   @UC-02.1
   Scenario: Tapping the notification opens that message
-    Given a notification for message "fonte-viva/42" was delivered
+    Given a notification for message A was delivered
+    And the notification shows message A's header (title), not its id
     When I tap the notification
-    Then the reader shows message "fonte-viva/42"
+    Then the reader shows message A
 
   @UC-02.2
   Scenario: App was closed

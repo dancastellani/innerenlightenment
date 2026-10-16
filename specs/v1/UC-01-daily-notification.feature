@@ -15,7 +15,7 @@ Feature: Receive a message every day at 6am
   @UC-01.2
   Scenario: Notification content
     When the 06:00 notification for a day is delivered
-    Then its title is the message title
+    Then its title is the message header (title), never an id
     And its body is the first line of the message text
 
   @UC-01.3

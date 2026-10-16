@@ -40,6 +40,17 @@ There is nothing to install with npm: the scripts only use what ships with Node.
 6. **Review.** You review the PR on GitHub. Comments on a PR Claude opened are picked up and handled by Claude: it pushes a fix, or replies saying why not. CI runs again after each push.
 7. **Merge.** When CI is green and you approve, merge the PR on GitHub. Delete the branch afterwards.
 
+## Edge cases
+
+Each spec covers the normal case and its edges, under an `# Edge cases` comment at the end of the `.feature` file, with the next free scenario IDs. The app has few inputs, so for each one ask:
+
+- **Boundaries.** The smallest and largest value, and one step either side: times 00:00 and 23:59, a time one minute before or after now, a day exactly 90 or 91 days ago, the last unseen message, a page of exactly 100 posts.
+- **Empty and missing.** No messages left, a message without a signature, a message missing from the content or its translation, a missing header or setting.
+- **Refused and cancelled.** Permission denied, a picker or share sheet closed, the site or Gemini answering with an error or nonsense.
+- **The phone's world changing.** No network, the phone restarted, the app resumed on a new day, daylight saving time, a new time zone.
+
+Write the expected behaviour, not the current one: when the code does something else, the scenario stays and the defect gets its own issue labelled `bug`. Use a `Scenario Outline` with `Examples` when only the value changes, such as 00:00 and 23:59.
+
 ## Updating the messages
 
 The messages rarely change, so the export runs by hand:

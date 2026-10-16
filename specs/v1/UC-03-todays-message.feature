@@ -18,3 +18,18 @@ Feature: See today's message when I open the app
     When I open the app on a new day
     Then the home screen shows a message chosen for today
     And it stays the same for the rest of the day
+
+  # Edge cases
+
+  @UC-03.4
+  Scenario: App left open past midnight
+    Given the app shows today's message A
+    When the app is brought back to the front on the next day
+    Then the home screen shows the next day's message
+    And notifications are topped up for the next 14 days
+
+  @UC-03.5
+  Scenario: Message without a signature
+    Given a message has no signature
+    When it is shown
+    Then no empty signature line is shown

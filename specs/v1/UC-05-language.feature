@@ -25,3 +25,24 @@ Feature: Read the message in English or Portuguese
     Given the device has no network connection
     When I switch between English and Portuguese
     Then both languages are available
+
+  # Edge cases
+
+  @UC-05.5
+  Scenario: Any Portuguese variant
+    Given the phone language is "pt-PT" or "pt-BR"
+    When I open the app for the first time
+    Then messages are shown in Portuguese
+
+  @UC-05.6
+  Scenario: A language the app does not have yet
+    Given the phone language is Spanish and Spanish is not available
+    When I open the app for the first time
+    Then messages are shown in English
+
+  @UC-05.7
+  Scenario: A message missing from the translation
+    Given messages are shown in English
+    And today's message has no English translation
+    When I open the app
+    Then today's message is shown in Portuguese

@@ -59,7 +59,8 @@ Supporting work for v1 (issues, not use cases): content export to JSON (PR #1), 
 
 ## Out of scope for now
 
-- Server push, accounts, analytics.
+- Server push and accounts.
+- In-app usage analytics (e.g. Firebase Analytics). For now, user numbers come from the Google Play Console (installs, active users, retention, crashes), which needs no code.
 
 ## How we work with these
 

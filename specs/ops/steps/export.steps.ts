@@ -10,7 +10,10 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { runCommand, type Result } from './run-command.ts';
 
-type Site = { categories: { id: number; count: number }[]; posts: { id: number; categories: number[] }[] };
+type Site = {
+  categories: { id: number; count: number }[];
+  posts: { id: number; categories: number[]; content: { rendered: string } }[];
+};
 
 type World = {
   site: Site;
@@ -39,6 +42,11 @@ Given('the site returns {int} messages per page', function (this: World, perPage
 
 Given('message {int} has no book', function (this: World, id: number) {
   this.site.posts.find((p) => p.id === id)!.categories = [];
+});
+
+Given('message {int} has the paragraph {string}', function (this: World, id: number, html: string) {
+  const post = this.site.posts.find((p) => p.id === id)!;
+  post.content.rendered = post.content.rendered.replace(/<p\b/, `<p>${html}</p>\n<p`);
 });
 
 Given('the site answers every request with an error', function (this: World) {
@@ -96,6 +104,11 @@ Then(
     assert.deepEqual(books.sort(), [[book1, count1], [book2, count2]].sort());
   },
 );
+
+Then('the exported message {int} has the paragraph {string}', function (this: World, id: number, text: string) {
+  const m = readOutput(this).messages.find((m: { id: number }) => m.id === id);
+  assert.ok(m.paragraphs.includes(text), JSON.stringify(m.paragraphs));
+});
 
 Then('it warns about {string}', function (this: World, url: string) {
   assert.ok(this.result.output.includes(`warning: ${url}`), this.result.output);

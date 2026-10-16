@@ -75,6 +75,7 @@ export default function App() {
   const [message, setMessage] = useState<Message>();
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [allowed, setAllowed] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
   const tapped = Notifications.useLastNotificationResponse();
 
   // On open: top up the schedule and show today's message.
@@ -136,6 +137,34 @@ export default function App() {
 
   if (!message) return null;
 
+  if (showSettings) {
+    return (
+      <ScrollView contentContainerStyle={styles.page}>
+        <Text style={styles.title}>Settings</Text>
+        <View style={styles.settings}>
+          <View style={styles.row}>
+            <Text style={styles.label}>Daily notification</Text>
+            <Switch value={settings.enabled} onValueChange={(enabled) => changeSettings({ ...settings, enabled })} />
+          </View>
+          {settings.enabled && (
+            <Button
+              title={`Time: ${String(settings.hour).padStart(2, '0')}:${String(settings.minute).padStart(2, '0')}`}
+              onPress={pickTime}
+            />
+          )}
+          {settings.enabled && !allowed && (
+            <View>
+              <Text style={styles.warning}>Notifications are blocked for this app in the phone settings.</Text>
+              <Button title="Open phone settings" onPress={() => Linking.openSettings()} />
+            </View>
+          )}
+          <Button title="Test notification in 10 seconds" onPress={sendTest} />
+          <Button title="Back" onPress={() => setShowSettings(false)} />
+        </View>
+      </ScrollView>
+    );
+  }
+
   return (
     <ScrollView contentContainerStyle={styles.page}>
       <Text style={styles.source}>
@@ -153,26 +182,8 @@ export default function App() {
         <Button title="Share" onPress={share} />
         <Button title="Open on fonteviva.org" onPress={() => Linking.openURL(message.url)} />
       </View>
-      <View style={styles.settings}>
-        <View style={styles.row}>
-          <Text style={styles.label}>Daily notification</Text>
-          <Switch value={settings.enabled} onValueChange={(enabled) => changeSettings({ ...settings, enabled })} />
-        </View>
-        {settings.enabled && (
-          <Button
-            title={`Time: ${String(settings.hour).padStart(2, '0')}:${String(settings.minute).padStart(2, '0')}`}
-            onPress={pickTime}
-          />
-        )}
-        {settings.enabled && !allowed && (
-          <View>
-            <Text style={styles.warning}>Notifications are blocked for this app in the phone settings.</Text>
-            <Button title="Open phone settings" onPress={() => Linking.openSettings()} />
-          </View>
-        )}
-      </View>
-      <View style={styles.test}>
-        <Button title="Test notification in 10 seconds" onPress={sendTest} />
+      <View style={styles.settingsButton}>
+        <Button title="Settings" onPress={() => setShowSettings(true)} />
       </View>
     </ScrollView>
   );
@@ -189,5 +200,5 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   label: { fontSize: 18 },
   warning: { color: '#b00', marginBottom: 8 },
-  test: { marginTop: 32 },
+  settingsButton: { marginTop: 32 },
 });

@@ -28,8 +28,8 @@ The scripts themselves only use what ships with Node; Cucumber is the one develo
 1. Install **Expo Go** from the Play Store.
 2. On your computer, run `./run.sh app`. The first run installs packages, which takes a minute.
 3. Open Expo Go and scan the QR code shown in the terminal. Phone and computer must be on the same Wi-Fi; if they can't be, stop it and run `cd mobile && npx expo start --tunnel` instead.
-4. Allow notifications when asked. The app shows today's message and schedules the next 14 days at 08:00.
-5. Tap **Test notification in 10 seconds**, lock the phone or switch apps, and wait for it. Tap the notification and the app opens on that message.
+4. Allow notifications when asked. The app shows today's message and schedules the next 14 days at 08:00 (change the time under **Settings**).
+5. Open **Settings** and tap **Test notification in 10 seconds**, lock the phone or switch apps, and wait for it. Tap the notification and the app opens on that message.
 
 ## The lifecycle of a change
 

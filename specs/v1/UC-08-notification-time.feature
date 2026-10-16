@@ -14,6 +14,14 @@ Feature: Change the notification time
     When the app is closed and reopened
     Then settings show 07:30
 
+  @UC-08.8
+  Scenario: Settings have their own screen
+    Given I am reading a message
+    When I tap "Settings"
+    Then a Settings screen shows the notification switch and the time
+    When I tap "Back"
+    Then I see the message again
+
   # Edge cases
 
   @UC-08.3

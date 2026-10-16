@@ -15,6 +15,10 @@ Feature: Checks and jobs on GitHub Actions
   Scenario: Every test is listed in the pull request's Checks tab
     Then the "Test" workflow publishes the JUnit reports as a "Test report" check, also when a test failed
 
+  @OP-04.5
+  Scenario: The translation check report is shown on the workflow run's page
+    Then the "Test" workflow writes the translation check report to the run's summary, also when a test failed
+
   @OP-04.2
   Scenario: The export is started by hand and proposes a pull request
     Then the "Export messages" workflow is started by hand

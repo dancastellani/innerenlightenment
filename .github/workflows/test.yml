@@ -27,6 +27,9 @@ jobs:
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           cat test-report.txt >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
+      # Adds the translation check's list of problems to the same page.
+      - if: always()
+        run: node scripts/check-translations.ts >> "$GITHUB_STEP_SUMMARY"
       # Adds a "Test report" check run that lists every test and spec scenario in the PR's Checks tab.
       # node --test puts tests without a describe() straight under <testsuites>, which the reporter skips,
       # so they are wrapped in a "Unit tests" suite first.

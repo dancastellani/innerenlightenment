@@ -2,6 +2,14 @@
 
 A mobile app that brings a daily uplifting message to the people who need it, starting with the messages published on [fonteviva.org](https://fonteviva.org/).
 
+## Background
+
+The messages come from Spiritism, a Christian-based philosophy, science, and religion. They are excerpts from books by the spirit Emmanuel, received by the medium Francisco Cândido Xavier. To learn more or join a study group (in person or online):
+
+- [innerenlightenment.com](https://www.innerenlightenment.com/)
+- [spiritist.us](https://spiritist.us/)
+- [tssfederation.org](https://www.tssfederation.org/)
+
 ## Status
 
 Early setup. The plan:
@@ -28,7 +36,7 @@ Scripts are TypeScript with no dependencies. Install [Node.js 24](https://nodejs
 ./run.sh export   # writes content/pt.json
 ```
 
-Or run the **Export messages** workflow from the Actions tab, which opens a PR with the updated file.
+Or run the **Export messages** workflow from the Actions tab, which opens a PR with the updated file. The **Translate messages** workflow does the same for `content/<lang>.json` (see [docs/development.md](docs/development.md#translating-the-messages)).
 
 ## License
 

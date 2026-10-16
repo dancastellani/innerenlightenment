@@ -9,12 +9,14 @@ if [ -z "$major" ] || [ "$major" -lt 24 ]; then
 fi
 
 case "$1" in
-  test)   node --test scripts/*.test.ts ;;
-  export) node scripts/export-fonteviva.ts content/pt.json ;;
+  test)      node --test scripts/*.test.ts ;;
+  export)    node scripts/export-fonteviva.ts content/pt.json ;;
+  translate) node scripts/translate.ts "${2:-en}" ;;
   *)
     echo "Usage: ./run.sh <command>"
     echo
-    echo "  test     run the tests"
-    echo "  export   download all messages from fonteviva.org into content/pt.json"
+    echo "  test              run the tests"
+    echo "  export            download all messages from fonteviva.org into content/pt.json"
+    echo "  translate [lang]  translate content/pt.json into content/<lang>.json (default en, needs GEMINI_API_KEY)"
     ;;
 esac

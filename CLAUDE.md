@@ -16,7 +16,7 @@
 
 - **Specs.** Each use case has a Gherkin `.feature` file in `specs/` with stable scenario IDs (`UC-xx.y` for the app, `OP-xx.y` for operations) and a linked GitHub issue. Scenarios are meant to run with Cucumber.
 - **Lifecycle.** Issue → branch → small change with tests → PR referencing the issue → CI → review → merge. A change in behaviour updates its spec in the same PR.
-- **Commands.** `./run.sh test` runs the tests, `./run.sh export` refreshes `content/pt.json` from fonteviva.org.
+- **Commands.** `./run.sh test` runs the tests, `./run.sh export` refreshes `content/pt.json` from fonteviva.org, `./run.sh translate <lang>` writes `content/<lang>.json` with Gemini.
 - **Actions.** *Export messages* refreshes the Portuguese content and opens a PR; translation runs in Actions using the `GEMINI_API_KEY` secret.
 - **More detail.** [docs/tech-stack.md](docs/tech-stack.md) explains each technology; [docs/development.md](docs/development.md) covers setup and the lifecycle; [docs/requirements.md](docs/requirements.md) lists the requirements.
 

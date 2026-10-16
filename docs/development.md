@@ -37,7 +37,7 @@ The scripts themselves only use what ships with Node; Cucumber is the one develo
 2. **Branch.** Work happens on a branch, never directly on `main`: `git switch -c my-change`.
 3. **Change and test.** Make the smallest change that does the job, then run `./run.sh test`. A change in behaviour updates its spec in the same branch.
 4. **Pull request.** Push the branch and open a PR that references the issue (`Closes #12`). Claude can do steps 2 to 4 when you ask in the project.
-5. **CI.** The **Test** workflow runs the tests and the specs on every PR. The PR page shows a green check when the tests pass, or a red cross with the failing output. Click **Details** next to the check, then **Summary**, to see the test report: every test and every spec scenario by ID, with its result.
+5. **CI.** The **Test** workflow runs the tests and the specs on every PR. The PR page shows a green check when the tests pass, or a red cross with the failing output. The **Checks** tab has a **Test report** check listing every test and spec scenario with its result; the run's **Summary** page shows the full output.
 6. **Review.** You review the PR on GitHub. Comments on a PR Claude opened are picked up and handled by Claude: it pushes a fix, or replies saying why not. CI runs again after each push.
 7. **Merge.** When CI is green and you approve, merge the PR on GitHub. Delete the branch afterwards.
 

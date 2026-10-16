@@ -12,8 +12,13 @@ case "$1" in
   test)
     # Runs the unit tests and the specs, each with its own summary, and fails if either fails.
     status=0
-    node --test scripts/*.test.ts mobile/*.test.ts || status=1
-    npx cucumber-js specs/ops --import 'specs/ops/steps/*.ts' --tags 'not @pending' --format pretty || status=1
+    # Besides the output, each writes a JUnit report to test-reports/, which GitHub shows in the Checks tab.
+    mkdir -p test-reports
+    node --test --test-reporter=spec --test-reporter-destination=stdout \
+      --test-reporter=junit --test-reporter-destination=test-reports/unit.xml \
+      scripts/*.test.ts mobile/*.test.ts || status=1
+    npx cucumber-js specs/ops --import 'specs/ops/steps/*.ts' --tags 'not @pending' \
+      --format pretty --format junit:test-reports/specs.xml --format-options '{"junit":{"suiteName":"Specs"}}' || status=1
     exit $status
     ;;
   export)    node scripts/export-fonteviva.ts content/pt.json ;;

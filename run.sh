@@ -23,6 +23,7 @@ case "$1" in
     ;;
   export)    node scripts/export-fonteviva.ts content/pt.json ;;
   translate) node scripts/translate.ts "${2:-en}" ;;
+  site)      node scripts/build-site.ts content site ;;
   app)       cd mobile && npm install && npx expo start ;;
   preview)
     # Publishes the checked-out code to its own EAS Update branch, named after the git branch,
@@ -36,6 +37,7 @@ case "$1" in
     echo "  test              run the tests and the specs in specs/ops (run npm install once first)"
     echo "  export            download all messages from fonteviva.org into content/pt.json"
     echo "  translate [lang]  translate content/pt.json into content/<lang>.json (default en, needs GEMINI_API_KEY)"
+    echo "  site              build the website from content/ into site/"
     echo "  app               start the app; scan the QR code with Expo Go on your phone"
     echo "  preview           publish the checked-out branch to Expo; open the printed link for its QR code"
     ;;

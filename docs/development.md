@@ -19,6 +19,7 @@ There is nothing to install with npm: the scripts only use what ships with Node.
 | `./run.sh` | Lists the commands |
 | `./run.sh test` | Runs the tests (`node --test scripts/*.test.ts`) |
 | `./run.sh export` | Downloads all messages from fonteviva.org into `content/pt.json` |
+| `./run.sh translate [lang]` | Translates `content/pt.json` into `content/<lang>.json` (default `en`) with Gemini; needs `GEMINI_API_KEY` |
 
 App commands will be added here once the Expo app exists.
 
@@ -38,3 +39,12 @@ The messages rarely change, so the export runs by hand:
 
 - **From GitHub (recommended):** Actions tab → **Export messages** → **Run workflow**. If `content/pt.json` changed, it opens a PR with the new file; review and merge it like any other PR.
 - **Locally:** `./run.sh export`, then commit `content/pt.json` on a branch and open a PR. This needs access to fonteviva.org, which some networks block.
+
+## Translating the messages
+
+Translations are made once from `content/pt.json` with the Gemini API and saved as `content/<lang>.json`.
+
+- **From GitHub (recommended):** Actions tab → **Translate messages** → **Run workflow**, with the language code (default `en`). It opens a PR with the file; spot-check a few messages and merge. It needs a repository secret named `GEMINI_API_KEY` (Settings → Secrets and variables → Actions), with a free key from [Google AI Studio](https://aistudio.google.com/apikey).
+- **Locally:** `GEMINI_API_KEY=... ./run.sh translate en`.
+
+Messages already in the output file are skipped, so if a run stops halfway (for example on the free tier's daily limit), run it again to finish.

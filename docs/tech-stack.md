@@ -120,6 +120,7 @@ GitHub Actions runs jobs on GitHub's machines, described by YAML files in `.gith
 
 - **Test** (`test.yml`) runs `node --test` on every pull request and every push to `main`. The PR page shows a green check or a red cross.
 - **Export messages** (`export-content.yml`) is started by hand from the **Actions** tab ("Run workflow"). It runs the export and, if `content/pt.json` changed, opens a PR with the new file. It exists because the export can't reach fonteviva.org from every environment, but it always works from GitHub.
+- **Translate messages** (`translate-content.yml`) is also started by hand, with a language code. It runs `scripts/translate.ts` with the `GEMINI_API_KEY` secret and opens a PR with `content/<lang>.json`.
 
 A workflow is a list of steps:
 
@@ -238,5 +239,6 @@ Settings (time, on/off, language, recently shown messages) are saved on the phon
 | Run tests | `node --test scripts/*.test.ts` |
 | Export messages | `node scripts/export-fonteviva.ts` |
 | Export from GitHub | Actions tab → Export messages → Run workflow |
+| Translate messages | `GEMINI_API_KEY=... node scripts/translate.ts en` |
 | Run specs (planned) | `npx cucumber-js specs` |
 | Run the app (planned) | `npx expo start` |

@@ -28,7 +28,7 @@ Scripts are TypeScript with no dependencies. Install [Node.js 24](https://nodejs
 ./run.sh export   # writes content/pt.json
 ```
 
-Or run the **Export messages** workflow from the Actions tab, which opens a PR with the updated file.
+Or run the **Export messages** workflow from the Actions tab, which opens a PR with the updated file. The **Translate messages** workflow does the same for `content/<lang>.json` (see [docs/development.md](docs/development.md#translating-the-messages)).
 
 ## License
 

@@ -1,0 +1,36 @@
+name: Translate messages
+
+# Translates content/pt.json with the Gemini API and opens a PR with content/<language>.json.
+# Needs the GEMINI_API_KEY repository secret.
+on:
+  workflow_dispatch:
+    inputs:
+      language:
+        description: Language code to translate into (en, es, fr...)
+        default: en
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  translate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node scripts/translate.ts "$LANGUAGE"
+        env:
+          LANGUAGE: ${{ inputs.language }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      - uses: peter-evans/create-pull-request@v7
+        if: always()
+        with:
+          branch: content/translate-${{ inputs.language }}
+          commit-message: Translate messages into ${{ inputs.language }}
+          title: Translate messages into ${{ inputs.language }}
+          body: Automated translation of content/pt.json with the Gemini API. Spot-check a few messages before merging.
+          add-paths: content/${{ inputs.language }}.json

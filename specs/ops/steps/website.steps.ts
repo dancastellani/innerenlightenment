@@ -63,7 +63,8 @@ Then(/^the page "([^"]*)" does not contain (.+)$/, function (this: World, page: 
 
 Then(/^the page "([^"]*)" links to (.+)$/, function (this: World, page: string, links: string) {
   const html = readPage(this, page);
-  for (const link of quoted(links)) assert.ok(html.includes(`href="${link}"`), link);
+  // In HTML a link's "&" is written "&amp;".
+  for (const link of quoted(links)) assert.ok(html.includes(`href="${link.replaceAll('&', '&amp;')}"`), link);
 });
 
 Then(/^the page "([^"]*)" does not link to (.+)$/, function (this: World, page: string, links: string) {

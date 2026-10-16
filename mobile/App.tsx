@@ -3,21 +3,35 @@ import { Linking, Pressable, ScrollView, Share, StyleSheet, Switch, Text, View }
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import content from '../content/pt.json';
+import portugueseContent from '../content/pt.json';
+import englishContent from '../content/en.json';
+import labels from '../website/languages.json';
 import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
+import { findMessage, languageFor, originalLink, type Language } from './language';
 
-const messages = content.messages as Message[];
-const books = content.books;
+// UC-05: Portuguese is the original; translations may leave a message out, so the plan uses the Portuguese ids.
+const portuguese = portugueseContent.messages as Message[];
+const translations: Record<Language, Message[]> = { pt: portuguese, en: englishContent.messages as Message[] };
+const books = portugueseContent.books;
 const bookNames = Object.fromEntries(books.map((b) => [b.slug, b.name]));
 
-// UC-08, UC-09: saved on the phone.
-type Settings = { hour: number; minute: number; enabled: boolean };
-const DEFAULT_SETTINGS: Settings = { hour: 8, minute: 0, enabled: true };
+function messageIn(language: Language, id: number | undefined): Message | undefined {
+  return findMessage(id, translations[language], portuguese);
+}
+
+// UC-05, UC-08, UC-09: saved on the phone. The language starts as the phone's.
+type Settings = { hour: number; minute: number; enabled: boolean; language: Language };
+const DEFAULT_SETTINGS: Settings = {
+  hour: 8,
+  minute: 0,
+  enabled: true,
+  language: languageFor(Intl.DateTimeFormat().resolvedOptions().locale),
+};
 
 async function loadSettings(): Promise<Settings> {
   const saved = await AsyncStorage.getItem('settings');
-  return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
+  return { ...DEFAULT_SETTINGS, ...(saved ? JSON.parse(saved) : {}) };
 }
 
 // Show notifications even while the app is open.
@@ -43,7 +57,7 @@ function notificationContent(message: Message) {
 // Returns false when the phone blocks notifications for the app.
 async function scheduleDays(settings: Settings): Promise<{ plan: Plan; allowed: boolean }> {
   const saved = await AsyncStorage.getItem('plan');
-  const plan = fillPlan(saved ? JSON.parse(saved) : {}, messages.map((m) => m.id), new Date());
+  const plan = fillPlan(saved ? JSON.parse(saved) : {}, portuguese.map((m) => m.id), new Date());
   await AsyncStorage.setItem('plan', JSON.stringify(plan));
 
   await Notifications.setNotificationChannelAsync('daily', {
@@ -61,7 +75,7 @@ async function scheduleDays(settings: Settings): Promise<{ plan: Plan; allowed: 
     if (day.length !== 10) continue; // skip extra messages like '2026-10-16 +1'
     const [year, month, date] = day.split('-').map(Number);
     const at = new Date(year, month - 1, date, settings.hour, settings.minute);
-    const message = messages.find((m) => m.id === id);
+    const message = messageIn(settings.language, id);
     if (at <= now || !message || scheduled === 14) continue;
     await Notifications.scheduleNotificationAsync({
       content: notificationContent(message),
@@ -89,7 +103,7 @@ function Action({ title, onPress, main = false }: { title: string; onPress: () =
 }
 
 export default function App() {
-  const [message, setMessage] = useState<Message>();
+  const [messageId, setMessageId] = useState<number>();
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [allowed, setAllowed] = useState(true);
   const [screen, setScreen] = useState<'message' | 'settings' | 'index'>('message');
@@ -102,18 +116,21 @@ export default function App() {
       setSettings(saved);
       const { plan, allowed } = await scheduleDays(saved);
       setAllowed(allowed);
-      setMessage((current) => current ?? messages.find((m) => m.id === plan[dayKey(new Date())]));
+      setMessageId((current) => current ?? plan[dayKey(new Date())]);
     });
   }, []);
 
   // UC-02: tapping a notification shows that message.
   useEffect(() => {
     const id = tapped?.notification.request.content.data?.id;
-    const found = messages.find((m) => m.id === id);
-    if (found) setMessage(found);
+    if (typeof id === 'number') setMessageId(id);
   }, [tapped]);
 
-  // UC-08, UC-09: save the change and reschedule; each day keeps its message.
+  // UC-05.3: the current message follows the chosen language.
+  const message = messageIn(settings.language, messageId);
+  const isTranslation = !!message && !portuguese.includes(message);
+
+  // UC-05.3, UC-08, UC-09: save the change and reschedule; each day keeps its message.
   async function changeSettings(next: Settings) {
     setSettings(next);
     await AsyncStorage.setItem('settings', JSON.stringify(next));
@@ -133,8 +150,8 @@ export default function App() {
 
   // UC-04: show a different, random message.
   function showAnother() {
-    const others = messages.filter((m) => m !== message);
-    setMessage(others[Math.floor(Math.random() * others.length)]);
+    const others = portuguese.filter((m) => m.id !== messageId);
+    setMessageId(others[Math.floor(Math.random() * others.length)].id);
   }
 
   // UC-06: title, body, signature and link through the system share sheet.
@@ -157,7 +174,7 @@ export default function App() {
 
   // UC-20: the books at the top; picking one lists its messages.
   if (screen === 'index') {
-    const bookMessages = messages.filter((m) => m.book === indexBook);
+    const bookMessages = portuguese.filter((m) => m.book === indexBook).map((m) => messageIn(settings.language, m.id)!);
     return (
       <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
         <Text style={styles.title}>Index</Text>
@@ -172,7 +189,7 @@ export default function App() {
             key={m.id}
             style={styles.indexItem}
             onPress={() => {
-              setMessage(m);
+              setMessageId(m.id);
               setScreen('message');
             }}
           >
@@ -211,6 +228,15 @@ export default function App() {
               <Action title="Open phone settings" onPress={() => Linking.openSettings()} />
             </View>
           )}
+          <Text style={styles.label}>Language</Text>
+          {(['en', 'pt'] as const).map((language) => (
+            <Action
+              key={language}
+              title={labels[language].name}
+              onPress={() => changeSettings({ ...settings, language })}
+              main={language === settings.language}
+            />
+          ))}
           <Action title="Test notification in 10 seconds" onPress={sendTest} />
           <Action title="Back" onPress={() => setScreen('message')} main />
         </View>
@@ -230,10 +256,11 @@ export default function App() {
         </Text>
       ))}
       {message.signature && <Text style={styles.signature}>{message.signature}</Text>}
+      {isTranslation && <Text style={styles.translation}>{labels.en.translationDisclaimer}</Text>}
       <View style={styles.actions}>
         <Action title="Another message" onPress={showAnother} main />
         <Action title="Share" onPress={share} />
-        <Action title="Open on fonteviva.org" onPress={() => Linking.openURL(message.url)} />
+        <Action title="Open on fonteviva.org" onPress={() => Linking.openURL(originalLink(message.url, settings.language))} />
       </View>
       <View style={styles.links}>
         <Pressable accessibilityRole="button" onPress={() => setScreen('index')} style={styles.link}>
@@ -267,6 +294,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 52, borderBottomWidth: 1, borderColor: colors.rule },
   label: { fontSize: 18, color: colors.ink },
   warning: { color: colors.warning, marginBottom: 8 },
+  translation: { fontSize: 14, fontStyle: 'italic', color: colors.muted, marginTop: 24 },
   backButton: { marginTop: 32 },
   bookTitle: { fontFamily: 'serif', fontSize: 24, fontWeight: '600', color: colors.ink, marginTop: 36, marginBottom: 8 },
   indexItem: { fontFamily: 'serif', fontSize: 18, color: colors.spring, paddingVertical: 14, borderBottomWidth: 1, borderColor: colors.rule },

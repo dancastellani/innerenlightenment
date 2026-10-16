@@ -20,7 +20,13 @@ Feature: Build and publish the website
     When the website is built
     Then the page "en/o-tempo/" contains "Time", "First paragraph.", "Second paragraph." and "Emmanuel"
     And the page "en/o-tempo/" contains "via Francisco Candido Xavier"
-    And the page "en/o-tempo/" links to "https://fonteviva.org/fonte-viva/o-tempo/"
+    And the page "pt/o-tempo/" links to "https://fonteviva.org/fonte-viva/o-tempo/"
+
+  # Same as the app's UC-07.2: a translated page opens the original through Google Translate.
+  @OP-05.19
+  Scenario: A translated page links to fonteviva.org through Google Translate
+    When the website is built
+    Then the page "en/o-tempo/" links to "https://fonteviva-org.translate.goog/fonte-viva/o-tempo/?_x_tr_sl=pt&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp"
 
   @OP-05.3
   Scenario: A message page links to the same message in the other languages

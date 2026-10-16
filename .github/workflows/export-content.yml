@@ -1,0 +1,26 @@
+name: Export messages
+
+# Pulls all messages from fonteviva.org and opens a PR when content/pt.json changes.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node scripts/export-fonteviva.ts content/pt.json
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: content/export-pt
+          commit-message: Update Portuguese messages from fonteviva.org
+          title: Update Portuguese messages from fonteviva.org
+          body: Automated export of all messages from https://fonteviva.org/ via its WordPress REST API.
+          add-paths: content/pt.json

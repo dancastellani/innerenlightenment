@@ -1,2 +1,35 @@
-# innerenlightenment-
-A project to help individuals develop their inner enlightenment.
+# innerenlightenment
+
+A mobile app that brings a daily uplifting message to the people who need it, starting with the messages published on [fonteviva.org](https://fonteviva.org/).
+
+## Status
+
+Early setup. The plan:
+
+- **Content:** all messages from fonteviva.org, exported to JSON (`content/pt.json`) through the site's public WordPress REST API.
+- **App:** Expo (React Native) for iOS and Android, running entirely on the phone with no server. Daily messages arrive as local notifications at a time the user picks (6am by default).
+- **Languages:** messages are translated once and stored as one file per language (`content/<lang>.json`). English and Portuguese ship with the app; other languages download from this repository on demand.
+- **Later:** a link to chat about the message with a Gemini gem, and per-user frequency.
+
+## Acknowledgements
+
+Thank you to **Marcelo Paiva**, creator and maintainer of [fonteviva.org](https://fonteviva.org/), whose work collecting and publishing these messages makes this project possible.
+
+## Exporting the messages
+
+Scripts are TypeScript with no dependencies. Install [Node.js 24](https://nodejs.org/), which runs `.ts` files directly:
+
+```sh
+node scripts/export-fonteviva.ts   # writes content/pt.json
+node --test scripts/*.test.ts      # parser tests
+```
+
+Or run the **Export messages** workflow from the Actions tab, which opens a PR with the updated file.
+
+## License
+
+The code is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE.md): you may use, copy and change it for any noncommercial purpose, keeping the copyright notice. Commercial use is not permitted. The software comes with no warranty or liability.
+
+The messages in `content/` are **not** covered by that license. They are excerpts from books by Emmanuel, psychographed by Francisco Cândido Xavier, as published on [fonteviva.org](https://fonteviva.org/), and their translations. All rights to that content remain with its rights holders.
+
+**Disclaimer:** the messages come from publicly available data on fonteviva.org. This project is not responsible or liable for the content of the messages.

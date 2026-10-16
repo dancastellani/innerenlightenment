@@ -38,3 +38,13 @@ The messages rarely change, so the export runs by hand:
 
 - **From GitHub (recommended):** Actions tab → **Export messages** → **Run workflow**. If `content/pt.json` changed, it opens a PR with the new file; review and merge it like any other PR.
 - **Locally:** `./run.sh export`, then commit `content/pt.json` on a branch and open a PR. This needs access to fonteviva.org, which some networks block.
+
+## Working with Claude Code locally
+
+You can keep working with Claude on your own computer using [Claude Code](https://code.claude.com/docs):
+
+1. Install it: `npm install -g @anthropic-ai/claude-code` (or follow the install steps on the docs page).
+2. Open a terminal in your clone of this repo and run `claude`. Sign in the first time.
+3. Claude reads [CLAUDE.md](../CLAUDE.md) on start, so it already knows the project, the rules and this workflow.
+4. Ask it to pick up an issue, for example: "Pick up issue #33, make a branch, implement it and open a PR." It runs `./run.sh test` before pushing.
+5. At the end of a session, run `/update-context`. It saves what was learned (decisions, gotchas, conventions) to `CLAUDE.md` or `docs/` in a PR, so the next session starts with it.

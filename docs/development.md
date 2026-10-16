@@ -17,11 +17,18 @@ There is nothing to install with npm: the scripts only use what ships with Node.
 | Command | What it does |
 |---|---|
 | `./run.sh` | Lists the commands |
-| `./run.sh test` | Runs the tests (`node --test scripts/*.test.ts`) |
+| `./run.sh test` | Runs the tests (`node --test scripts/*.test.ts mobile/*.test.ts`) |
 | `./run.sh export` | Downloads all messages from fonteviva.org into `content/pt.json` |
 | `./run.sh translate [lang]` | Translates `content/pt.json` into `content/<lang>.json` (default `en`) with Gemini; needs `GEMINI_API_KEY` |
+| `./run.sh app` | Installs the app's packages and starts it; scan the QR code with Expo Go |
 
-App commands will be added here once the Expo app exists.
+## Trying the app on your Android phone
+
+1. Install **Expo Go** from the Play Store.
+2. On your computer, run `./run.sh app`. The first run installs packages, which takes a minute.
+3. Open Expo Go and scan the QR code shown in the terminal. Phone and computer must be on the same Wi-Fi; if they can't be, stop it and run `cd mobile && npx expo start --tunnel` instead.
+4. Allow notifications when asked. The app shows today's message and schedules the next 14 days at 08:00.
+5. Tap **Test notification in 10 seconds**, lock the phone or switch apps, and wait for it. Tap the notification and the app opens on that message.
 
 ## The lifecycle of a change
 

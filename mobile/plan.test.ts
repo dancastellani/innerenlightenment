@@ -1,0 +1,31 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { dayKey, fillPlan } from './plan.ts';
+
+const ids = Array.from({ length: 724 }, (_, i) => i + 1);
+const today = new Date(2026, 9, 16, 12, 0);
+
+test('UC-01.1: fills today and the next 14 days', () => {
+  const plan = fillPlan({}, ids, today);
+  assert.equal(Object.keys(plan).length, 15);
+  assert.ok(plan['2026-10-16'] && plan['2026-10-30']);
+});
+
+test('UC-01.4: topping up keeps existing days and adds one message per new day', () => {
+  const first = fillPlan({}, ids, today);
+  const later = fillPlan(first, ids, new Date(2026, 9, 25, 12, 0));
+  for (const day of Object.keys(first)) assert.equal(later[day], first[day]);
+  assert.equal(Object.keys(later).length, 15 + 9);
+});
+
+test('UC-01.5: no repeats within the plan, and days older than 90 days are forgotten', () => {
+  const plan = fillPlan({ '2026-07-01': 5, '2026-09-01': 7 }, ids, today);
+  const values = Object.values(plan);
+  assert.equal(new Set(values).size, values.length);
+  assert.equal(plan['2026-07-01'], undefined);
+  assert.equal(plan['2026-09-01'], 7);
+});
+
+test('dayKey uses local date', () => {
+  assert.equal(dayKey(new Date(2026, 0, 5, 23, 59)), '2026-01-05');
+});

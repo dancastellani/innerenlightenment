@@ -3,7 +3,7 @@ Feature: Change the notification time
 
   @UC-08.1
   Scenario: Pick a new time
-    Given notifications are scheduled for 06:00
+    Given notifications are scheduled for 08:00
     When I set the time to 07:30 in settings
     Then all scheduled notifications are at 07:30
     And each day keeps the same message it had before

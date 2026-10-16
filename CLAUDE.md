@@ -8,7 +8,7 @@
 
 - **Goal.** An app that shares uplifting, encouraging messages with people who need them. Owner: Dan (`dancastellani`), who is new to TypeScript and learning it, so write clean, readable code ([Clean Code](https://gist.github.com/wojteklu/73c6914cc446146b8b533c0988cf8d29)), not clever code.
 - **Source.** The messages are book excerpts from Spiritism (Christian-based), published in Portuguese on [fonteviva.org](https://fonteviva.org/) by Marcelo Paiva (WordPress API, one deep link per message). Related study-group orgs: innerenlightenment.com, spiritist.us, tssfederation.org. Book content is not covered by the code license.
-- **Product.** Android first (maybe iOS and macOS later), built with Expo. Everything runs on the device: no server, local scheduled notifications (daily 6am first, user-chosen time later).
+- **Product.** Android first (maybe iOS and macOS later), built with Expo. Everything runs on the device: no server, local scheduled notifications (daily 8am first, user-chosen time later).
 - **Languages.** English (default) and Portuguese are bundled in the app; other languages are downloaded on demand from this repo. Spanish is next, later French, Russian and Korean. Translations are made once with an LLM (Gemini) in GitHub Actions.
 - **Website.** GitHub Pages, with a page per message for share links and translation comparison for study groups.
 

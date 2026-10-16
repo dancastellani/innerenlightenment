@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Inner Enlightenment",
+    "slug": "innerenlightenmentapp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a43630de-7136-4588-b919-4c7374060fd8"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a43630de-7136-4588-b919-4c7374060fd8"
+      }
+    }
+  }
+}

@@ -139,7 +139,7 @@ Each use case has a `.feature` file in `specs/` written in **Gherkin**: plain-En
 
 ```gherkin
 @UC-01 @v1
-Feature: Receive a message every day at 6am
+Feature: Receive a message every day at 8am
 
   @UC-01.4
   Scenario: Queue is topped up when the app opens
@@ -211,7 +211,7 @@ One-time setup, already done for this repo:
 
 ### Local notifications (planned)
 
-`expo-notifications` asks the phone to show a notification at a set time, even with the app closed and no network. The text is fixed when the notification is scheduled, so the app picks the next 14 messages and schedules one per day at 6:00. Each time the app opens, it tops the queue back up to 14 days (iOS allows at most 64 pending notifications). Tapping one opens that message.
+`expo-notifications` asks the phone to show a notification at a set time, even with the app closed and no network. The text is fixed when the notification is scheduled, so the app picks the next 14 messages and schedules one per day at 8:00. Each time the app opens, it tops the queue back up to 14 days (iOS allows at most 64 pending notifications). Tapping one opens that message.
 
 ```ts
 import * as Notifications from 'expo-notifications';

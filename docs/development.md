@@ -48,3 +48,13 @@ Translations are made once from `content/pt.json` with the Gemini API and saved 
 - **Locally:** `GEMINI_API_KEY=... ./run.sh translate en`.
 
 Messages already in the output file are skipped, so if a run stops halfway (for example on the free tier's daily limit), run it again to finish.
+
+## Working with Claude Code locally
+
+You can keep working with Claude on your own computer using [Claude Code](https://code.claude.com/docs):
+
+1. Install it: `npm install -g @anthropic-ai/claude-code` (or follow the install steps on the docs page).
+2. Open a terminal in your clone of this repo and run `claude`. Sign in the first time.
+3. Claude reads [CLAUDE.md](../CLAUDE.md) on start, so it already knows the project, the rules and this workflow.
+4. Ask it to pick up an issue, for example: "Pick up issue #33, make a branch, implement it and open a PR." It runs `./run.sh test` before pushing.
+5. At the end of a session, run `/update-context`. It saves what was learned (decisions, gotchas, conventions) to `CLAUDE.md` or `docs/` in a PR, so the next session starts with it.

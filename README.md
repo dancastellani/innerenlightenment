@@ -2,6 +2,8 @@
 
 A mobile app that brings a daily uplifting message to the people who need it, starting with the messages published on [fonteviva.org](https://fonteviva.org/).
 
+**Read the messages on the website:** https://dancastellani.github.io/innerenlightenment/ (English, Portuguese and Spanish; no app needed). It is published from `main` on every merge.
+
 ## Background
 
 The messages come from Spiritism, a Christian-based philosophy, science, and religion. They are excerpts from books by the spirit Emmanuel, received by the medium Francisco Cândido Xavier. To learn more or join a study group (in person or online):
@@ -16,6 +18,7 @@ Early setup. The plan:
 
 - **Content:** all messages from fonteviva.org, exported to JSON (`content/pt.json`) through the site's public WordPress REST API.
 - **App:** Expo (React Native) for iOS and Android, running entirely on the phone with no server. Daily messages arrive as local notifications at a time the user picks (8am by default).
+- **Website:** one page per message, in every language, at https://dancastellani.github.io/innerenlightenment/, built by `scripts/build-site.ts` and published with GitHub Pages.
 - **Languages:** messages are translated once and stored as one file per language (`content/<lang>.json`). English and Portuguese ship with the app; other languages download from this repository on demand.
 - **Later:** a link to chat about the message with a Gemini gem, and per-user frequency.
 

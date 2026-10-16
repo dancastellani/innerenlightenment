@@ -35,6 +35,14 @@ Then(
 );
 
 Then(
+  "the {string} workflow writes the translation check report to the run's summary, also when a test failed",
+  function (this: World, name: string) {
+    this.workflow = workflow(name);
+    assert.match(this.workflow, /- if: always\(\)\n +run: node scripts\/check-translations.ts >> "\$GITHUB_STEP_SUMMARY"/);
+  },
+);
+
+Then(
   'the {string} workflow publishes the JUnit reports as a {string} check, also when a test failed',
   function (this: World, name: string, checkName: string) {
     this.workflow = workflow(name);

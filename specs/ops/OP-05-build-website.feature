@@ -28,6 +28,12 @@ Feature: Build and publish the website
     Then the page "en/o-tempo/" links to "../../pt/o-tempo/"
     And the page "pt/o-tempo/" links to "../../en/o-tempo/"
 
+  @OP-05.16
+  Scenario: A message page shows which language is selected
+    When the website is built
+    Then the page "pt/o-tempo/" marks "Português" as the selected language
+    And the page "en/o-tempo/" marks "English" as the selected language
+
   @OP-05.4
   Scenario: The home page opens a random English message
     When the website is built

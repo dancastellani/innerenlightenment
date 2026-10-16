@@ -93,3 +93,9 @@ Then('every language but {string} in website\\/languages.json has a {string}', f
     if (language !== original) assert.ok((values as Record<string, string>)[label], `${language} has no ${label}`);
   }
 });
+
+Then('the page {string} marks {string} as the selected language', function (this: World, page: string, language: string) {
+  const html = readPage(this, page);
+  assert.ok(html.includes(`aria-current="true">${language}</a>`), html);
+  assert.equal(html.split('aria-current').length - 1, 1, 'exactly one selected language');
+});

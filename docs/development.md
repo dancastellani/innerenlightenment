@@ -21,6 +21,7 @@ The scripts themselves only use what ships with Node; Cucumber is the one develo
 | `./run.sh test` | Runs the tests (`node --test scripts/*.test.ts mobile/*.test.ts`), then the specs in `specs/ops/` with Cucumber |
 | `./run.sh export` | Downloads all messages from fonteviva.org into `content/pt.json` |
 | `./run.sh translate [lang]` | Translates `content/pt.json` into `content/<lang>.json` (default `en`) with Gemini; needs `GEMINI_API_KEY` |
+| `./run.sh site` | Builds the website from `content/` into `site/` |
 | `./run.sh app` | Installs the app's packages and starts it; scan the QR code with Expo Go |
 | `./run.sh preview` | Publishes the checked-out branch to Expo (EAS Update) as `preview-<branch>`; open the printed link for its QR code |
 
@@ -68,6 +69,12 @@ Translations are made once from `content/pt.json` with the Gemini API and saved 
 - **Locally:** `GEMINI_API_KEY=... ./run.sh translate en`.
 
 Messages already in the output file are skipped, so if a run stops halfway (for example on the free tier's daily limit), run it again to finish.
+
+## The website
+
+`scripts/build-site.ts` turns `content/<lang>.json` into a static site: one page per message at `<lang>/<slug>/` (the slug is fonteviva.org's, the same in every language), a list of messages per language, and `<lang>/random/`, which opens a random message (the "Another message" link). The home page opens a random English message. The look is kept apart from the code in `website/`: HTML templates in `website/templates/` (with `{{name}}` placeholders), `style.css`, and `languages.json`, which holds each language's name and labels; add an entry there when adding a language, or the build stops with `Add "<lang>" to website/languages.json`. The **Website** workflow builds it and publishes it with GitHub Pages on every push to `main`; Pages must be set once to Settings → Pages → Source: **GitHub Actions**.
+
+To look at it locally: `./run.sh site`, then `npx serve site` and open the printed address (links end in `/`, so opening the files directly doesn't follow them).
 
 ## Previewing an app PR in Expo Go
 

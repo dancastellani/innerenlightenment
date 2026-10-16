@@ -10,7 +10,7 @@
 - **Source.** The messages are book excerpts from Spiritism (Christian-based), published in Portuguese on [fonteviva.org](https://fonteviva.org/) by Marcelo Paiva (WordPress API, one deep link per message). Related study-group orgs: innerenlightenment.com, spiritist.us, tssfederation.org. Book content is not covered by the code license.
 - **Product.** Android first (maybe iOS and macOS later), built with Expo. Everything runs on the device: no server, local scheduled notifications (daily 8am first, user-chosen time later).
 - **Languages.** English (default) and Portuguese are bundled in the app; other languages are downloaded on demand from this repo. Spanish is next, later French, Russian and Korean. Translations are made once with an LLM (Gemini) in GitHub Actions.
-- **Website.** GitHub Pages, with a page per message for share links and translation comparison for study groups.
+- **Website.** GitHub Pages, with a page per message for share links and translation comparison for study groups. Built by `scripts/build-site.ts` from the templates, stylesheet and labels in `website/`, and published by the *Website* Action on every merge to `main`. Adding a language also needs its name and labels in `website/languages.json` (the build stops without them).
 
 ## How work is done
 

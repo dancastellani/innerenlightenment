@@ -24,7 +24,7 @@ Source plan: messages from [fonteviva.org](https://fonteviva.org/) (724 excerpts
 
 ### v1: Daily message
 
-| # | As a reader, I can... | Acceptance criteria (summary) |
+| # | As a reader, I can... | Acceptance criteria (summary; full scenarios in `specs/`) |
 |---|---|---|
 | UC-01 | **receive a message every day at 6am** | After first launch and permission, a local notification arrives daily at 06:00 device time with the message title and opening line; works with no network; at least ~30 days are queued and topped up each time the app opens. |
 | UC-02 | **open today's message from the notification** | Tapping the notification opens that exact message in the reader. |
@@ -40,7 +40,7 @@ Supporting work for v1 (issues, not use cases): content export to JSON (PR #1), 
 
 ### v2: Personal schedule and more languages
 
-| # | As a reader, I can... | Acceptance criteria (summary) |
+| # | As a reader, I can... | Acceptance criteria (summary; full scenarios in `specs/`) |
 |---|---|---|
 | UC-10 | **choose which days I get a message** | Pick days of the week (e.g. weekdays only); notifications are scheduled only on those days. |
 | UC-11 | **get more than one message a day** | Add more than one time per day; each time gets a different message; iOS's 64 pending-notification limit is respected. |
@@ -51,7 +51,7 @@ Supporting work for v1 (issues, not use cases): content export to JSON (PR #1), 
 
 ### v3: Talk about it
 
-| # | As a reader, I can... | Acceptance criteria (summary) |
+| # | As a reader, I can... | Acceptance criteria (summary; full scenarios in `specs/`) |
 |---|---|---|
 | UC-16 | **talk about a message with the Fonte Viva gem** | A "Talk about this message" button opens the gem's share link in the Gemini app or browser. |
 | UC-17 | **chat about a message inside the app** | (Later, optional) In-app chat using the gem's instructions via Firebase AI Logic; no API key ships in the app. |
@@ -63,6 +63,11 @@ Supporting work for v1 (issues, not use cases): content export to JSON (PR #1), 
 
 ## How we work with these
 
-- One GitHub issue per use case, titled `UC-xx: <use case>`, labelled `use-case`, with full acceptance criteria as a checklist, in its milestone.
-- Supporting tasks are issues too, labelled `task`.
-- A PR that implements a use case references its issue (`Closes #n`). When a use case changes, update its issue and this table together.
+The acceptance criteria live in **executable specs**, so the same text that defines a feature later drives its automated tests.
+
+- **Specs:** one Gherkin file per use case in [`specs/`](../specs/), e.g. `specs/v1/UC-01-daily-notification.feature`. Each feature is tagged with its use case (`@UC-01`) and milestone (`@v1`); each scenario has a stable ID (`@UC-01.1`). IDs are never reused or renumbered; a dropped scenario keeps its ID retired.
+- **Issues:** one GitHub issue per use case, titled `UC-xx: <use case>`, labelled `use-case`, in its milestone. The issue links to its spec file and lists the scenario IDs as a checklist, ticked when each scenario has a passing test. Supporting tasks are issues labelled `task`.
+- **Tests:** every automated test names the scenario it covers (e.g. `it('UC-01.4 queue is topped up when the app opens', ...)`). Logic like scheduling and message choice is tested with Jest against the scenarios; on-device flows (tapping a notification, sharing) with an end-to-end tool such as Maestro. A CI check can then list scenarios with no test, giving a coverage report per use case.
+- **Changes:** a PR that implements or changes behaviour updates the spec in the same PR and references its issue (`Closes #n`). The spec file is the source of truth; this table is the overview.
+
+v2 and v3 specs are written when those milestones start.

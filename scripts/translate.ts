@@ -23,7 +23,7 @@ const done: Message[] = existsSync(output) ? JSON.parse(await readFile(output, '
 async function translate(batch: Translation[]): Promise<Translation[]> {
   const prompt =
     `Translate these messages from Portuguese into the language with code "${lang}". ` +
-    'They are Christian spiritual texts; keep their tone, meaning and Bible references. ' +
+    'They are Spiritist (Christian-based) spiritual texts; keep their tone, meaning and Bible references. ' +
     'Return the same JSON array with the same ids and the same number of paragraphs per message, ' +
     'translating only "title", "paragraphs" and "note" (leave null as null).\n\n' +
     JSON.stringify(batch);

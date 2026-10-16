@@ -51,12 +51,7 @@ Messages already in the output file are skipped, so if a run stops halfway (for 
 
 ## Previewing an app PR in Expo Go
 
-The **Expo preview** Action publishes every PR that changes `mobile/` or `content/` with EAS Update and comments a QR code on the PR; scan it with Expo Go to try that PR on your phone. One-time setup:
-
-1. Create a free account at [expo.dev](https://expo.dev/signup) and a project named `innerenlightenment`; its project ID goes in `mobile/app.json` (`expo.extra.eas.projectId` and `expo.updates.url`). Done: the project is `a43630de-7136-4588-b919-4c7374060fd8`.
-2. Create an access token at [expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens) and save it as a repository secret named `EXPO_TOKEN`.
-
-Each PR is published to its own update branch (`pr-<number>`), so every open PR has a working QR code at the same time, and nothing is sent to an installed store build. Until the secret exists, the Action skips itself.
+Every PR that changes `mobile/` or `content/` gets a comment with a QR code from the **Expo preview** Action; scan it with Expo Go to try that PR on your phone. How it works and the one-time setup are in [tech-stack.md](tech-stack.md#pr-previews-in-expo-go-eas-update).
 
 ## Working with Claude Code locally
 

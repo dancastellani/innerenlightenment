@@ -49,7 +49,7 @@ Two rules come with this:
 - Imports include the `.ts` extension: `import { parseMessage } from './parse-message.ts'`.
 - Only TypeScript features that can simply be erased are allowed (types, `type` imports). Features that generate code, like `enum`, don't run. Plain objects and string unions do the same job.
 
-Node also ships with what the scripts need, so there are **no dependencies** to install: `fetch` for HTTP, `node:fs` for files, `node:test` for tests. `package.json` only says `"type": "module"`, which turns on `import`/`export`.
+Node also ships with what the scripts need, so the scripts have **no dependencies**: `fetch` for HTTP, `node:fs` for files, `node:test` for tests. `package.json` says `"type": "module"`, which turns on `import`/`export`, and lists Cucumber as the one development dependency, used to run the specs.
 
 Install: [nodejs.org](https://nodejs.org/), version 24 or newer. Check with `node --version`.
 
@@ -152,7 +152,7 @@ Feature: Receive a message every day at 8am
 - Tags like `@UC-01.4` are **stable scenario IDs**. They are never renumbered or reused, so issues, tests and reports can point at them.
 - One GitHub issue per use case (`UC-01: ...`) lists its scenario IDs as a checklist. See `docs/requirements.md`.
 
-### Running specs with Cucumber (planned)
+### Running specs with Cucumber
 
 [Cucumber](https://github.com/cucumber/cucumber-js) reads the `.feature` files and runs them. For each Given/When/Then line it finds a matching TypeScript function, a **step definition**, and calls it. A scenario passes when all of its steps pass.
 
@@ -173,7 +173,7 @@ Then('notifications are scheduled for the next {int} days', function (days: numb
 });
 ```
 
-`{int}` captures a number from the sentence, so one step definition serves every scenario that uses the same wording. `this` is shared between the steps of one scenario. Step definitions are written along with the app code each scenario covers. The command will look like `npx cucumber-js specs`, and results are reported by tag (`@UC-01.4`). Flows that need a real phone, like tapping a notification, may later use an on-device tool such as Maestro, still named by scenario ID.
+`{int}` captures a number from the sentence, so one step definition serves every scenario that uses the same wording. `this` is shared between the steps of one scenario. Step definitions are written along with the code each scenario covers. The operational specs in `specs/ops/` (export, `run.sh`, CI checks) already run this way, as part of `./run.sh test` (after `npm install`) and on every PR. Results are reported by tag (`@OP-01.1`). Flows that need a real phone, like tapping a notification, may later use an on-device tool such as Maestro, still named by scenario ID.
 
 ## The app: Expo and React Native (planned)
 

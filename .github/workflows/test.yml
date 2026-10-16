@@ -13,4 +13,5 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
-      - run: node --test scripts/*.test.ts mobile/*.test.ts
+      - run: npm ci
+      - run: ./run.sh test

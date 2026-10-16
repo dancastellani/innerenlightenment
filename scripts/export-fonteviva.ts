@@ -5,7 +5,8 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { parseMessage, toText, type Post } from './parse-message.ts';
 
-const API = 'https://fonteviva.org/wp-json/wp/v2';
+// FONTEVIVA_API lets the specs point the export at saved sample data instead of the real site.
+const API = process.env.FONTEVIVA_API ?? 'https://fonteviva.org/wp-json/wp/v2';
 
 type Category = { id: number; name: string; slug: string; count: number };
 

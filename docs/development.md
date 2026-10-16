@@ -6,9 +6,10 @@ How a change goes from an idea to `main`, and the commands you need along the wa
 
 1. Install [Node.js 24](https://nodejs.org/) or newer. Check with `node --version`.
 2. Clone the repo: `git clone https://github.com/dancastellani/innerenlightenment.git`
-3. Run the tests: `./run.sh test`
+3. Install Cucumber, used to run the specs: `npm install`
+4. Run the tests and the specs: `./run.sh test`
 
-There is nothing to install with npm: the scripts only use what ships with Node.
+The scripts themselves only use what ships with Node; Cucumber is the one development dependency.
 
 ## `run.sh`
 
@@ -17,7 +18,7 @@ There is nothing to install with npm: the scripts only use what ships with Node.
 | Command | What it does |
 |---|---|
 | `./run.sh` | Lists the commands |
-| `./run.sh test` | Runs the tests (`node --test scripts/*.test.ts mobile/*.test.ts`) |
+| `./run.sh test` | Runs the tests (`node --test scripts/*.test.ts mobile/*.test.ts`), then the specs in `specs/ops/` with Cucumber |
 | `./run.sh export` | Downloads all messages from fonteviva.org into `content/pt.json` |
 | `./run.sh translate [lang]` | Translates `content/pt.json` into `content/<lang>.json` (default `en`) with Gemini; needs `GEMINI_API_KEY` |
 | `./run.sh app` | Installs the app's packages and starts it; scan the QR code with Expo Go |
@@ -36,7 +37,7 @@ There is nothing to install with npm: the scripts only use what ships with Node.
 2. **Branch.** Work happens on a branch, never directly on `main`: `git switch -c my-change`.
 3. **Change and test.** Make the smallest change that does the job, then run `./run.sh test`. A change in behaviour updates its spec in the same branch.
 4. **Pull request.** Push the branch and open a PR that references the issue (`Closes #12`). Claude can do steps 2 to 4 when you ask in the project.
-5. **CI.** The **Test** workflow runs on every PR. The PR page shows a green check when the tests pass, or a red cross with the failing output.
+5. **CI.** The **Test** workflow runs the tests and the specs on every PR. The PR page shows a green check when the tests pass, or a red cross with the failing output.
 6. **Review.** You review the PR on GitHub. Comments on a PR Claude opened are picked up and handled by Claude: it pushes a fix, or replies saying why not. CI runs again after each push.
 7. **Merge.** When CI is green and you approve, merge the PR on GitHub. Delete the branch afterwards.
 

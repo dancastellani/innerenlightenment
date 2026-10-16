@@ -46,3 +46,16 @@ test('UC-04.3: once every message was shown in the last 90 days, messages start 
   assert.ok(ids.includes(id));
   assert.ok(ids.includes(fillPlan(plan, ids, new Date(2026, 9, 31, 12, 0))['2026-11-14']));
 });
+
+test('UC-01.5 boundary: a day exactly 90 days ago is kept, 91 days ago is forgotten', () => {
+  const plan = fillPlan({ '2026-07-18': 5, '2026-07-17': 7 }, ids, today);
+  assert.equal(plan['2026-07-18'], 5);
+  assert.equal(plan['2026-07-17'], undefined);
+});
+
+test('UC-04.2 boundary: with one unseen message left, that one is shown', () => {
+  let plan = fillPlan({}, ids, today);
+  while (Object.keys(plan).length < ids.length - 1) plan = addAnother(plan, ids, today)[0];
+  const unseen = ids.find((id) => !Object.values(plan).includes(id));
+  assert.equal(addAnother(plan, ids, today)[1], unseen);
+});

@@ -26,7 +26,7 @@ Source plan: messages from [fonteviva.org](https://fonteviva.org/) (724 excerpts
 
 | # | As a reader, I can... | Acceptance criteria (summary; full scenarios in `specs/`) |
 |---|---|---|
-| UC-01 | **receive a message every day at 6am** | After first launch and permission, a local notification arrives daily at 06:00 device time with the message title and opening line; works with no network; at least ~30 days are queued and topped up each time the app opens. |
+| UC-01 | **receive a message every day at 6am** | After first launch and permission, a local notification arrives daily at 06:00 device time with the message title and opening line; works with no network; 14 days are queued and topped up each time the app opens. |
 | UC-02 | **open today's message from the notification** | Tapping the notification opens that exact message in the reader. |
 | UC-03 | **see today's message when I open the app** | The home screen shows today's message (same one the notification announced) with book, chapter, title, body and signature. |
 | UC-04 | **ask for another message** | An "Another message" action shows a random message not shown recently. |

@@ -11,7 +11,7 @@ Feature: Turn notifications off and on
   Scenario: Turn back on
     Given notifications are off
     When I turn notifications on
-    Then notifications are scheduled for the next 30 days at my chosen time
+    Then notifications are scheduled for the next 14 days at my chosen time
 
   @UC-09.3
   Scenario: System permission denied

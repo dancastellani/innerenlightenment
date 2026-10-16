@@ -10,7 +10,7 @@ Feature: Receive a message every day at 6am
   @UC-01.1
   Scenario: Default daily schedule
     Given I have not changed the notification time
-    Then a notification is scheduled for 06:00 device time on each of the next 30 days
+    Then a notification is scheduled for 06:00 device time on each of the next 14 days
 
   @UC-01.2
   Scenario: Notification content
@@ -28,11 +28,11 @@ Feature: Receive a message every day at 6am
   Scenario: Queue is topped up when the app opens
     Given only 5 notifications remain scheduled
     When I open the app
-    Then notifications are scheduled for the next 30 days
+    Then notifications are scheduled for the next 14 days
     And no day has more than one daily notification
 
   @UC-01.5
   Scenario: Messages do not repeat soon
-    When the next 30 days are scheduled
+    When the next 14 days are scheduled
     Then no message appears twice among them
     And no message shown in the last 90 days is scheduled

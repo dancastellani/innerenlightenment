@@ -1,5 +1,6 @@
-// Builds the static website from content/<lang>.json: a landing page, a list of messages
-// per language, and one page per message at <lang>/<slug>/ (the link the app shares).
+// Builds the static website from content/<lang>.json: one page per message at <lang>/<slug>/
+// (the link the app shares), a list of messages per language, and <lang>/random/, which opens
+// a random message. The home page opens a random English message.
 //
 // Usage: node scripts/build-site.ts [content folder] [output folder]
 
@@ -10,6 +11,7 @@ import type { Message } from './parse-message.ts';
 type Content = { language: string; books: { slug: string; name: string }[]; messages: Message[] };
 
 const LANGUAGE_NAMES: Record<string, string> = { pt: 'Português', en: 'English', es: 'Español' };
+const ANOTHER_MESSAGE: Record<string, string> = { pt: 'Outra mensagem', en: 'Another message', es: 'Otro mensaje' };
 
 const STYLE = `
   body { font-family: Georgia, serif; max-width: 40rem; margin: 0 auto; padding: 1rem; line-height: 1.6; color: #222; }
@@ -43,18 +45,26 @@ ${body}
 `;
 }
 
-function landingPage(contents: Content[]): string {
+const CREDIT = `<p>The messages are published in Portuguese on <a href="https://fonteviva.org/">fonteviva.org</a> by Marcelo Paiva. Thank you for making this possible.</p>
+<p>Disclaimer: the messages come from publicly available data on fonteviva.org. This project is not responsible or liable for the content of the messages.</p>`;
+
+// Opens a random message of the content: `prefix` is the path from this page to the language folder.
+// Without JavaScript it shows `fallback` instead.
+function randomMessagePage(content: Content, prefix: string, fallback: string): string {
+  const slugs = JSON.stringify(content.messages.map((m) => m.slug));
+  return page(content.language, 'Fonte Viva messages', `
+<script>
+const slugs = ${slugs};
+location.replace('${prefix}' + slugs[Math.floor(Math.random() * slugs.length)] + '/');
+</script>
+<noscript>${fallback}</noscript>`);
+}
+
+// The home page shows a random English message (or of the first language when there is no English).
+function homePage(contents: Content[]): string {
+  const content = contents.find((c) => c.language === 'en') ?? contents[0];
   const languages = contents.map((c) => `<li><a href="${c.language}/">${languageName(c.language)}</a></li>`).join('\n');
-  return page('en', 'Fonte Viva messages', `
-<h1>Fonte Viva messages</h1>
-<p>Uplifting messages for every day, from the books of Emmanuel received by Francisco Cândido Xavier.</p>
-<ul>
-${languages}
-</ul>
-<footer>
-<p>The messages are published in Portuguese on <a href="https://fonteviva.org/">fonteviva.org</a> by Marcelo Paiva. Thank you for making this possible.</p>
-<p>Disclaimer: the messages come from publicly available data on fonteviva.org. This project is not responsible or liable for the content of the messages.</p>
-</footer>`);
+  return randomMessagePage(content, `${content.language}/`, `<h1>Fonte Viva messages</h1>\n<ul>\n${languages}\n</ul>\n<footer>${CREDIT}</footer>`);
 }
 
 function languagePage(content: Content): string {
@@ -80,13 +90,16 @@ function messagePage(content: Content, message: Message, otherLanguages: string[
   const note = message.note ? `<p class="note">${escapeHtml(message.note)}</p>` : '';
   const languages = otherLanguages.map((l) => `<a href="../../${l}/${message.slug}/">${languageName(l)}</a>`).join(' · ');
   return page(content.language, message.title, `
-<nav><a href="../">${languageName(content.language)}</a>${languages ? ` · ${languages}` : ''}</nav>
+<nav><a href="../random/">${ANOTHER_MESSAGE[content.language] ?? ANOTHER_MESSAGE.en}</a> · <a href="../">${languageName(content.language)}</a>${languages ? ` · ${languages}` : ''}</nav>
 <p class="meta">${meta}</p>
 <h1>${escapeHtml(message.title)}</h1>
 ${paragraphs}
 ${signature}
 ${note}
-<footer><a href="${escapeHtml(message.url)}">fonteviva.org</a></footer>`);
+<footer>
+<p><a href="${escapeHtml(message.url)}">Read it on fonteviva.org</a></p>
+${CREDIT}
+</footer>`);
 }
 
 function readContents(folder: string): Content[] {
@@ -103,9 +116,10 @@ function write(file: string, html: string) {
 function buildSite(contentFolder: string, outFolder: string) {
   const contents = readContents(contentFolder);
   rmSync(outFolder, { recursive: true, force: true });
-  write(join(outFolder, 'index.html'), landingPage(contents));
+  write(join(outFolder, 'index.html'), homePage(contents));
   for (const content of contents) {
     write(join(outFolder, content.language, 'index.html'), languagePage(content));
+    write(join(outFolder, content.language, 'random', 'index.html'), randomMessagePage(content, '../', `<a href="../">${languageName(content.language)}</a>`));
     for (const message of content.messages) {
       const otherLanguages = contents
         .filter((c) => c !== content && c.messages.some((m) => m.id === message.id))

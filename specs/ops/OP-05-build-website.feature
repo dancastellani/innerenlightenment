@@ -25,10 +25,21 @@ Feature: Build the website
     And the page "pt/o-tempo/" links to "../../en/o-tempo/"
 
   @OP-05.4
-  Scenario: The landing page lists the languages and credits fonteviva.org
+  Scenario: The home page opens a random English message
     When the website is built
-    Then the page "" links to "pt/" and "en/"
-    And the page "" contains "fonteviva.org", "Marcelo Paiva" and "not responsible or liable"
+    Then the page "" opens a random message of "en/" from "o-tempo"
+    And without JavaScript the page "" links to "pt/" and "en/"
+
+  @OP-05.10
+  Scenario: "Another message" opens a random message in the same language
+    When the website is built
+    Then the page "pt/o-tempo/" links to "../random/"
+    And the page "pt/random/" opens a random message of "../" from "o-tempo" and "fe-e-obras"
+
+  @OP-05.11
+  Scenario: Every message page credits fonteviva.org
+    When the website is built
+    Then the page "pt/o-tempo/" contains "Marcelo Paiva" and "not responsible or liable"
 
   @OP-05.5
   Scenario: A language page lists its messages by book

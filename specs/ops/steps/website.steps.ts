@@ -66,3 +66,15 @@ Then(/^the page "([^"]*)" does not link to (.+)$/, function (this: World, page: 
 Then('the page {string} has no signature', function (this: World, page: string) {
   assert.ok(!readPage(this, page).includes('class="signature"'));
 });
+
+// The page picks one of these slugs at random in the browser; here we check it has exactly them.
+Then(/^the page "([^"]*)" opens a random message of "([^"]*)" from (.+)$/, function (this: World, page: string, prefix: string, slugs: string) {
+  const html = readPage(this, page);
+  assert.ok(html.includes(`const slugs = ${JSON.stringify(quoted(slugs))};`), html);
+  assert.ok(html.includes(`location.replace('${prefix}' + `), html);
+});
+
+Then(/^without JavaScript the page "([^"]*)" links to (.+)$/, function (this: World, page: string, links: string) {
+  const noscript = readPage(this, page).split('<noscript>')[1];
+  for (const link of quoted(links)) assert.ok(noscript.includes(`href="${link}"`), link);
+});

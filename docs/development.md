@@ -72,7 +72,7 @@ Messages already in the output file are skipped, so if a run stops halfway (for 
 
 ## The website
 
-`scripts/build-site.ts` turns `content/<lang>.json` into a static site: a landing page, a list of messages per language, and one page per message at `<lang>/<slug>/` (the slug is fonteviva.org's, the same in every language). The **Website** workflow builds it and publishes it with GitHub Pages on every push to `main`; Pages must be set once to Settings → Pages → Source: **GitHub Actions**.
+`scripts/build-site.ts` turns `content/<lang>.json` into a static site: one page per message at `<lang>/<slug>/` (the slug is fonteviva.org's, the same in every language), a list of messages per language, and `<lang>/random/`, which opens a random message (the "Another message" link). The home page opens a random English message. The **Website** workflow builds it and publishes it with GitHub Pages on every push to `main`; Pages must be set once to Settings → Pages → Source: **GitHub Actions**.
 
 To look at it locally: `./run.sh site`, then `npx serve site` and open the printed address (links end in `/`, so opening the files directly doesn't follow them).
 

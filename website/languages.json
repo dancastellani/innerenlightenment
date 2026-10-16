@@ -3,5 +3,7 @@
     "translationDisclaimer": "This message was translated from the Portuguese original by AI and is provided without guarantee." },
   "pt": { "name": "Português", "anotherMessage": "Outra mensagem", "readOriginal": "Leia em fonteviva.org" },
   "es": { "name": "Español", "anotherMessage": "Otro mensaje", "readOriginal": "Léalo en fonteviva.org",
-    "translationDisclaimer": "Este mensaje fue traducido del original en portugués con IA y se ofrece sin garantía." }
+    "translationDisclaimer": "Este mensaje fue traducido del original en portugués con IA y se ofrece sin garantía." },
+  "fr": { "name": "Français", "anotherMessage": "Un autre message", "readOriginal": "Lisez-le sur fonteviva.org",
+    "translationDisclaimer": "Ce message a été traduit de l'original portugais par IA et est fourni sans garantie." }
 }

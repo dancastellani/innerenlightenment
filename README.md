@@ -15,13 +15,17 @@ Early setup. The plan:
 
 Thank you to **Marcelo Paiva**, creator and maintainer of [fonteviva.org](https://fonteviva.org/), whose work collecting and publishing these messages makes this project possible.
 
+## Development
+
+See [docs/development.md](docs/development.md) for setup, `run.sh`, and how a change goes from issue to merge.
+
 ## Exporting the messages
 
 Scripts are TypeScript with no dependencies. Install [Node.js 24](https://nodejs.org/), which runs `.ts` files directly:
 
 ```sh
-node scripts/export-fonteviva.ts   # writes content/pt.json
-node --test scripts/*.test.ts      # parser tests
+./run.sh test     # parser tests
+./run.sh export   # writes content/pt.json
 ```
 
 Or run the **Export messages** workflow from the Actions tab, which opens a PR with the updated file.

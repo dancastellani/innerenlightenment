@@ -29,10 +29,16 @@ Feature: Build and publish the website
     And the page "pt/o-tempo/" links to "../../en/o-tempo/"
 
   @OP-05.16
-  Scenario: A message page shows which language is selected
+  Scenario: A message page shows which language is selected, as text and not a link
     When the website is built
     Then the page "pt/o-tempo/" marks "Português" as the selected language
     And the page "en/o-tempo/" marks "English" as the selected language
+
+  @OP-05.17
+  Scenario: A message page links to the index of its language
+    When the website is built
+    Then the page "pt/o-tempo/" has the link "Índice" to "../"
+    And the page "en/o-tempo/" has the link "Index" to "../"
 
   @OP-05.4
   Scenario: The home page opens a random English message
@@ -62,6 +68,12 @@ Feature: Build and publish the website
     When the website is built
     Then the page "pt/" contains "Fonte Viva"
     And the page "pt/" links to "o-tempo/" and "fe-e-obras/"
+
+  @OP-05.18
+  Scenario: A language page starts with its books, each a link to its messages
+    When the website is built
+    Then the page "pt/" has the link "Fonte Viva" to "#fonte-viva" before the first message
+    And the page "pt/" has the book heading "fonte-viva"
 
   @OP-05.12
   Scenario: Every merge publishes the website

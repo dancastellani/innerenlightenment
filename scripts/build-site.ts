@@ -13,7 +13,7 @@ import type { Message } from './parse-message.ts';
 
 type Content = { language: string; books: { slug: string; name: string }[]; messages: Message[] };
 // translationDisclaimer is shown on translated messages, so every language but Portuguese (the original) has one.
-type Labels = { name: string; anotherMessage: string; readOriginal: string; translationDisclaimer?: string };
+type Labels = { name: string; index: string; anotherMessage: string; readOriginal: string; translationDisclaimer?: string };
 
 const WEBSITE_FOLDER = join(import.meta.dirname, '..', 'website');
 
@@ -66,16 +66,21 @@ class Website {
     return this.page(content.language, 'Fonte Viva messages', '', this.randomScript(content, `${content.language}/`, fallback));
   }
 
+  // The books first, as links to their part of the page, then each book's messages.
   languagePage(content: Content): string {
+    const bookLinks = content.books
+      .map((book) => `<li><a href="#${book.slug}">${escapeHtml(book.name)}</a></li>`)
+      .join('\n');
     const books = content.books.map((book) => {
       const links = content.messages
         .filter((m) => m.book === book.slug)
         .map((m) => `<li><a href="${m.slug}/">${escapeHtml(m.title)}</a></li>`)
         .join('\n');
-      return `<h2>${escapeHtml(book.name)}</h2>\n<ul>\n${links}\n</ul>`;
+      return `<h2 id="${book.slug}">${escapeHtml(book.name)}</h2>\n<ul>\n${links}\n</ul>`;
     });
     const name = this.labels[content.language].name;
-    return this.page(content.language, name, '../', this.render('language', { languageName: name, books: books.join('\n') }));
+    const body = this.render('language', { languageName: name, bookLinks, books: books.join('\n') });
+    return this.page(content.language, name, '../', body);
   }
 
   // The "Another message" link: opens a random message of the same language.
@@ -94,6 +99,7 @@ class Website {
       .join('');
     const body = this.render('message', {
       anotherMessage: labels.anotherMessage,
+      index: labels.index,
       languageName: labels.name,
       otherLanguages,
       meta,

@@ -96,6 +96,23 @@ Then('every language but {string} in website\\/languages.json has a {string}', f
 
 Then('the page {string} marks {string} as the selected language', function (this: World, page: string, language: string) {
   const html = readPage(this, page);
-  assert.ok(html.includes(`aria-current="true">${language}</a>`), html);
+  assert.ok(html.includes(`<strong class="current" aria-current="true">${language}</strong>`), html);
   assert.equal(html.split('aria-current').length - 1, 1, 'exactly one selected language');
+});
+
+Then('the page {string} has the link {string} to {string}', function (this: World, page: string, text: string, link: string) {
+  assert.ok(readPage(this, page).includes(`<a href="${link}">${text}</a>`));
+});
+
+Then(
+  'the page {string} has the link {string} to {string} before the first message',
+  function (this: World, page: string, text: string, link: string) {
+    const html = readPage(this, page);
+    const position = html.indexOf(`<a href="${link}">${text}</a>`);
+    assert.ok(position >= 0 && position < html.indexOf('<h2'), html);
+  },
+);
+
+Then('the page {string} has the book heading {string}', function (this: World, page: string, id: string) {
+  assert.ok(readPage(this, page).includes(`<h2 id="${id}">`));
 });

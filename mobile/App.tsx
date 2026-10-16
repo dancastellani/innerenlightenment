@@ -12,7 +12,7 @@ const bookNames = Object.fromEntries(content.books.map((b) => [b.slug, b.name]))
 
 // UC-08, UC-09: saved on the phone.
 type Settings = { hour: number; minute: number; enabled: boolean };
-const DEFAULT_SETTINGS: Settings = { hour: 6, minute: 0, enabled: true };
+const DEFAULT_SETTINGS: Settings = { hour: 8, minute: 0, enabled: true };
 
 async function loadSettings(): Promise<Settings> {
   const saved = await AsyncStorage.getItem('settings');
@@ -127,7 +127,7 @@ export default function App() {
     Share.share({ message: text });
   }
 
-  // For testing: the same notification in 10 seconds instead of waiting for 06:00.
+  // For testing: the same notification in 10 seconds instead of waiting for 08:00.
   async function sendTest() {
     if (!message) return;
     await Notifications.scheduleNotificationAsync({

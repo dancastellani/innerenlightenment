@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+  checks: write # to add the test report check run
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -23,3 +27,15 @@ jobs:
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           cat test-report.txt >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
+      # Adds a "Test report" check run that lists every test and spec scenario in the PR's Checks tab.
+      # node --test puts tests without a describe() straight under <testsuites>, which the reporter skips,
+      # so they are wrapped in a "Unit tests" suite first.
+      - if: always()
+        run: sed -i 's|<testsuites>|<testsuites><testsuite name="Unit tests">|; s|</testsuites>|</testsuite></testsuites>|' test-reports/unit.xml
+      - if: always()
+        uses: dorny/test-reporter@v2
+        with:
+          name: Test report
+          path: test-reports/*.xml
+          reporter: java-junit
+          use-actions-summary: false # create a check run instead of a summary section

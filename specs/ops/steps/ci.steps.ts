@@ -34,6 +34,15 @@ Then(
   },
 );
 
+Then(
+  'the {string} workflow publishes the JUnit reports as a {string} check, also when a test failed',
+  function (this: World, name: string, checkName: string) {
+    this.workflow = workflow(name);
+    assert.match(this.workflow, /- if: always\(\)\n +uses: dorny\/test-reporter@/);
+    assert.match(this.workflow, new RegExp(`name: ${checkName}\n +path: test-reports/\\*\\.xml`));
+  },
+);
+
 Then('the {string} workflow is started by hand', function (this: World, name: string) {
   this.workflow = workflow(name);
   assert.match(this.workflow, /^on:\n {2}workflow_dispatch:/m);

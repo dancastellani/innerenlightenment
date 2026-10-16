@@ -1,7 +1,10 @@
 @OP-05 @ops
-Feature: Build the website
-  scripts/build-site.ts turns content/<lang>.json into static pages for GitHub Pages (issue #35).
-  Each message has its own page at <lang>/<slug>/, the link the app can share.
+Feature: Build and publish the website
+  As the owner, I want the website built and published automatically on every merge,
+  so anyone can read the messages in a browser without installing the app (issue #35).
+  scripts/build-site.ts turns content/<lang>.json into static pages, using the templates,
+  stylesheet and language labels in website/. Each message has its own page at <lang>/<slug>/,
+  the link the app can share.
 
   Background:
     Given the saved sample content with 2 messages in Portuguese and 1 in English
@@ -16,6 +19,7 @@ Feature: Build the website
   Scenario: A message page shows the whole message and its link to fonteviva.org
     When the website is built
     Then the page "en/o-tempo/" contains "Time", "First paragraph.", "Second paragraph." and "Emmanuel"
+    And the page "en/o-tempo/" contains "via Francisco Candido Xavier"
     And the page "en/o-tempo/" links to "https://fonteviva.org/fonte-viva/o-tempo/"
 
   @OP-05.3
@@ -47,6 +51,12 @@ Feature: Build the website
     Then the page "pt/" contains "Fonte Viva"
     And the page "pt/" links to "o-tempo/" and "fe-e-obras/"
 
+  @OP-05.12
+  Scenario: Every merge publishes the website
+    Then the "Website" workflow runs on every push to main
+    And it runs "./run.sh site"
+    And it publishes the "site" folder with GitHub Pages
+
   # Edge cases
 
   @OP-05.6
@@ -71,3 +81,9 @@ Feature: Build the website
     Given the content folder is empty
     When the website is built
     Then it fails with "No content files"
+
+  @OP-05.13
+  Scenario: A language without names and labels in website/languages.json
+    Given the content also has the language "xx"
+    When the website is built
+    Then it fails with "Add \"xx\" to website/languages.json"

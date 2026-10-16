@@ -52,3 +52,13 @@ Then('it opens a pull request that changes only {string}', function (this: World
   assert.match(this.workflow, /uses: peter-evans\/create-pull-request@/);
   assert.match(this.workflow, new RegExp(`^ +add-paths: ${path}$`, 'm'));
 });
+
+Then('the {string} workflow runs on every push to main', function (this: World, name: string) {
+  this.workflow = workflow(name);
+  assert.match(this.workflow, /^ {2}push:\n {4}branches: \[main\]/m);
+});
+
+Then('it publishes the {string} folder with GitHub Pages', function (this: World, folder: string) {
+  assert.match(this.workflow, new RegExp(`uses: actions/upload-pages-artifact@v\\d+\n {8}with:\n {10}path: ${folder}\n`));
+  assert.match(this.workflow, /uses: actions\/deploy-pages@v\d+/);
+});

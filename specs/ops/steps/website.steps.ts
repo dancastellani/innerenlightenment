@@ -3,7 +3,7 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
-import { mkdtemp } from 'node:fs/promises';
+import { cp, mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { runCommand, type Result } from './run-command.ts';
@@ -28,6 +28,14 @@ Given('the saved sample content with {int} messages in Portuguese and {int} in E
 
 Given('the content folder is empty', async function (this: World) {
   this.contentFolder = await mkdtemp(join(tmpdir(), 'content-'));
+});
+
+Given('the content also has the language {string}', async function (this: World, language: string) {
+  const folder = await mkdtemp(join(tmpdir(), 'content-'));
+  await cp(this.contentFolder, folder, { recursive: true });
+  const content = JSON.parse(readFileSync(join(folder, 'en.json'), 'utf8'));
+  await writeFile(join(folder, `${language}.json`), JSON.stringify({ ...content, language }));
+  this.contentFolder = folder;
 });
 
 When('the website is built', async function (this: World) {

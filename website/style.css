@@ -5,3 +5,4 @@ footer { margin-top: 3rem; border-top: 1px solid #ddd; padding-top: 1rem; }
 .signature { font-style: italic; text-align: right; }
 .medium { font-style: normal; }
 .translation { font-style: italic; }
+nav .current { color: #222; }

@@ -7,6 +7,8 @@ import { readFile, writeFile } from 'node:fs/promises';
 
 const MODEL = 'gemini-3.5-flash-lite';
 const BATCH_SIZE = 10;
+// The free tier allows 10 requests per minute, so start at most one request every 6.5 seconds.
+const SECONDS_BETWEEN_REQUESTS = 6.5;
 
 type Message = { id: number; title: string; paragraphs: string[]; note: string | null; [field: string]: unknown };
 type Content = { source: string; language: string; books: unknown[]; messages: Message[] };
@@ -20,6 +22,9 @@ if (!key) throw new Error('Set the GEMINI_API_KEY environment variable');
 const source: Content = JSON.parse(await readFile('content/pt.json', 'utf8'));
 const done: Message[] = existsSync(output) ? JSON.parse(await readFile(output, 'utf8')).messages : [];
 
+const sleep = (seconds: number) => new Promise((resolve) => setTimeout(resolve, seconds * 1000));
+let lastRequest = 0;
+
 async function translate(batch: Translation[]): Promise<Translation[]> {
   const prompt =
     `Translate these messages from Portuguese into the language with code "${lang}". ` +
@@ -27,6 +32,8 @@ async function translate(batch: Translation[]): Promise<Translation[]> {
     'Return the same JSON array with the same ids and the same number of paragraphs per message, ' +
     'translating only "title", "paragraphs" and "note" (leave null as null).\n\n' +
     JSON.stringify(batch);
+  await sleep(Math.max(0, SECONDS_BETWEEN_REQUESTS - (Date.now() - lastRequest) / 1000));
+  lastRequest = Date.now();
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key! },
@@ -36,8 +43,8 @@ async function translate(batch: Translation[]): Promise<Translation[]> {
     }),
   });
   if (response.status === 429) {
-    console.error('rate limited, waiting a minute');
-    await new Promise((resolve) => setTimeout(resolve, 60_000));
+    console.error(`rate limited, waiting a minute: ${await response.text()}`);
+    await sleep(60);
     return translate(batch);
   }
   if (!response.ok) throw new Error(`${response.status} ${response.statusText}: ${await response.text()}`);

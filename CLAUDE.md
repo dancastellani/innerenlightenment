@@ -2,11 +2,11 @@
 
 - Make the minimal change and write the simplest code that achieves the goal. No speculative features, abstractions, options or dependencies.
 - Everything is TypeScript: scripts run directly with Node 24 (`node file.ts`, no build step); the app uses Expo. Keep code plain and readable.
-- Agents post on GitHub with Dan's account, so end every comment, review reply and issue comment you post with a signature line: a `---` line, then `_🤖 Claude (AI assistant)_`.
+- Agents may post on GitHub with a person's account, so end every comment, review reply and issue comment you post with a signature line: a `---` line, then `_🤖 Claude (AI assistant)_`.
 
 ## Project context
 
-- **Goal.** An app that shares uplifting, encouraging messages with people who need them. Owner: Dan (`dancastellani`), who is new to TypeScript and learning it, so prefer plain code over clever code.
+- **Goal.** An app that shares uplifting, encouraging messages with people who need them. Owner: Dan (`dancastellani`), who is new to TypeScript and learning it, so write clean, readable code ([Clean Code](https://gist.github.com/wojteklu/73c6914cc446146b8b533c0988cf8d29)), not clever code.
 - **Source.** The messages are book excerpts from Spiritism (Christian-based), published in Portuguese on [fonteviva.org](https://fonteviva.org/) by Marcelo Paiva (WordPress API, one deep link per message). Related study-group orgs: innerenlightenment.com, spiritist.us, tssfederation.org. Book content is not covered by the code license.
 - **Product.** Android first (maybe iOS and macOS later), built with Expo. Everything runs on the device: no server, local scheduled notifications (daily 6am first, user-chosen time later).
 - **Languages.** English (default) and Portuguese are bundled in the app; other languages are downloaded on demand from this repo. Spanish is next, later French, Russian and Korean. Translations are made once with an LLM (Gemini) in GitHub Actions.

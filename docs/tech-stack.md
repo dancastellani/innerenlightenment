@@ -222,7 +222,7 @@ await Notifications.scheduleNotificationAsync({
 });
 ```
 
-Settings (time, on/off, language, recently shown messages) are saved on the phone.
+Settings (time, on/off, language) and the message planned for each upcoming day are saved on the phone.
 
 ## Languages (planned)
 

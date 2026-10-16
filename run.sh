@@ -19,6 +19,12 @@ case "$1" in
   export)    node scripts/export-fonteviva.ts content/pt.json ;;
   translate) node scripts/translate.ts "${2:-en}" ;;
   app)       cd mobile && npm install && npx expo start ;;
+  preview)
+    # Publishes the checked-out code to its own EAS Update branch, named after the git branch,
+    # so it never reaches the production channel. Needs `npx eas-cli@latest login` once.
+    branch="preview-$(git branch --show-current | tr '/' '-')"
+    cd mobile && npm install && npx eas-cli@latest update --branch "$branch" --message "$branch"
+    ;;
   *)
     echo "Usage: ./run.sh <command>"
     echo
@@ -26,5 +32,6 @@ case "$1" in
     echo "  export            download all messages from fonteviva.org into content/pt.json"
     echo "  translate [lang]  translate content/pt.json into content/<lang>.json (default en, needs GEMINI_API_KEY)"
     echo "  app               start the app; scan the QR code with Expo Go on your phone"
+    echo "  preview           publish the checked-out branch to Expo; open the printed link for its QR code"
     ;;
 esac

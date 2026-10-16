@@ -69,3 +69,8 @@ You can keep working with Claude on your own computer using [Claude Code](https:
 3. Claude reads [CLAUDE.md](../CLAUDE.md) on start, so it already knows the project, the rules and this workflow.
 4. Ask it to pick up an issue, for example: "Pick up issue #33, make a branch, implement it and open a PR." It runs `./run.sh test` before pushing.
 5. At the end of a session, run `/update-context`. It saves what was learned (decisions, gotchas, conventions) to `CLAUDE.md` or `docs/` in a PR, so the next session starts with it.
+
+Recommended add-ons, installed once on your computer:
+
+- Expo plugin: run `/plugin install expo@claude-plugins-official` inside Claude Code.
+- Gemini API skill (for the translation script): run `npx skills add google-gemini/gemini-skills --skill gemini-api-dev --global` in a terminal, then check it shows in `/skills` ([Google's guide](https://ai.google.dev/gemini-api/docs/coding-agents)).

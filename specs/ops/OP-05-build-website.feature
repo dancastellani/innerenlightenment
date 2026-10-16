@@ -45,6 +45,12 @@ Feature: Build and publish the website
     When the website is built
     Then the page "pt/o-tempo/" contains "Marcelo Paiva" and "not responsible or liable"
 
+  @OP-05.14
+  Scenario: A translated message says it was translated by AI, without guarantee
+    When the website is built
+    Then the page "en/o-tempo/" contains "translated from the Portuguese original by AI" and "without guarantee"
+    And the page "pt/o-tempo/" does not contain "translated from the Portuguese original"
+
   @OP-05.5
   Scenario: A language page lists its messages by book
     When the website is built
@@ -87,3 +93,7 @@ Feature: Build and publish the website
     Given the content also has the language "xx"
     When the website is built
     Then it fails with "Add \"xx\" to website/languages.json"
+
+  @OP-05.15
+  Scenario: Every translated language has its AI translation disclaimer
+    Then every language but "pt" in website/languages.json has a "translationDisclaimer"

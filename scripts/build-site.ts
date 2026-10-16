@@ -12,7 +12,8 @@ import { join } from 'node:path';
 import type { Message } from './parse-message.ts';
 
 type Content = { language: string; books: { slug: string; name: string }[]; messages: Message[] };
-type Labels = { name: string; anotherMessage: string; readOriginal: string };
+// translationDisclaimer is shown on translated messages, so every language but Portuguese (the original) has one.
+type Labels = { name: string; anotherMessage: string; readOriginal: string; translationDisclaimer?: string };
 
 const WEBSITE_FOLDER = join(import.meta.dirname, '..', 'website');
 
@@ -100,6 +101,7 @@ class Website {
       paragraphs: message.paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join('\n'),
       signature: signature(message),
       note: message.note ? `<p class="note">${escapeHtml(message.note)}</p>` : '',
+      translationDisclaimer: labels.translationDisclaimer ? `<p class="translation">${labels.translationDisclaimer}</p>` : '',
       url: escapeHtml(message.url),
       readOriginal: labels.readOriginal,
       credit: this.render('credit', {}),

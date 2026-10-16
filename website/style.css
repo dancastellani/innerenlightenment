@@ -1,6 +1,7 @@
 body { font-family: Georgia, serif; max-width: 40rem; margin: 0 auto; padding: 1rem; line-height: 1.6; color: #222; }
 a { color: #2a5d84; }
-nav, footer, .meta, .note, .medium { font-family: system-ui, sans-serif; font-size: 0.9rem; color: #555; }
+nav, footer, .meta, .note, .translation, .medium { font-family: system-ui, sans-serif; font-size: 0.9rem; color: #555; }
 footer { margin-top: 3rem; border-top: 1px solid #ddd; padding-top: 1rem; }
 .signature { font-style: italic; text-align: right; }
 .medium { font-style: normal; }
+.translation { font-style: italic; }

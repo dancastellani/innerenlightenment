@@ -1,5 +1,7 @@
 {
-  "en": { "name": "English", "anotherMessage": "Another message", "readOriginal": "Read it on fonteviva.org" },
+  "en": { "name": "English", "anotherMessage": "Another message", "readOriginal": "Read it on fonteviva.org",
+    "translationDisclaimer": "This message was translated from the Portuguese original by AI and is provided without guarantee." },
   "pt": { "name": "Português", "anotherMessage": "Outra mensagem", "readOriginal": "Leia em fonteviva.org" },
-  "es": { "name": "Español", "anotherMessage": "Otro mensaje", "readOriginal": "Léalo en fonteviva.org" }
+  "es": { "name": "Español", "anotherMessage": "Otro mensaje", "readOriginal": "Léalo en fonteviva.org",
+    "translationDisclaimer": "Este mensaje fue traducido del original en portugués con IA y se ofrece sin garantía." }
 }

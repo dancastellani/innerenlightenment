@@ -8,7 +8,8 @@ import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
 
 const messages = content.messages as Message[];
-const bookNames = Object.fromEntries(content.books.map((b) => [b.slug, b.name]));
+const books = content.books;
+const bookNames = Object.fromEntries(books.map((b) => [b.slug, b.name]));
 
 // UC-08, UC-09: saved on the phone.
 type Settings = { hour: number; minute: number; enabled: boolean };
@@ -75,7 +76,8 @@ export default function App() {
   const [message, setMessage] = useState<Message>();
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [allowed, setAllowed] = useState(true);
-  const [showSettings, setShowSettings] = useState(false);
+  const [screen, setScreen] = useState<'message' | 'settings' | 'index'>('message');
+  const [indexBook, setIndexBook] = useState<string>(); // UC-20: the book picked on the index
   const tapped = Notifications.useLastNotificationResponse();
 
   // On open: top up the schedule and show today's message.
@@ -137,7 +139,38 @@ export default function App() {
 
   if (!message) return null;
 
-  if (showSettings) {
+  // UC-20: the books at the top; picking one lists its messages.
+  if (screen === 'index') {
+    const bookMessages = messages.filter((m) => m.book === indexBook);
+    return (
+      <ScrollView contentContainerStyle={styles.page}>
+        <Text style={styles.title}>Index</Text>
+        <View style={styles.actions}>
+          {books.map((book) => (
+            <Button key={book.slug} title={book.name} onPress={() => setIndexBook(book.slug)} />
+          ))}
+        </View>
+        {indexBook && <Text style={styles.bookTitle}>{bookNames[indexBook]}</Text>}
+        {bookMessages.map((m) => (
+          <Text
+            key={m.id}
+            style={styles.indexItem}
+            onPress={() => {
+              setMessage(m);
+              setScreen('message');
+            }}
+          >
+            {m.title}
+          </Text>
+        ))}
+        <View style={styles.settingsButton}>
+          <Button title="Back" onPress={() => (indexBook ? setIndexBook(undefined) : setScreen('message'))} />
+        </View>
+      </ScrollView>
+    );
+  }
+
+  if (screen === 'settings') {
     return (
       <ScrollView contentContainerStyle={styles.page}>
         <Text style={styles.title}>Settings</Text>
@@ -159,7 +192,7 @@ export default function App() {
             </View>
           )}
           <Button title="Test notification in 10 seconds" onPress={sendTest} />
-          <Button title="Back" onPress={() => setShowSettings(false)} />
+          <Button title="Back" onPress={() => setScreen('message')} />
         </View>
       </ScrollView>
     );
@@ -183,7 +216,8 @@ export default function App() {
         <Button title="Open on fonteviva.org" onPress={() => Linking.openURL(message.url)} />
       </View>
       <View style={styles.settingsButton}>
-        <Button title="Settings" onPress={() => setShowSettings(true)} />
+        <Button title="Index" onPress={() => setScreen('index')} />
+        <Button title="Settings" onPress={() => setScreen('settings')} />
       </View>
     </ScrollView>
   );
@@ -200,5 +234,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   label: { fontSize: 18 },
   warning: { color: '#b00', marginBottom: 8 },
-  settingsButton: { marginTop: 32 },
+  settingsButton: { gap: 12, marginTop: 32 },
+  bookTitle: { fontSize: 22, fontWeight: 'bold', marginTop: 32, marginBottom: 8 },
+  indexItem: { fontSize: 18, paddingVertical: 10, borderBottomWidth: 1, borderColor: '#eee' },
 });

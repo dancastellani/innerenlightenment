@@ -32,6 +32,13 @@ Feature: Read the message in English or Portuguese
     Then the message says, in English, that it was translated from the Portuguese original by AI and is provided without guarantee
     And a message shown in Portuguese has no such note
 
+  @UC-05.9
+  Scenario: The selected language is shown
+    Given messages are shown in English
+    When I open the language choice in settings
+    Then "English" is marked as the selected language
+    And tapping it again keeps the current screen
+
   # Edge cases
 
   @UC-05.5

@@ -32,7 +32,7 @@ Source plan: messages from [fonteviva.org](https://fonteviva.org/) (724 excerpts
 | UC-04 | **ask for another message** | An "Another message" action shows a random message not shown recently. |
 | UC-05 | **read the message in English or Portuguese** | The app defaults to English, or Portuguese if the phone is set to Portuguese; the language can be switched in settings, and notifications follow it. |
 | UC-06 | **share a message** | Share opens the system share sheet with the message text and the fonteviva.org link. |
-| UC-07 | **open the original on fonteviva.org** | Each message has a link that opens its page on the site. |
+| UC-07 | **open the original on fonteviva.org** | Each message has a link that opens its page on the site; in English it opens the page through Google Translate. |
 | UC-08 | **change the notification time** | Settings let me pick the daily time; queued notifications are rescheduled to it. |
 | UC-09 | **turn notifications off and on** | A switch in settings cancels or restores the schedule; if the system permission is denied, the app explains how to enable it. |
 

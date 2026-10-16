@@ -28,7 +28,12 @@ case "$1" in
     # Publishes the checked-out code to its own EAS Update branch, named after the git branch,
     # so it never reaches the production channel. Needs `npx eas-cli@latest login` once.
     branch="preview-$(git branch --show-current | tr '/' '-')"
-    cd mobile && npm install && npx eas-cli@latest update --branch "$branch" --message "$branch"
+    cd mobile && npm install && npx --yes eas-cli@latest update --branch "$branch" --message "$branch"
+    ;;
+  build)
+    # Builds the Android app on Expo's servers: "preview" makes an APK to install on a phone,
+    # "production" makes an AAB to upload to the Play Store. Needs `npx eas-cli@latest login` once.
+    cd mobile && npm install && npx --yes eas-cli@latest build --platform android --profile "${2:-preview}"
     ;;
   *)
     echo "Usage: ./run.sh <command>"
@@ -38,5 +43,6 @@ case "$1" in
     echo "  translate [lang]  translate content/pt.json into content/<lang>.json (default en, needs GEMINI_API_KEY)"
     echo "  app               start the app; scan the QR code with Expo Go on your phone"
     echo "  preview           publish the checked-out branch to Expo; open the printed link for its QR code"
+    echo "  build [profile]   build the Android app on Expo: preview (APK for your phone, default) or production (AAB for the Play Store)"
     ;;
 esac

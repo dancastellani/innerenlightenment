@@ -23,6 +23,7 @@ The scripts themselves only use what ships with Node; Cucumber is the one develo
 | `./run.sh translate [lang]` | Translates `content/pt.json` into `content/<lang>.json` (default `en`) with Gemini; needs `GEMINI_API_KEY` |
 | `./run.sh app` | Installs the app's packages and starts it; scan the QR code with Expo Go |
 | `./run.sh preview` | Publishes the checked-out branch to Expo (EAS Update) as `preview-<branch>`; open the printed link for its QR code |
+| `./run.sh build [profile]` | Builds the Android app on Expo's servers (EAS Build): `preview` (default) makes an APK to install on a phone, `production` makes an AAB for the Play Store |
 
 ## Trying the app on your Android phone
 
@@ -78,6 +79,21 @@ PRs don't get a QR code automatically. To try a PR on your phone from anywhere (
 3. Run `./run.sh preview`. It publishes that branch as `preview-<branch>` and prints a link to expo.dev; open it and scan the QR code with Expo Go.
 
 How it works is in [tech-stack.md](tech-stack.md#pr-previews-in-expo-go-eas-update).
+
+## Installing the app on your Android phone (APK)
+
+This installs the app itself, with its own icon, instead of running it inside Expo Go. The build runs on Expo's servers, so your laptop needs no Android tools.
+
+1. Once: `npx eas-cli@latest login` with your Expo account.
+2. Run `./run.sh build`. The first time it asks to create an Android signing key (keystore): answer yes, and Expo keeps it safe for you. The build takes about 10 to 20 minutes on the free plan and prints a link when it is done.
+3. Open that link on your phone (or scan the QR code on its page) and download the APK.
+4. Open the file. Android asks to allow installing apps from your browser or files app: allow it, then tap **Install**.
+
+To update it later, build again and install the new APK over the old one; settings and the planned messages are kept. Changes to the app's code only (no new native packages) can also reach the installed APK with `eas update --channel preview` instead of a new build.
+
+`npm install` in `mobile/` reports about 24 vulnerabilities. They are all in Expo's and React Native's build tools on your laptop (Metro, the Expo CLI, the iOS project editor), not in the app on the phone, and npm has no fixed versions for them yet; its suggested `npm audit fix --force` would downgrade Expo by 14 versions, so don't run it. They go away as Expo updates its packages.
+
+Publishing on Google Play is a separate set of steps, most of them done by you: see [play-store.md](play-store.md).
 
 ## Working with Claude Code locally
 

@@ -20,3 +20,17 @@ Feature: Run common tasks with run.sh
     Then it succeeds
     And it reports that no test failed
     And it starts Cucumber on "specs/ops"
+
+  @OP-03.4
+  Scenario: The build command builds the Android preview by default
+    Given npm and Expo are replaced by stand-ins, so nothing is installed or built
+    When I run "./run.sh build"
+    Then it succeeds
+    And it starts an Expo build of the Android app with the "preview" profile
+
+  @OP-03.5
+  Scenario: The build command builds the Play Store version when asked
+    Given npm and Expo are replaced by stand-ins, so nothing is installed or built
+    When I run "./run.sh build production"
+    Then it succeeds
+    And it starts an Expo build of the Android app with the "production" profile

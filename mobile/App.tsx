@@ -8,7 +8,7 @@ import { dayKey, fillPlan, type Plan } from './plan';
 
 const messages = content.messages as Message[];
 const bookNames = Object.fromEntries(content.books.map((b) => [b.slug, b.name]));
-const HOUR = 6;
+const HOUR = 8;
 
 // Show notifications even while the app is open.
 Notifications.setNotificationHandler({
@@ -24,7 +24,7 @@ function notificationContent(message: Message) {
   return { title: message.title, body: message.paragraphs[0], data: { id: message.id } };
 }
 
-// UC-01: give each upcoming day a message and schedule one notification per day at 06:00.
+// UC-01: give each upcoming day a message and schedule one notification per day at 08:00.
 async function scheduleDays(): Promise<Plan> {
   const saved = await AsyncStorage.getItem('plan');
   const plan = fillPlan(saved ? JSON.parse(saved) : {}, messages.map((m) => m.id), new Date());
@@ -72,7 +72,7 @@ export default function App() {
     if (found) setMessage(found);
   }, [tapped]);
 
-  // For testing: the same notification in 10 seconds instead of waiting for 06:00.
+  // For testing: the same notification in 10 seconds instead of waiting for 08:00.
   async function sendTest() {
     if (!message) return;
     await Notifications.scheduleNotificationAsync({

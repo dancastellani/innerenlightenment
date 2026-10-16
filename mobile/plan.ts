@@ -39,5 +39,7 @@ export function addAnother(plan: Plan, ids: number[], today: Date, random = Math
 function pickUnused(plan: Plan, ids: number[], random: () => number): number {
   const used = new Set(Object.values(plan));
   const unused = ids.filter((id) => !used.has(id));
-  return unused[Math.floor(random() * unused.length)];
+  // Every message was shown in the last 90 days: allow repeats rather than show nothing.
+  const pool = unused.length > 0 ? unused : ids;
+  return pool[Math.floor(random() * pool.length)];
 }

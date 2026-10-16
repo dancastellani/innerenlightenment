@@ -38,3 +38,11 @@ test('UC-04.1, UC-04.2: another message is new and is remembered so it does not 
   const [, next] = addAnother(after, ids, today);
   assert.notEqual(next, id);
 });
+
+test('UC-04.3: once every message was shown in the last 90 days, messages start repeating', () => {
+  let plan = fillPlan({}, ids, today);
+  while (Object.keys(plan).length < ids.length) plan = addAnother(plan, ids, today)[0];
+  const [, id] = addAnother(plan, ids, today);
+  assert.ok(ids.includes(id));
+  assert.ok(ids.includes(fillPlan(plan, ids, new Date(2026, 9, 31, 12, 0))['2026-11-14']));
+});

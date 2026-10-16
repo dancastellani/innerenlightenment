@@ -26,6 +26,12 @@ Feature: Read the message in English or Portuguese
     When I switch between English and Portuguese
     Then both languages are available
 
+  @UC-05.8
+  Scenario: Translations say they were made by AI, without guarantee
+    Given messages are shown in English
+    Then the message says, in English, that it was translated from the Portuguese original by AI and is provided without guarantee
+    And a message shown in Portuguese has no such note
+
   # Edge cases
 
   @UC-05.5

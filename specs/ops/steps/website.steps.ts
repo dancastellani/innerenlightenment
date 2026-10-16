@@ -86,3 +86,10 @@ Then(/^without JavaScript the page "([^"]*)" links to (.+)$/, function (this: Wo
   const noscript = readPage(this, page).split('<noscript>')[1];
   for (const link of quoted(links)) assert.ok(noscript.includes(`href="${link}"`), link);
 });
+
+Then('every language but {string} in website\\/languages.json has a {string}', function (original: string, label: string) {
+  const labels = JSON.parse(readFileSync('website/languages.json', 'utf8'));
+  for (const [language, values] of Object.entries(labels)) {
+    if (language !== original) assert.ok((values as Record<string, string>)[label], `${language} has no ${label}`);
+  }
+});

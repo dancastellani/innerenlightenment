@@ -120,6 +120,7 @@ GitHub Actions runs jobs on GitHub's machines, described by YAML files in `.gith
 
 - **Test** (`test.yml`) runs `node --test` on every pull request and every push to `main`. The PR page shows a green check or a red cross.
 - **Export messages** (`export-content.yml`) is started by hand from the **Actions** tab ("Run workflow"). It runs the export and, if `content/pt.json` changed, opens a PR with the new file. It exists because the export can't reach fonteviva.org from every environment, but it always works from GitHub.
+- **Translate messages** (`translate-content.yml`) is also started by hand, with a language code. It runs `scripts/translate.ts` with the `GEMINI_API_KEY` secret and opens a PR with `content/<lang>.json`.
 
 A workflow is a list of steps:
 
@@ -138,7 +139,7 @@ Each use case has a `.feature` file in `specs/` written in **Gherkin**: plain-En
 
 ```gherkin
 @UC-01 @v1
-Feature: Receive a message every day at 6am
+Feature: Receive a message every day at 8am
 
   @UC-01.4
   Scenario: Queue is topped up when the app opens
@@ -172,7 +173,7 @@ Then('notifications are scheduled for the next {int} days', function (days: numb
 });
 ```
 
-`{int}` captures a number from the sentence, so one step definition serves every scenario that uses the same wording. `this` is shared between the steps of one scenario. Step definitions are written along with the code each scenario covers. The operational specs in `specs/ops/` (export, `run.sh`, CI checks) already run this way: `./run.sh specs` (after `npm install`), and on every PR. Results are reported by tag (`@OP-01.1`). Flows that need a real phone, like tapping a notification, may later use an on-device tool such as Maestro, still named by scenario ID.
+`{int}` captures a number from the sentence, so one step definition serves every scenario that uses the same wording. `this` is shared between the steps of one scenario. Step definitions are written along with the code each scenario covers. The operational specs in `specs/ops/` (export, `run.sh`, CI checks) already run this way, as part of `./run.sh test` (after `npm install`) and on every PR. Results are reported by tag (`@OP-01.1`). Flows that need a real phone, like tapping a notification, may later use an on-device tool such as Maestro, still named by scenario ID.
 
 ## The app: Expo and React Native (planned)
 
@@ -198,9 +199,19 @@ npx expo start   # then scan the QR code with Expo Go
 
 Everything runs on the phone: there is **no server** of our own.
 
+### PR previews in Expo Go (EAS Update)
+
+**EAS Update** is Expo's hosting for app bundles (the JavaScript and assets, not a full app). The *Expo preview* Action publishes every app PR to its own update branch, `pr-<number>`, and comments a QR code on the PR. Scanning it with Expo Go opens that PR's version of the app, so several open PRs can be tried side by side. Nothing reaches users: a store build only receives updates from the channel it was built for, and previews never go there.
+
+One-time setup, already done for this repo:
+
+1. Sign up at [expo.dev/signup](https://expo.dev/signup) (Google sign-in works) and create a project named `innerenlightenmentapp`.
+2. Link the app to it: `cd mobile && npx eas-cli@latest init --id <project id>`. This writes the ID into `mobile/app.json` (`extra.eas.projectId`); the app also needs `updates.url` (`https://u.expo.dev/<project id>`), `runtimeVersion` (`{ "policy": "sdkVersion" }`, which matches Expo Go) and the `expo-updates` package.
+3. Create an access token at [expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens) and save it as the repository secret `EXPO_TOKEN` (Settings → Secrets and variables → Actions). Without it the Action skips itself.
+
 ### Local notifications (planned)
 
-`expo-notifications` asks the phone to show a notification at a set time, even with the app closed and no network. The text is fixed when the notification is scheduled, so the app picks the next 14 messages and schedules one per day at 6:00. Each time the app opens, it tops the queue back up to 14 days (iOS allows at most 64 pending notifications). Tapping one opens that message.
+`expo-notifications` asks the phone to show a notification at a set time, even with the app closed and no network. The text is fixed when the notification is scheduled, so the app picks the next 14 messages and schedules one per day at 8:00. Each time the app opens, it tops the queue back up to 14 days (iOS allows at most 64 pending notifications). Tapping one opens that message.
 
 ```ts
 import * as Notifications from 'expo-notifications';
@@ -211,7 +222,7 @@ await Notifications.scheduleNotificationAsync({
 });
 ```
 
-Settings (time, on/off, language, recently shown messages) are saved on the phone.
+Settings (time, on/off, language) and the message planned for each upcoming day are saved on the phone.
 
 ## Languages (planned)
 
@@ -232,11 +243,4 @@ Settings (time, on/off, language, recently shown messages) are saved on the phon
 
 ## Quick reference
 
-| Task | Command |
-|---|---|
-| Check Node version | `node --version` (24 or newer) |
-| Run tests | `node --test scripts/*.test.ts` |
-| Export messages | `node scripts/export-fonteviva.ts` |
-| Export from GitHub | Actions tab → Export messages → Run workflow |
-| Run specs | `./run.sh specs` |
-| Run the app (planned) | `npx expo start` |
+The everyday commands are in [`run.sh`](development.md#runsh). The GitHub workflows are in [Updating the messages](development.md#updating-the-messages) and [Translating the messages](development.md#translating-the-messages).

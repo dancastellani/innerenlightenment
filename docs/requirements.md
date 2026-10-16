@@ -27,10 +27,10 @@ Source plan: messages from [fonteviva.org](https://fonteviva.org/) (724 excerpts
 
 | # | As a reader, I can... | Acceptance criteria (summary; full scenarios in `specs/`) |
 |---|---|---|
-| UC-01 | **receive a message every day at 6am** | After first launch and permission, a local notification arrives daily at 06:00 device time with the message title and opening line; works with no network; 14 days are queued and topped up each time the app opens. |
+| UC-01 | **receive a message every day at 8am** | After first launch and permission, a local notification arrives daily at 08:00 device time with the message title and opening line; works with no network; 14 days are queued and topped up each time the app opens. |
 | UC-02 | **open today's message from the notification** | Tapping the notification opens that exact message in the reader. |
 | UC-03 | **see today's message when I open the app** | The home screen shows today's message (same one the notification announced) with book, chapter, title, body and signature. |
-| UC-04 | **ask for another message** | An "Another message" action shows a random message not shown recently. |
+| UC-04 | **ask for another message** | An "Another message" action shows a different, random message. |
 | UC-05 | **read the message in English or Portuguese** | The app defaults to English, or Portuguese if the phone is set to Portuguese; the language can be switched in settings, and notifications follow it. |
 | UC-06 | **share a message** | Share opens the system share sheet with the message text and the fonteviva.org link. |
 | UC-07 | **open the original on fonteviva.org** | Each message has a link that opens its page on the site; in English it opens the page through Google Translate. |
@@ -49,6 +49,8 @@ Supporting work for v1 (issues, not use cases): content export to JSON (PR #1), 
 | UC-13 | **keep favourites** | Mark a message as favourite and find it later in a favourites list, stored on the device. |
 | UC-14 | **see messages I've already received** | A history list shows past messages by date. |
 | UC-15 | **choose which books I hear from** | Turn individual books (Caminho, Verdade e Vida; Fonte Viva; Pão Nosso; Vinha de Luz) on or off. |
+| UC-18 | **compare with the original** | An "Original" button shows the Portuguese text next to the translation, as study groups do to clarify a reading; also on the message's website page. |
+| UC-19 | **find a study group** | A "Study groups" screen links to Spiritist organizations that hold in-person and online meetings; also on the website. |
 
 ### v3: Talk about it
 

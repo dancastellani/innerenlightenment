@@ -21,8 +21,8 @@ Then('the {string} workflow runs on every pull request and every push to main', 
   assert.match(this.workflow, /^ {2}push:\n {4}branches: \[main\]/m);
 });
 
-Then('it runs {string} and {string}', function (this: World, a: string, b: string) {
-  for (const command of [a, b]) assert.ok(this.workflow.includes(`run: ${command}\n`), `missing "run: ${command}"`);
+Then('it runs {string}', function (this: World, command: string) {
+  assert.ok(this.workflow.includes(`run: ${command}\n`), `missing "run: ${command}"`);
 });
 
 Then('the {string} workflow is started by hand', function (this: World, name: string) {

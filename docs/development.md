@@ -7,7 +7,7 @@ How a change goes from an idea to `main`, and the commands you need along the wa
 1. Install [Node.js 24](https://nodejs.org/) or newer. Check with `node --version`.
 2. Clone the repo: `git clone https://github.com/dancastellani/innerenlightenment.git`
 3. Install Cucumber, used to run the specs: `npm install`
-4. Run the tests and the specs: `./run.sh test` and `./run.sh specs`
+4. Run the tests and the specs: `./run.sh test`
 
 The scripts themselves only use what ships with Node; Cucumber is the one development dependency.
 
@@ -18,17 +18,24 @@ The scripts themselves only use what ships with Node; Cucumber is the one develo
 | Command | What it does |
 |---|---|
 | `./run.sh` | Lists the commands |
-| `./run.sh test` | Runs the tests (`node --test scripts/*.test.ts`) |
-| `./run.sh specs` | Runs the specs in `specs/ops/` with Cucumber |
+| `./run.sh test` | Runs the tests (`node --test scripts/*.test.ts mobile/*.test.ts`), then the specs in `specs/ops/` with Cucumber |
 | `./run.sh export` | Downloads all messages from fonteviva.org into `content/pt.json` |
+| `./run.sh translate [lang]` | Translates `content/pt.json` into `content/<lang>.json` (default `en`) with Gemini; needs `GEMINI_API_KEY` |
+| `./run.sh app` | Installs the app's packages and starts it; scan the QR code with Expo Go |
 
-App commands will be added here once the Expo app exists.
+## Trying the app on your Android phone
+
+1. Install **Expo Go** from the Play Store.
+2. On your computer, run `./run.sh app`. The first run installs packages, which takes a minute.
+3. Open Expo Go and scan the QR code shown in the terminal. Phone and computer must be on the same Wi-Fi; if they can't be, stop it and run `cd mobile && npx expo start --tunnel` instead.
+4. Allow notifications when asked. The app shows today's message and schedules the next 14 days at 08:00.
+5. Tap **Test notification in 10 seconds**, lock the phone or switch apps, and wait for it. Tap the notification and the app opens on that message.
 
 ## The lifecycle of a change
 
 1. **Issue.** Every feature or bug starts as a GitHub issue that says what should happen. A use case has its spec in `specs/` with scenario IDs like `UC-01.4` (see [tech-stack.md](tech-stack.md#specs-in-plain-english-gherkin)).
 2. **Branch.** Work happens on a branch, never directly on `main`: `git switch -c my-change`.
-3. **Change and test.** Make the smallest change that does the job, then run `./run.sh test` and `./run.sh specs`. A change in behaviour updates its spec in the same branch.
+3. **Change and test.** Make the smallest change that does the job, then run `./run.sh test`. A change in behaviour updates its spec in the same branch.
 4. **Pull request.** Push the branch and open a PR that references the issue (`Closes #12`). Claude can do steps 2 to 4 when you ask in the project.
 5. **CI.** The **Test** workflow runs the tests and the specs on every PR. The PR page shows a green check when the tests pass, or a red cross with the failing output.
 6. **Review.** You review the PR on GitHub. Comments on a PR Claude opened are picked up and handled by Claude: it pushes a fix, or replies saying why not. CI runs again after each push.
@@ -40,3 +47,31 @@ The messages rarely change, so the export runs by hand:
 
 - **From GitHub (recommended):** Actions tab → **Export messages** → **Run workflow**. If `content/pt.json` changed, it opens a PR with the new file; review and merge it like any other PR.
 - **Locally:** `./run.sh export`, then commit `content/pt.json` on a branch and open a PR. This needs access to fonteviva.org, which some networks block.
+
+## Translating the messages
+
+Translations are made once from `content/pt.json` with the Gemini API and saved as `content/<lang>.json`.
+
+- **From GitHub (recommended):** Actions tab → **Translate messages** → **Run workflow**, with the language code (default `en`). It opens a PR with the file; spot-check a few messages and merge. It needs a repository secret named `GEMINI_API_KEY` (Settings → Secrets and variables → Actions), with a free key from [Google AI Studio](https://aistudio.google.com/apikey).
+- **Locally:** `GEMINI_API_KEY=... ./run.sh translate en`.
+
+Messages already in the output file are skipped, so if a run stops halfway (for example on the free tier's daily limit), run it again to finish.
+
+## Previewing an app PR in Expo Go
+
+Every PR that changes `mobile/` or `content/` gets a comment with a QR code from the **Expo preview** Action; scan it with Expo Go to try that PR on your phone. How it works and the one-time setup are in [tech-stack.md](tech-stack.md#pr-previews-in-expo-go-eas-update).
+
+## Working with Claude Code locally
+
+You can keep working with Claude on your own computer using [Claude Code](https://code.claude.com/docs):
+
+1. Install it: `npm install -g @anthropic-ai/claude-code` (or follow the install steps on the docs page).
+2. Open a terminal in your clone of this repo and run `claude`. Sign in the first time.
+3. Claude reads [CLAUDE.md](../CLAUDE.md) on start, so it already knows the project, the rules and this workflow.
+4. Ask it to pick up an issue, for example: "Pick up issue #33, make a branch, implement it and open a PR." It runs `./run.sh test` before pushing.
+5. At the end of a session, run `/update-context`. It saves what was learned (decisions, gotchas, conventions) to `CLAUDE.md` or `docs/` in a PR, so the next session starts with it.
+
+Recommended add-ons, installed once on your computer:
+
+- Expo plugin: run `/plugin install expo@claude-plugins-official` inside Claude Code.
+- Gemini API skill (for the translation script): run `npx skills add google-gemini/gemini-skills --skill gemini-api-dev --global` in a terminal, then check it shows in `/skills` ([Google's guide](https://ai.google.dev/gemini-api/docs/coding-agents)).

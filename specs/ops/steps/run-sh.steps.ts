@@ -9,12 +9,20 @@ import { runCommand, type Result } from './run-command.ts';
 
 type World = { path: string | undefined; result: Result };
 
+// Puts a fake command first on PATH: a tiny shell script that runs `script` instead of the real one.
+async function fakeCommand(world: World, name: string, script: string) {
+  const dir = await mkdtemp(join(tmpdir(), `${name}-`));
+  await writeFile(join(dir, name), `#!/bin/sh\n${script}\n`);
+  await chmod(join(dir, name), 0o755);
+  world.path = `${dir}:${process.env.PATH}`;
+}
+
 Given('the installed Node is version {int}', async function (this: World, version: number) {
-  // A fake `node` placed first on PATH, which only prints its version.
-  const dir = await mkdtemp(join(tmpdir(), 'node-'));
-  await writeFile(join(dir, 'node'), `#!/bin/sh\necho v${version}.0.0\n`);
-  await chmod(join(dir, 'node'), 0o755);
-  this.path = `${dir}:${process.env.PATH}`;
+  await fakeCommand(this, 'node', `echo v${version}.0.0`);
+});
+
+Given("Cucumber is replaced by a stand-in, so these specs don't start themselves", async function (this: World) {
+  await fakeCommand(this, 'npx', 'echo "stand-in npx $@"');
 });
 
 When('I run {string}', async function (this: World, commandLine: string) {
@@ -22,9 +30,12 @@ When('I run {string}', async function (this: World, commandLine: string) {
   this.result = await runCommand(command, args, this.path ? { PATH: this.path } : {});
 });
 
-Then('it lists the commands {string}, {string} and {string}', function (this: World, a: string, b: string, c: string) {
-  for (const command of [a, b, c]) assert.match(this.result.output, new RegExp(`^  ${command} `, 'm'));
-});
+Then(
+  'it lists the commands {string}, {string}, {string} and {string}',
+  function (this: World, a: string, b: string, c: string, d: string) {
+    for (const command of [a, b, c, d]) assert.match(this.result.output, new RegExp(`^  ${command} `, 'm'));
+  },
+);
 
 Then('it fails with {string}', function (this: World, message: string) {
   assert.notEqual(this.result.code, 0);
@@ -33,4 +44,8 @@ Then('it fails with {string}', function (this: World, message: string) {
 
 Then('it reports that no test failed', function (this: World) {
   assert.match(this.result.output, /^ℹ fail 0$/m);
+});
+
+Then('it starts Cucumber on {string}', function (this: World, folder: string) {
+  assert.ok(this.result.output.includes(`stand-in npx cucumber-js ${folder} `), this.result.output);
 });

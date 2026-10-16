@@ -5,7 +5,7 @@ Feature: Checks and jobs on GitHub Actions
   @OP-04.1
   Scenario: Every pull request runs the tests and the specs
     Then the "Test" workflow runs on every pull request and every push to main
-    And it runs "./run.sh test" and "./run.sh specs"
+    And it runs "./run.sh test"
 
   @OP-04.2
   Scenario: The export is started by hand and proposes a pull request

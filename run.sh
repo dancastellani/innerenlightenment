@@ -9,12 +9,14 @@ if [ -z "$major" ] || [ "$major" -lt 24 ]; then
 fi
 
 case "$1" in
-  test)   node --test scripts/*.test.ts ;;
+  test)   node --test scripts/*.test.ts mobile/*.test.ts ;;
   export) node scripts/export-fonteviva.ts content/pt.json ;;
+  app)    cd mobile && npm install && npx expo start ;;
   *)
     echo "Usage: ./run.sh <command>"
     echo
     echo "  test     run the tests"
     echo "  export   download all messages from fonteviva.org into content/pt.json"
+    echo "  app      start the app; scan the QR code with Expo Go on your phone"
     ;;
 esac

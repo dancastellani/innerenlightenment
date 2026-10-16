@@ -235,8 +235,8 @@ Settings (time, on/off, language, recently shown messages) are saved on the phon
 | Task | Command |
 |---|---|
 | Check Node version | `node --version` (24 or newer) |
-| Run tests | `node --test scripts/*.test.ts` |
+| Run tests | `node --test scripts/*.test.ts mobile/*.test.ts` |
 | Export messages | `node scripts/export-fonteviva.ts` |
 | Export from GitHub | Actions tab → Export messages → Run workflow |
 | Run specs (planned) | `npx cucumber-js specs` |
-| Run the app (planned) | `npx expo start` |
+| Run the app | `./run.sh app` |

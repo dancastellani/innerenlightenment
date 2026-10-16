@@ -40,6 +40,17 @@ There is nothing to install with npm: the scripts only use what ships with Node.
 6. **Review.** You review the PR on GitHub. Comments on a PR Claude opened are picked up and handled by Claude: it pushes a fix, or replies saying why not. CI runs again after each push.
 7. **Merge.** When CI is green and you approve, merge the PR on GitHub. Delete the branch afterwards.
 
+## Edge cases
+
+Each spec covers the normal case and its edges, under an `# Edge cases` comment at the end of the `.feature` file, with the next free scenario IDs. The app has few inputs, so for each one ask:
+
+- **Boundaries.** The value exactly at each limit and one step past it, on both sides, and check the app still works across the boundary: times 00:00 and 23:59, a time one minute before or after now, the last day of the month or year, a page of exactly 100 posts.
+- **Empty and missing.** A message without a signature, a message missing from the content or its translation, a missing header or setting.
+- **Refused and cancelled.** Permission denied or its request closed, a picker or share sheet closed, the site or Gemini answering with an error or nonsense. None of these may break the app: it carries on and asks again next time.
+- **The phone's world changing.** No network, the phone restarted or switched off in the middle of saving, the app resumed on a new day, daylight saving time, a new time zone. Saved data must never end up half written, and the next app open repairs anything left half done.
+
+Write the expected behaviour, not the current one: when the code does something else, the scenario stays and the defect gets its own issue labelled `bug`. Every bug also gets a regression scenario so it can't come back; put a `# Regression for #<n>: <what went wrong>` comment above it when the scenario alone doesn't say why it is there. Use a `Scenario Outline` with `Examples` when only the value changes, such as 00:00 and 23:59.
+
 ## Updating the messages
 
 The messages rarely change, so the export runs by hand:

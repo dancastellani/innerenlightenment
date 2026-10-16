@@ -9,11 +9,22 @@ export type Content = { language: string; messages: Message[] };
 
 // Fields that are copied from the original as they are, never translated.
 const KEPT_FIELDS = ['slug', 'url', 'book', 'chapter', 'spirit', 'medium', 'signature'];
-// A paragraph identical to the Portuguese one and longer than this was most likely left untranslated.
-// Shorter ones can be names or Bible references that read the same in both languages.
-const UNTRANSLATED_MIN_LENGTH = 25;
+// A text of at least this many words, nearly all of them also in the Portuguese text, was most likely left
+// untranslated. Short sentences can read the same in both languages, such as "De salvador a desamparado…" in Spanish.
+const UNTRANSLATED_MIN_WORDS = 5;
+const UNTRANSLATED_SHARED_WORDS = 0.9;
 // An epigraph this many times longer than the Portuguese one was most likely expanded into the full verse.
 const EXPANDED_EPIGRAPH_RATIO = 1.5;
+
+const words = (text: string) => text.toLowerCase().match(/\p{L}+/gu) ?? [];
+
+// True when the text has enough words and nearly all of them are also in the original.
+function isStillPortuguese(text: string, original: string): boolean {
+  const textWords = words(text);
+  const originalWords = new Set(words(original));
+  const shared = textWords.filter((word) => originalWords.has(word)).length;
+  return textWords.length >= UNTRANSLATED_MIN_WORDS && shared >= textWords.length * UNTRANSLATED_SHARED_WORDS;
+}
 
 export function checkTranslation(original: Content, translation: Content, lang: string): string[] {
   const findings: string[] = [];
@@ -53,10 +64,13 @@ export function checkTranslation(original: Content, translation: Content, lang: 
       findings.push(`${where} ${o.note === null ? 'has a note the original does not have' : 'lost its note'}`);
     }
     m.paragraphs.forEach((paragraph, i) => {
-      if (paragraph === o.paragraphs[i] && paragraph.length > UNTRANSLATED_MIN_LENGTH) {
+      if (isStillPortuguese(paragraph, o.paragraphs[i] ?? '')) {
         findings.push(`${where} paragraph ${i + 1} is still in Portuguese: "${paragraph}"`);
       }
     });
+    if (m.note !== null && isStillPortuguese(m.note, o.note ?? '')) {
+      findings.push(`${where} note is still in Portuguese: "${m.note}"`);
+    }
     const epigraph = m.paragraphs[0] ?? '';
     const originalEpigraph = o.paragraphs[0] ?? '';
     if (originalEpigraph.startsWith('“') && epigraph.length > originalEpigraph.length * EXPANDED_EPIGRAPH_RATIO) {

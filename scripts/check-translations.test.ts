@@ -86,12 +86,28 @@ test('a note must be kept, and not added', () => {
   ]);
 });
 
-test('a paragraph left in Portuguese is reported from 26 characters on', () => {
-  const at25 = 'x'.repeat(25);
-  const at26 = 'x'.repeat(26);
-  const source: Content = { language: 'pt', messages: [message(1, [at25, at26])] };
-  const translation: Content = { language: 'en', messages: [message(1, [at25, at26])] };
-  assert.deepEqual(checkTranslation(source, translation, 'en'), [`[1](https://fonteviva.org/livro/1/) paragraph 2 is still in Portuguese: "${at26}"`]);
+test('a paragraph left in Portuguese is reported from 5 words on', () => {
+  const fourWords = 'De salvador a desamparado';
+  const fiveWords = 'E ele chamou os doze';
+  const source: Content = { language: 'pt', messages: [message(1, [fourWords, fiveWords])] };
+  const translation: Content = { language: 'es', messages: [message(1, [fourWords, fiveWords])] };
+  assert.deepEqual(checkTranslation(source, translation, 'es'), [`[1](https://fonteviva.org/livro/1/) paragraph 2 is still in Portuguese: "${fiveWords}"`]);
+});
+
+test('a paragraph is still in Portuguese when 90% of its words are', () => {
+  const original = 'um dois três quatro cinco seis sete oito nove dez';
+  const ninetyPercent = 'um dois três quatro cinco seis sete oito nove ten';
+  const eightyPercent = 'um dois três quatro cinco seis sete oito nine ten';
+  const source: Content = { language: 'pt', messages: [message(1, [original, original])] };
+  const translation: Content = { language: 'en', messages: [message(1, [ninetyPercent, eightyPercent])] };
+  assert.deepEqual(checkTranslation(source, translation, 'en'), [`[1](https://fonteviva.org/livro/1/) paragraph 1 is still in Portuguese: "${ninetyPercent}"`]);
+});
+
+test('a note left in Portuguese is reported', () => {
+  const note = 'Esta mensagem foi publicada originalmente em 1950';
+  const source: Content = { language: 'pt', messages: [message(1, ['Um.'], note)] };
+  const translation: Content = { language: 'en', messages: [message(1, ['One.'], note)] };
+  assert.deepEqual(checkTranslation(source, translation, 'en'), [`[1](https://fonteviva.org/livro/1/) note is still in Portuguese: "${note}"`]);
 });
 
 test('an epigraph more than 1.5 times longer than the original is reported', () => {

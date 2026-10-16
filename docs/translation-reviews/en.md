@@ -7,11 +7,11 @@ Review of `content/en.json` (724 messages), translated from `content/pt.json` wi
 | | Messages |
 | --- | --- |
 | Checked | 724 |
-| Fixed | 18 |
+| Fixed | 21 |
 | Open | 0 (one style note below) |
 
 - **Structure:** every message has the same id, order, fields, book, chapter, author, signature and link as the Portuguese, the same number of paragraphs, and a note only where the original has one. No problems.
-- **Epigraphs:** 18 opening Bible quotes were fixed by hand: 9 left in Portuguese, 1 partly in Portuguese, 6 expanded into the full verse, and 2 much wordier than the original. The automatic check in [scripts/check-translations.ts](../../scripts/check-translations.ts) now finds 17 of them (all but 1150, which was Portuguese worded differently from the original, so it doesn't match it).
+- **Epigraphs:** 21 opening Bible quotes were fixed by hand: 10 left in Portuguese, 1 partly in Portuguese, 6 expanded into the full verse, 2 much wordier than the original, and 2 with the book name in Portuguese (Hebreus). On the file as Gemini wrote it, the automatic check in [scripts/check-translations.ts](../../scripts/check-translations.ts) finds 18 of them; reading found the other 3 (1150, which was Portuguese worded differently from the original, and the two book names).
 - **Style note, not fixed:** Bible references are written in two ways, "(John, 16:32)" in 644 messages and "(Romans 14:6)" in 70. Both read fine; they can be made uniform later if wanted.
 
 ## Fixes
@@ -26,7 +26,7 @@ Problem: epigraph expanded into the full Bible verse (fixed in #41).
 
 ### [871 The World and Evil](https://fonteviva.org/caminho-verdade-e-vida/o-mundo-e-o-mal/)
 
-Problem: epigraph much longer and wordier than the Portuguese, found by the automatic check and reworded closer to the original (fixed with the check).
+Problem: epigraph much longer and wordier than the Portuguese, reworded closer to the original (found by the check).
 
 - Portuguese: “Não peço que os tires do mundo, mas que os livres do mal.” — JESUS (João, 17.15)
 - Before: “I do not pray that You should take them out of the world, but that You should keep them from the evil one.” — JESUS (John, 17:15)
@@ -34,11 +34,19 @@ Problem: epigraph much longer and wordier than the Portuguese, found by the auto
 
 ### [1020 Within the Struggle](https://fonteviva.org/fonte-viva/dentro-da-luta/)
 
-Problem: epigraph much longer and wordier than the Portuguese, found by the automatic check and reworded closer to the original (fixed with the check).
+Problem: epigraph much longer and wordier than the Portuguese, reworded closer to the original (found by the check).
 
 - Portuguese: “Não peço para que os tires do mundo, mas que os livres do mal.” — JESUS (João, 17.15)
 - Before: “I do not pray that You should take them out of the world, but that You should keep them from the evil one.” — JESUS (John, 17:15)
 - After: “I do not ask that You take them out of the world, but that You deliver them from evil.” — JESUS (John, 17:15)
+
+### [1074 Serve and March](https://fonteviva.org/fonte-viva/servir-e-marchar/)
+
+Problem: epigraph has its book name in Portuguese (found by reading).
+
+- Portuguese: “Portanto, tornai a levantar as mãos cansadas e os joelhos desconjuntados.” — PAULO (Hebreus, 12.12)
+- Before: “Therefore strengthen the hands which hang down, and the feeble knees.” — PAUL (Hebreus, 12:12)
+- After: “Therefore strengthen the hands which hang down, and the feeble knees.” — PAUL (Hebrews, 12:12)
 
 ### [1106 In Instrumentality](https://fonteviva.org/fonte-viva/na-instrumentalidade/)
 
@@ -55,6 +63,14 @@ Problem: epigraph partly in Portuguese (fixed in #41).
 - Portuguese: “Tornou, pois, Jesus a dizer-lhes: Em verdade vos digo que eu sou a porta das ovelhas.” — (JOÃO, 10.7)
 - Before: “Jesus, pois, lhes disse outra vez: Em verdade, em verdade vos digo que eu sou a porta das ovelhas.” — (JOHN, 10.7)
 - After: “Then Jesus said to them again: Truly I say to you, I am the door of the sheep.” — (JOHN, 10:7)
+
+### [1171 Spiritual Nourishment](https://fonteviva.org/pao-nosso/nutricao-espiritual/)
+
+Problem: epigraph has its book name in Portuguese (found by reading).
+
+- Portuguese: “Bom é que o coração se fortifique com graça e não com manjares, que de nada aproveitaram aos que a eles se entregaram.” — PAULO (Hebreus, 13.9)
+- Before: “It is good that the heart be established by grace, not with foods which have not profited those who have been occupied with them.” — PAUL (Hebreus 13:9)
+- After: “It is good that the heart be established by grace, not with foods which have not profited those who have been occupied with them.” — PAUL (Hebrews 13:9)
 
 ### [1249 When You Pray](https://fonteviva.org/pao-nosso/quando-orardes/)
 
@@ -87,6 +103,14 @@ Problem: epigraph left in Portuguese (fixed in #41).
 - Portuguese: “Mas a Jerusalém que é de Cima, é livre, a qual é mãe de todos nós.” — PAULO (Gálatas, 4.26)
 - Before: “Mas a Jerusalém que é de Cima, é livre, a qual é mãe de todos nós.” — PAULO (Gálatas, 4.26)
 - After: “But the Jerusalem which is above is free, which is the mother of us all.” — PAUL (Galatians, 4:26)
+
+### [1441 The Greatest](https://fonteviva.org/vinha-de-luz/maiorais/)
+
+Problem: epigraph left in Portuguese, all but one word (found by the check).
+
+- Portuguese: “E ele, assentando-se, chamou os doze e disse-lhes: Se alguém quiser ser o primeiro, será o último de todos e servo de todos.” — (MARCOS, 9.35)
+- Before: “E he, assentando-se, chamou os doze e disse-lhes: Se alguém quiser ser o primeiro, será o último de todos e servo de todos.” — (MARCOS, 9.35)
+- After: “And He sat down, called the twelve and said to them: If anyone wants to be first, he shall be last of all and servant of all.” — (MARK, 9:35)
 
 ### [1442 Do Not Withdraw](https://fonteviva.org/vinha-de-luz/nao-te-afastes/)
 

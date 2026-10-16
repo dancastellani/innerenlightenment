@@ -38,3 +38,4 @@ jobs:
           name: Test report
           path: test-reports/*.xml
           reporter: java-junit
+          use-actions-summary: false # create a check run instead of a summary section

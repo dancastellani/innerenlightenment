@@ -47,3 +47,4 @@ You can keep working with Claude on your own computer using [Claude Code](https:
 2. Open a terminal in your clone of this repo and run `claude`. Sign in the first time.
 3. Claude reads [CLAUDE.md](../CLAUDE.md) on start, so it already knows the project, the rules and this workflow.
 4. Ask it to pick up an issue, for example: "Pick up issue #33, make a branch, implement it and open a PR." It runs `./run.sh test` before pushing.
+5. At the end of a session, run `/update-context`. It saves what was learned (decisions, gotchas, conventions) to `CLAUDE.md` or `docs/` in a PR, so the next session starts with it.

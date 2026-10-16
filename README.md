@@ -22,6 +22,6 @@ Or run the **Export messages** workflow from the Actions tab, which opens a PR w
 
 ## License
 
-The code is licensed under the [MIT License](LICENSE).
+The code is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE.md): you may use, copy and change it for any noncommercial purpose, keeping the copyright notice. Commercial use is not permitted. The software comes with no warranty or liability.
 
 The messages in `content/` are **not** covered by that license. They are excerpts from books by Emmanuel, psychographed by Francisco Cândido Xavier, as published on [fonteviva.org](https://fonteviva.org/), and their translations. All rights to that content remain with its rights holders.

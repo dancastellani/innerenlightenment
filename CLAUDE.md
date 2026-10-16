@@ -15,6 +15,8 @@
 ## How work is done
 
 - **Specs.** Each use case has a Gherkin `.feature` file in `specs/` with stable scenario IDs (`UC-xx.y` for the app, `OP-xx.y` for operations) and a linked GitHub issue. Scenarios are meant to run with Cucumber.
+- **Tests.** Cover the boundaries, not just the happy path: empty, exactly at a limit, one past it, and running out (Dan asked for this on PR #45).
+- **Defects.** Every defect found gets its own GitHub issue labelled `bug`, even when it is fixed right away, and the fixing PR says `Fixes #<n>` (Dan tracks defects).
 - **Lifecycle.** Issue → branch → small change with tests → PR referencing the issue → CI → review → merge. A change in behaviour updates its spec in the same PR.
 - **Edge cases.** Each spec also has boundary and negative scenarios (limits, empty, refused, offline, clock and time zone changes); how to write them is in [docs/development.md](docs/development.md#edge-cases).
 - **Screenshots.** A PR that changes the UI (app or website) shows every changed screen: commit phone-sized screenshots to `docs/screenshots/` and embed them under an *Evidence* section in the PR description, naming the scenario IDs each one shows. For the app, the web build (`npx expo export -p web`) in headless Chromium is enough; say what web can't show (real notifications). App PRs also get an Expo Go QR code, commented by the *Expo preview* Action.

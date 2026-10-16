@@ -21,6 +21,7 @@ Feature: See today's message when I open the app
 
   # Edge cases
 
+  # Regression for #49: the app showed yesterday's message when resumed.
   @UC-03.4
   Scenario: App left open past midnight
     Given the app shows today's message A

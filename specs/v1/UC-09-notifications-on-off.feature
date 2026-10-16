@@ -42,3 +42,10 @@ Feature: Turn notifications off and on
     Given I turned notifications off
     When the app is closed and reopened
     Then notifications are still off and none are scheduled
+
+  @UC-09.7
+  Scenario: Permission request closed or refused
+    Given the app asks for notification permission
+    When I close the request or tap "Don't allow"
+    Then the app still shows today's message and works as usual
+    And it asks again the next time it opens, while the phone still allows asking

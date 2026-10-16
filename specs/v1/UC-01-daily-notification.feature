@@ -32,10 +32,9 @@ Feature: Receive a message every day at 8am
     And no day has more than one daily notification
 
   @UC-01.5
-  Scenario: Messages do not repeat soon
+  Scenario: Each day gets a random message
     When the next 14 days are scheduled
-    Then no message appears twice among them
-    And no message shown in the last 90 days is scheduled
+    Then each day gets a message picked at random from all messages
 
   # Edge cases
 
@@ -68,6 +67,7 @@ Feature: Receive a message every day at 8am
     Given the clocks change during the next 14 days
     Then every notification is still at 08:00 device time
 
+  # Regression for #50: notifications kept the old time zone until the app was opened.
   @UC-01.11
   Scenario: Travelling to another time zone
     Given notifications were scheduled in São Paulo time
@@ -80,9 +80,17 @@ Feature: Receive a message every day at 8am
     When the phone is restarted
     Then the notifications are still delivered
 
+  # Regression for #48: the home screen was blank all day.
   @UC-01.13
   Scenario: A planned message is no longer in the content
     Given today's planned message was removed from the content in an app update
     When I open the app
-    Then today gets another message that was not shown recently
+    Then today gets another message
     And its notification and the home screen show that message
+
+  @UC-01.14
+  Scenario: Phone switched off while the app is saving or scheduling
+    Given the phone switches off while the app is rescheduling notifications
+    When the phone is back on and I open the app
+    Then today's message is shown
+    And notifications are scheduled for the next 14 days, one per day

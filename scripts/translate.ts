@@ -5,7 +5,7 @@
 import { existsSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
 
-const MODEL = 'gemini-2.5-flash';
+const MODEL = 'gemini-3.5-flash-lite';
 const BATCH_SIZE = 10;
 
 type Message = { id: number; title: string; paragraphs: string[]; note: string | null; [field: string]: unknown };
@@ -63,11 +63,13 @@ for (let i = 0; i < todo.length; i += BATCH_SIZE) {
   const translations = await translate(batch.map(({ id, title, paragraphs, note }) => ({ id, title, paragraphs, note })));
   for (const original of batch) {
     const t = translations.find((t) => t.id === original.id);
+    console.info(`translating: ${t.title}...`);
     if (!t || t.paragraphs.length !== original.paragraphs.length) {
       console.error(`warning: failed ${original.url}, translation missing or paragraph count differs`);
       failed++;
       continue;
     }
+    console.info(`translated: ${t.title}`);
     done.push({ ...original, title: t.title, paragraphs: t.paragraphs, note: t.note });
     translated++;
   }

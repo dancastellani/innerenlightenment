@@ -49,6 +49,15 @@ Translations are made once from `content/pt.json` with the Gemini API and saved 
 
 Messages already in the output file are skipped, so if a run stops halfway (for example on the free tier's daily limit), run it again to finish.
 
+## Previewing an app PR in Expo Go
+
+The **Expo preview** Action publishes every PR that changes `mobile/` or `content/` with EAS Update and comments a QR code on the PR; scan it with Expo Go to try that PR on your phone. One-time setup:
+
+1. Create a free account at [expo.dev](https://expo.dev/signup) and a project named `innerenlightenment`; its project ID goes in `mobile/app.json` (`expo.extra.eas.projectId`, plus `expo.owner` and `expo.updates.url`).
+2. Create an access token at [expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens) and save it as a repository secret named `EXPO_TOKEN`.
+
+Until the secret exists, the Action skips itself.
+
 ## Working with Claude Code locally
 
 You can keep working with Claude on your own computer using [Claude Code](https://code.claude.com/docs):

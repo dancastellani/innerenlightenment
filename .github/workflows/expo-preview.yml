@@ -1,0 +1,37 @@
+# Publishes each app PR with EAS Update and comments a QR code that opens it in Expo Go.
+# Skipped until the EXPO_TOKEN secret exists (see docs/development.md).
+name: Expo preview
+
+on:
+  pull_request:
+    paths: ['mobile/**', 'content/**']
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        if: env.EXPO_TOKEN != ''
+      - uses: actions/setup-node@v6
+        if: env.EXPO_TOKEN != ''
+        with:
+          node-version: 24
+      - uses: expo/expo-github-action@v8
+        if: env.EXPO_TOKEN != ''
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: npm ci
+        if: env.EXPO_TOKEN != ''
+        working-directory: mobile
+      - uses: expo/expo-github-action/preview@v8
+        if: env.EXPO_TOKEN != ''
+        with:
+          working-directory: mobile
+          qr-target: expo-go
+          command: eas update --auto --branch ${{ github.head_ref }}

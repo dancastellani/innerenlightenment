@@ -199,6 +199,16 @@ npx expo start   # then scan the QR code with Expo Go
 
 Everything runs on the phone: there is **no server** of our own.
 
+### PR previews in Expo Go (EAS Update)
+
+**EAS Update** is Expo's hosting for app bundles (the JavaScript and assets, not a full app). The *Expo preview* Action publishes every app PR to its own update branch, `pr-<number>`, and comments a QR code on the PR. Scanning it with Expo Go opens that PR's version of the app, so several open PRs can be tried side by side. Nothing reaches users: a store build only receives updates from the channel it was built for, and previews never go there.
+
+One-time setup, already done for this repo:
+
+1. Sign up at [expo.dev/signup](https://expo.dev/signup) (Google sign-in works) and create a project named `innerenlightenmentapp`.
+2. Link the app to it: `cd mobile && npx eas-cli@latest init --id <project id>`. This writes the ID into `mobile/app.json` (`extra.eas.projectId`); the app also needs `updates.url` (`https://u.expo.dev/<project id>`), `runtimeVersion` (`{ "policy": "sdkVersion" }`, which matches Expo Go) and the `expo-updates` package.
+3. Create an access token at [expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens) and save it as the repository secret `EXPO_TOKEN` (Settings → Secrets and variables → Actions). Without it the Action skips itself.
+
 ### Local notifications (planned)
 
 `expo-notifications` asks the phone to show a notification at a set time, even with the app closed and no network. The text is fixed when the notification is scheduled, so the app picks the next 14 messages and schedules one per day at 6:00. Each time the app opens, it tops the queue back up to 14 days (iOS allows at most 64 pending notifications). Tapping one opens that message.

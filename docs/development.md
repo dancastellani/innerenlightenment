@@ -49,6 +49,10 @@ Translations are made once from `content/pt.json` with the Gemini API and saved 
 
 Messages already in the output file are skipped, so if a run stops halfway (for example on the free tier's daily limit), run it again to finish.
 
+## Previewing an app PR in Expo Go
+
+Every PR that changes `mobile/` or `content/` gets a comment with a QR code from the **Expo preview** Action; scan it with Expo Go to try that PR on your phone. How it works and the one-time setup are in [tech-stack.md](tech-stack.md#pr-previews-in-expo-go-eas-update).
+
 ## Working with Claude Code locally
 
 You can keep working with Claude on your own computer using [Claude Code](https://code.claude.com/docs):

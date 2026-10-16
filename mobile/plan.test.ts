@@ -39,12 +39,19 @@ test('UC-04.1, UC-04.2: another message is new and is remembered so it does not 
   assert.notEqual(next, id);
 });
 
-test('UC-04.3: once every message was shown in the last 90 days, messages start repeating', () => {
-  let plan = fillPlan({}, ids, today);
+test('UC-04.3: once every message was shown, a new round starts without repeating today or upcoming days', () => {
+  let plan = fillPlan({ '2026-10-10': 1 }, ids, today);
   while (Object.keys(plan).length < ids.length) plan = addAnother(plan, ids, today)[0];
-  const [, id] = addAnother(plan, ids, today);
-  assert.ok(ids.includes(id));
-  assert.ok(ids.includes(fillPlan(plan, ids, new Date(2026, 9, 31, 12, 0))['2026-11-14']));
+  const upcoming = Object.entries(plan).filter(([key]) => key >= '2026-10-16' && key.length === 10).map(([, id]) => id);
+
+  const [after, id] = addAnother(plan, ids, today);
+  assert.ok(!upcoming.includes(id));
+  assert.equal(after['2026-10-10'], undefined);
+  assert.equal(after['2026-10-16 +1'], id);
+  const [, next] = addAnother(after, ids, today);
+  assert.ok(next !== id && !upcoming.includes(next));
+  const tomorrow = fillPlan(after, ids, new Date(2026, 9, 17, 12, 0))['2026-10-31'];
+  assert.ok(tomorrow !== undefined && tomorrow !== id && !upcoming.includes(tomorrow));
 });
 
 test('UC-01.5 boundary: a day exactly 90 days ago is kept, 91 days ago is forgotten', () => {

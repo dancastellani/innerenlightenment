@@ -23,7 +23,7 @@ export function fillPlan(plan: Plan, ids: number[], today: Date, days = 14, keep
   for (let i = 0; i <= days; i++) {
     const day = dayKey(addDays(i));
     if (result[day] !== undefined) continue;
-    result[day] = pickUnused(result, ids, random);
+    result[day] = pickUnused(result, ids, dayKey(today), random);
   }
   return result;
 }
@@ -31,15 +31,26 @@ export function fillPlan(plan: Plan, ids: number[], today: Date, days = 14, keep
 // UC-04: a message not shown in the last 90 days (the plan only keeps those days), recorded for today.
 export function addAnother(plan: Plan, ids: number[], today: Date, random = Math.random): [Plan, number] {
   const day = dayKey(today);
-  const count = Object.keys(plan).filter((key) => key.startsWith(`${day} +`)).length;
-  const id = pickUnused(plan, ids, random);
-  return [{ ...plan, [`${day} +${count + 1}`]: id }, id];
+  const result = { ...plan };
+  const id = pickUnused(result, ids, day, random);
+  const count = Object.keys(result).filter((key) => key.startsWith(`${day} +`)).length;
+  result[`${day} +${count + 1}`] = id;
+  return [result, id];
 }
 
-function pickUnused(plan: Plan, ids: number[], random: () => number): number {
-  const used = new Set(Object.values(plan));
-  const unused = ids.filter((id) => !used.has(id));
-  // Every message was shown in the last 90 days: allow repeats rather than show nothing.
-  const pool = unused.length > 0 ? unused : ids;
+// Picks a message not in the plan. Once every message is in it, a new round starts:
+// everything but today's and upcoming days' messages is forgotten, so those can't repeat soon.
+function pickUnused(plan: Plan, ids: number[], today: string, random: () => number): number {
+  const unused = () => {
+    const used = new Set(Object.values(plan));
+    return ids.filter((id) => !used.has(id));
+  };
+  let pool = unused();
+  if (pool.length === 0) {
+    for (const key of Object.keys(plan)) {
+      if (key < today || key.length !== 10) delete plan[key];
+    }
+    pool = unused();
+  }
   return pool[Math.floor(random() * pool.length)];
 }

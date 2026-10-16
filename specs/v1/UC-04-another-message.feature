@@ -16,4 +16,5 @@ Feature: Ask for another message
   Scenario: Every message was shown recently
     Given every message was shown in the last 90 days
     When I tap "Another message"
-    Then a message is still shown, even though it repeats
+    Then a new round starts: earlier messages can come back
+    But not the messages for today or the upcoming days

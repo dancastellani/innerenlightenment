@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-python@v5
         with:
-          node-version: 22
-      - run: npm run export:pt
+          python-version: "3.12"
+      - run: python -m scripts.export_fonteviva content/pt.json
       - uses: peter-evans/create-pull-request@v7
         with:
           branch: content/export-pt

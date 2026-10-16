@@ -13,9 +13,11 @@ Early setup. The plan:
 
 ## Exporting the messages
 
+Scripts are plain Python 3.10+ with no dependencies.
+
 ```sh
-npm run export:pt   # writes content/pt.json
-npm test            # parser tests
+python -m scripts.export_fonteviva   # writes content/pt.json
+python -m unittest                   # parser tests
 ```
 
 Or run the **Export messages** workflow from the Actions tab, which opens a PR with the updated file.

@@ -34,4 +34,5 @@ jobs:
         with:
           working-directory: mobile
           qr-target: expo-go
-          command: eas update --auto --branch ${{ github.head_ref }}
+          # Each PR gets its own update branch, so previews of open PRs coexist and none reaches a store build.
+          command: eas update --auto --branch pr-${{ github.event.pull_request.number }}

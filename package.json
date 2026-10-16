@@ -1,0 +1,10 @@
+{
+  "name": "innerenlightenment",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "export:pt": "node scripts/export-fonteviva.mjs content/pt.json",
+    "test": "node --test scripts/test/*.test.mjs"
+  }
+}

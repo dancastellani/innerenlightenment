@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Linking, ScrollView, Share, StyleSheet, Switch, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, Share, StyleSheet, Switch, Text, View } from 'react-native';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
@@ -70,6 +70,22 @@ async function scheduleDays(settings: Settings): Promise<{ plan: Plan; allowed: 
     scheduled++;
   }
   return { plan, allowed: true };
+}
+
+// The same colours as the website: a clear spring's cool paper, slate ink and teal.
+const colors = { paper: '#f6f8f7', ink: '#1d2b2c', muted: '#566464', spring: '#17605b', rule: '#d3dfdc', warning: '#a3261b' };
+
+// A full-width button. The main action is filled; the others are outlined.
+function Action({ title, onPress, main = false }: { title: string; onPress: () => void; main?: boolean }) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [styles.action, main && styles.mainAction, pressed && styles.pressed]}
+    >
+      <Text style={[styles.actionText, main && styles.mainActionText]}>{title}</Text>
+    </Pressable>
+  );
 }
 
 export default function App() {
@@ -143,11 +159,11 @@ export default function App() {
   if (screen === 'index') {
     const bookMessages = messages.filter((m) => m.book === indexBook);
     return (
-      <ScrollView contentContainerStyle={styles.page}>
+      <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
         <Text style={styles.title}>Index</Text>
         <View style={styles.actions}>
           {books.map((book) => (
-            <Button key={book.slug} title={book.name} onPress={() => setIndexBook(book.slug)} />
+            <Action key={book.slug} title={book.name} onPress={() => setIndexBook(book.slug)} main={book.slug === indexBook} />
           ))}
         </View>
         {indexBook && <Text style={styles.bookTitle}>{bookNames[indexBook]}</Text>}
@@ -163,8 +179,8 @@ export default function App() {
             {m.title}
           </Text>
         ))}
-        <View style={styles.settingsButton}>
-          <Button title="Back" onPress={() => (indexBook ? setIndexBook(undefined) : setScreen('message'))} />
+        <View style={styles.backButton}>
+          <Action title="Back" onPress={() => (indexBook ? setIndexBook(undefined) : setScreen('message'))} />
         </View>
       </ScrollView>
     );
@@ -172,15 +188,19 @@ export default function App() {
 
   if (screen === 'settings') {
     return (
-      <ScrollView contentContainerStyle={styles.page}>
+      <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
         <Text style={styles.title}>Settings</Text>
         <View style={styles.settings}>
           <View style={styles.row}>
             <Text style={styles.label}>Daily notification</Text>
-            <Switch value={settings.enabled} onValueChange={(enabled) => changeSettings({ ...settings, enabled })} />
+            <Switch
+              value={settings.enabled}
+              onValueChange={(enabled) => changeSettings({ ...settings, enabled })}
+              trackColor={{ true: colors.spring }}
+            />
           </View>
           {settings.enabled && (
-            <Button
+            <Action
               title={`Time: ${String(settings.hour).padStart(2, '0')}:${String(settings.minute).padStart(2, '0')}`}
               onPress={pickTime}
             />
@@ -188,22 +208,22 @@ export default function App() {
           {settings.enabled && !allowed && (
             <View>
               <Text style={styles.warning}>Notifications are blocked for this app in the phone settings.</Text>
-              <Button title="Open phone settings" onPress={() => Linking.openSettings()} />
+              <Action title="Open phone settings" onPress={() => Linking.openSettings()} />
             </View>
           )}
-          <Button title="Test notification in 10 seconds" onPress={sendTest} />
-          <Button title="Back" onPress={() => setScreen('message')} />
+          <Action title="Test notification in 10 seconds" onPress={sendTest} />
+          <Action title="Back" onPress={() => setScreen('message')} main />
         </View>
       </ScrollView>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.page}>
+    <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
+      <Text style={styles.title}>{message.title}</Text>
       <Text style={styles.source}>
         {bookNames[message.book ?? '']} · {message.chapter}
       </Text>
-      <Text style={styles.title}>{message.title}</Text>
       {message.paragraphs.map((text, i) => (
         <Text key={i} style={styles.paragraph}>
           {text}
@@ -211,30 +231,43 @@ export default function App() {
       ))}
       {message.signature && <Text style={styles.signature}>{message.signature}</Text>}
       <View style={styles.actions}>
-        <Button title="Another message" onPress={showAnother} />
-        <Button title="Share" onPress={share} />
-        <Button title="Open on fonteviva.org" onPress={() => Linking.openURL(message.url)} />
+        <Action title="Another message" onPress={showAnother} main />
+        <Action title="Share" onPress={share} />
+        <Action title="Open on fonteviva.org" onPress={() => Linking.openURL(message.url)} />
       </View>
-      <View style={styles.settingsButton}>
-        <Button title="Index" onPress={() => setScreen('index')} />
-        <Button title="Settings" onPress={() => setScreen('settings')} />
+      <View style={styles.links}>
+        <Pressable accessibilityRole="button" onPress={() => setScreen('index')} style={styles.link}>
+          <Text style={styles.linkText}>Index</Text>
+        </Pressable>
+        <Pressable accessibilityRole="button" onPress={() => setScreen('settings')} style={styles.link}>
+          <Text style={styles.linkText}>Settings</Text>
+        </Pressable>
       </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  page: { padding: 24, paddingTop: 64 },
-  source: { color: '#666', marginBottom: 8 },
-  title: { fontSize: 26, fontWeight: 'bold', marginBottom: 16 },
-  paragraph: { fontSize: 18, lineHeight: 28, marginBottom: 12 },
-  signature: { fontSize: 18, fontStyle: 'italic', textAlign: 'right', marginTop: 8 },
-  actions: { gap: 12, marginTop: 24 },
-  settings: { gap: 12, marginTop: 32 },
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  label: { fontSize: 18 },
-  warning: { color: '#b00', marginBottom: 8 },
-  settingsButton: { gap: 12, marginTop: 32 },
-  bookTitle: { fontSize: 22, fontWeight: 'bold', marginTop: 32, marginBottom: 8 },
-  indexItem: { fontSize: 18, paddingVertical: 10, borderBottomWidth: 1, borderColor: '#eee' },
+  screen: { backgroundColor: colors.paper },
+  page: { padding: 24, paddingTop: 64, paddingBottom: 48 },
+  title: { fontFamily: 'serif', fontSize: 34, lineHeight: 40, fontWeight: '600', color: colors.ink, marginBottom: 6 },
+  source: { fontSize: 14, color: colors.muted, marginBottom: 28 },
+  paragraph: { fontFamily: 'serif', fontSize: 19, lineHeight: 31, color: colors.ink, marginBottom: 16 },
+  signature: { fontFamily: 'serif', fontSize: 19, fontStyle: 'italic', color: colors.ink, textAlign: 'right', marginTop: 12 },
+  actions: { gap: 12, marginTop: 40 },
+  action: { minHeight: 52, borderRadius: 26, borderWidth: 1.5, borderColor: colors.spring, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20 },
+  mainAction: { backgroundColor: colors.spring },
+  pressed: { opacity: 0.7 },
+  actionText: { fontSize: 17, fontWeight: '600', color: colors.spring },
+  mainActionText: { color: colors.paper },
+  links: { flexDirection: 'row', justifyContent: 'center', gap: 24, marginTop: 28 },
+  link: { padding: 12 },
+  linkText: { fontSize: 16, color: colors.muted, textDecorationLine: 'underline' },
+  settings: { gap: 12, marginTop: 24 },
+  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 52, borderBottomWidth: 1, borderColor: colors.rule },
+  label: { fontSize: 18, color: colors.ink },
+  warning: { color: colors.warning, marginBottom: 8 },
+  backButton: { marginTop: 32 },
+  bookTitle: { fontFamily: 'serif', fontSize: 24, fontWeight: '600', color: colors.ink, marginTop: 36, marginBottom: 8 },
+  indexItem: { fontFamily: 'serif', fontSize: 18, color: colors.spring, paddingVertical: 14, borderBottomWidth: 1, borderColor: colors.rule },
 });

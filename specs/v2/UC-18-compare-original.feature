@@ -14,6 +14,7 @@ Feature: Compare with the original
     Then only the translation is shown
 
   @UC-18.3
-  Scenario: Not offered in Portuguese
+  Scenario: Reading the original
     Given I am viewing a message in Portuguese
-    Then there is no "Original" button
+    Then the message is marked as the original language
+    And there is no "Original" button

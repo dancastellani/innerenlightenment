@@ -4,7 +4,7 @@ A mobile app that brings a daily uplifting message to the people who need it, st
 
 ## Background
 
-The messages come from Spiritism, a Christian-based belief system. They are excerpts from books by the spirit Emmanuel, received by the medium Francisco Cândido Xavier. To learn more or join a study group (in person or online):
+The messages come from Spiritism, a Christian-based philosophy, science, and religion. They are excerpts from books by the spirit Emmanuel, received by the medium Francisco Cândido Xavier. To learn more or join a study group (in person or online):
 
 - [innerenlightenment.com](https://www.innerenlightenment.com/)
 - [spiritist.us](https://spiritist.us/)

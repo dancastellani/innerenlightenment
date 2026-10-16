@@ -25,15 +25,15 @@ Thank you to **Marcelo Paiva**, creator and maintainer of [fonteviva.org](https:
 
 ## Development
 
-See [docs/development.md](docs/development.md) for setup, `run.sh`, and how a change goes from issue to merge.
+Run `npm run setup` once, then `npm run` to see all commands (tests, previews, Android builds, export, translation). See [docs/development.md](docs/development.md) for setup, the commands, and how a change goes from issue to merge.
 
 ## Exporting the messages
 
 Scripts are TypeScript with no dependencies. Install [Node.js 24](https://nodejs.org/), which runs `.ts` files directly:
 
 ```sh
-./run.sh test     # parser tests
-./run.sh export   # writes content/pt.json
+npm test                  # tests and specs
+npm run export-messages   # writes content/pt.json
 ```
 
 Or run the **Export messages** workflow from the Actions tab, which opens a PR with the updated file. The **Translate messages** workflow does the same for `content/<lang>.json` (see [docs/development.md](docs/development.md#translating-the-messages)).

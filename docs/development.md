@@ -6,15 +6,28 @@ How a change goes from an idea to `main`, and the commands you need along the wa
 
 1. Install [Node.js 24](https://nodejs.org/) or newer. Check with `node --version`. With [nvm](https://github.com/nvm-sh/nvm), `nvm use` picks the version in `.nvmrc`.
 2. Clone the repo: `git clone https://github.com/dancastellani/innerenlightenment.git`
-3. Install the packages: `./run.sh setup`. It runs `npm ci` at the root (Cucumber, for the specs) and in `mobile/` (the app).
-4. Run the tests and the specs: `./run.sh test`
+3. Install the packages: `npm run setup`. It runs `npm ci` at the root (Cucumber, for the specs) and in `mobile/` (the app).
+4. Run the tests and the specs: `npm test`
 5. For previews and app builds, sign in to Expo once: `npx eas-cli@latest login`.
 
 The scripts themselves only use what ships with Node; Cucumber is the one development dependency. `mobile/.npmrc` lets the two eas-cli packages that need install scripts run them (newer npm blocks them by default), so you don't have to change your own npm settings.
 
 ## `run.sh`
 
-`run.sh` is a small shortcut for the commands you use most. It first checks that Node 24 or newer is installed.
+**Run `npm run` to see all commands.** Each one is an npm script in `package.json` that calls `run.sh`, so `npm run preview` and `./run.sh preview` do the same thing. Pass extra arguments after `--`, for example `npm run translate-messages -- es`.
+
+`run.sh` is where the commands live. It first checks that Node 24 or newer is installed.
+
+| npm script | Same as |
+|---|---|
+| `npm run setup` | `./run.sh setup` |
+| `npm test` | `./run.sh test` |
+| `npm run app` | `./run.sh app` |
+| `npm run preview` | `./run.sh preview` |
+| `npm run build-apk` | `./run.sh build preview` |
+| `npm run build-play-store` | `./run.sh build production` |
+| `npm run export-messages` | `./run.sh export` |
+| `npm run translate-messages -- <lang>` | `./run.sh translate <lang>` |
 
 | Command | What it does |
 |---|---|
@@ -87,7 +100,7 @@ How it works is in [tech-stack.md](tech-stack.md#pr-previews-in-expo-go-eas-upda
 This installs the app itself, with its own icon, instead of running it inside Expo Go. The build runs on Expo's servers, so your laptop needs no Android tools.
 
 1. Once: `npx eas-cli@latest login` with your Expo account.
-2. Run `./run.sh build`. The first time it asks to create an Android signing key (keystore): answer yes, and Expo keeps it safe for you. The build takes about 10 to 20 minutes on the free plan and prints a link when it is done.
+2. Run `npm run build-apk`. The first time it asks to create an Android signing key (keystore): answer yes, and Expo keeps it safe for you. The build takes about 10 to 20 minutes on the free plan and prints a link when it is done.
 3. Open that link on your phone (or scan the QR code on its page) and download the APK.
 4. Open the file. Android asks to allow installing apps from your browser or files app: allow it, then tap **Install**.
 

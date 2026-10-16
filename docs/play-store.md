@@ -18,7 +18,7 @@ Nothing is uploaded to Google Play automatically: each step below is done by Dan
 
 ## Each release
 
-1. Run `./run.sh build production` from your laptop. It builds an AAB (Android App Bundle) on Expo's servers, signed with the same key as the preview APK, and raises the version code by itself.
+1. Run `npm run build-play-store` from your laptop. It builds an AAB (Android App Bundle) on Expo's servers, signed with the same key as the preview APK, and raises the version code by itself.
 2. Download the `.aab` from the link it prints.
 3. In the Play Console, open **Testing → Closed testing** (later **Production**), create a release, upload the `.aab`, write what changed, and send it for review. The first review can take a few days.
 

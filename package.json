@@ -2,6 +2,16 @@
   "name": "innerenlightenment",
   "private": true,
   "type": "module",
+  "scripts": {
+    "setup": "./run.sh setup",
+    "test": "./run.sh test",
+    "app": "./run.sh app",
+    "preview": "./run.sh preview",
+    "build-apk": "./run.sh build preview",
+    "build-play-store": "./run.sh build production",
+    "export-messages": "./run.sh export",
+    "translate-messages": "./run.sh translate"
+  },
   "devDependencies": {
     "@cucumber/cucumber": "^13.3.0"
   }

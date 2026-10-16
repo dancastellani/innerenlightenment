@@ -32,4 +32,4 @@ The code is licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE.md
 
 The messages in `content/` are **not** covered by that license. They are excerpts from books by Emmanuel, psychographed by Francisco Cândido Xavier, as published on [fonteviva.org](https://fonteviva.org/), and their translations. All rights to that content remain with its rights holders.
 
-The messages come from publicly available data on fonteviva.org. This project is not responsible or liable for the content of the messages.
+**Disclaimer:** the messages come from publicly available data on fonteviva.org. This project is not responsible or liable for the content of the messages.

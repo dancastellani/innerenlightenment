@@ -20,6 +20,11 @@ Notifications.setNotificationHandler({
   }),
 });
 
+// The link added to shared messages. Switch to our own site's page per message once it exists (#35).
+function shareLink(message: Message): string {
+  return message.url;
+}
+
 function notificationContent(message: Message) {
   return { title: message.title, body: message.paragraphs[0], data: { id: message.id } };
 }
@@ -84,7 +89,7 @@ export default function App() {
   // UC-06: title, body, signature and link through the system share sheet.
   function share() {
     if (!message) return;
-    const text = [message.title, ...message.paragraphs, message.signature, message.url].filter(Boolean).join('\n\n');
+    const text = [message.title, ...message.paragraphs, message.signature, shareLink(message)].filter(Boolean).join('\n\n');
     Share.share({ message: text });
   }
 

@@ -205,7 +205,7 @@ Everything runs on the phone: there is **no server** of our own.
 
 One-time setup, already done for this repo:
 
-1. Sign up at [expo.dev/signup](https://expo.dev/signup) (Google sign-in works) and create a project named `innerenlightenment`.
+1. Sign up at [expo.dev/signup](https://expo.dev/signup) (Google sign-in works) and create a project named `innerenlightenmentapp`.
 2. Link the app to it: `cd mobile && npx eas-cli@latest init --id <project id>`. This writes the ID into `mobile/app.json` (`extra.eas.projectId`); the app also needs `updates.url` (`https://u.expo.dev/<project id>`), `runtimeVersion` (`{ "policy": "sdkVersion" }`, which matches Expo Go) and the `expo-updates` package.
 3. Create an access token at [expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens) and save it as the repository secret `EXPO_TOKEN` (Settings → Secrets and variables → Actions). Without it the Action skips itself.
 

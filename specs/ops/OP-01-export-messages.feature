@@ -20,13 +20,6 @@ Feature: Export the messages from fonteviva.org
     When the export runs
     Then message 1485 has the title "Brilhe vossa luz", the chapter "Prefácio" and the signature "Emmanuel"
 
-  # Bugs #67, #71: codes 128 to 159 are Windows-1252 characters, as browsers show them.
-  @OP-01.6
-  Scenario: Windows-1252 character codes become the characters a browser shows
-    Given message 1485 has the paragraph "reencarnações&#133; Os homens d&#146;outrora"
-    When the export runs
-    Then the exported message 1485 has the paragraph "reencarnações… Os homens d’outrora"
-
   @OP-01.3
   Scenario: Only books with messages are listed
     When the export runs

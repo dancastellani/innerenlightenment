@@ -40,13 +40,6 @@ test('parses header, body, signature and note', () => {
   assert.equal(m.book, 'vinha-de-luz');
 });
 
-test('#67: codes 128 to 159 are read as Windows-1252, like browsers do', () => {
-  assert.equal(toText('a&#133; d&#146;b'), 'a… d’b');
-  assert.equal(toText('a\u0085 d\u0092b'), 'a… d’b'); // the same codes as raw characters
-  assert.equal(toText('&#128;&#159;'), '€Ÿ'); // both ends of the range
-  assert.equal(toText('&#127;&#160;x'), '\u007f\u00a0x'); // just outside it, unchanged
-});
-
 test('decodes entities', () => {
   assert.equal(toText('&#xE3;o &amp; &hellip; &Atilde;&ccedil; &unknown;'), 'ão & … Ãç &unknown;');
 });

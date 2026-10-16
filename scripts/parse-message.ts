@@ -41,20 +41,13 @@ function decodeEntity(entity: string, code: string): string {
   return code[0] === code[0].toUpperCase() ? lower.toUpperCase() : lower; // &Atilde; -> Ã
 }
 
-// fonteviva.org writes some characters with their Windows-1252 codes, e.g. &#133; for "…" and &#146; for "’".
-// Browsers show these codes (128 to 159) as the Windows-1252 character, as the HTML standard says, so we do too.
-function fromWindows1252(character: string): string {
-  return new TextDecoder('windows-1252').decode(new Uint8Array([character.charCodeAt(0)]));
-}
-
 // Strips tags from an HTML fragment, keeping <br> as a line break.
 export function toText(html: string): string {
   const text = html
     .replace(/\s+/g, ' ')
     .replace(/<br\s*\/?>/gi, '\n')
     .replace(/<[^>]+>/g, '')
-    .replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, decodeEntity)
-    .replace(/[\x80-\x9f]/g, fromWindows1252);
+    .replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, decodeEntity);
   return text.split('\n').map((line) => line.trim()).filter(Boolean).join('\n');
 }
 

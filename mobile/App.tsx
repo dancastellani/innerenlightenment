@@ -9,9 +9,10 @@ import labels from '../website/languages.json';
 import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
 import { findMessage, languageFor, originalLink, type Language } from './language';
+import { readable } from './text';
 
 // UC-05: Portuguese is the original; translations may leave a message out, so the plan uses the Portuguese ids.
-const portuguese = portugueseContent.messages as Message[];
+const portuguese = (portugueseContent.messages as Message[]).map(readable);
 const translations: Record<Language, Message[]> = { pt: portuguese, en: englishContent.messages as Message[] };
 const books = portugueseContent.books;
 const bookNames = Object.fromEntries(books.map((b) => [b.slug, b.name]));

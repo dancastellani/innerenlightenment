@@ -38,6 +38,18 @@ Given('the content also has the language {string}', async function (this: World,
   this.contentFolder = folder;
 });
 
+Given(
+  'the Portuguese message {string} ends its first paragraph with the Windows-1252 code {int}',
+  async function (this: World, slug: string, code: number) {
+    const folder = await mkdtemp(join(tmpdir(), 'content-'));
+    await cp(this.contentFolder, folder, { recursive: true });
+    const content = JSON.parse(readFileSync(join(folder, 'pt.json'), 'utf8'));
+    content.messages.find((m: { slug: string }) => m.slug === slug).paragraphs[0] += String.fromCharCode(code);
+    await writeFile(join(folder, 'pt.json'), JSON.stringify(content));
+    this.contentFolder = folder;
+  },
+);
+
 When('the website is built', async function (this: World) {
   this.siteFolder = join(await mkdtemp(join(tmpdir(), 'site-')), 'site');
   this.result = await runCommand('node', ['scripts/build-site.ts', this.contentFolder, this.siteFolder]);

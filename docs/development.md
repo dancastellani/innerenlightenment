@@ -43,7 +43,7 @@ The scripts themselves only use what ships with Node; Cucumber is the one develo
 
 ## Trying the app on your Android phone
 
-1. Install **Expo Go** from the Play Store.
+1. Install **Expo Go** from the Play Store. The app uses Expo SDK 58, and until the Play Store has Expo Go for SDK 58 (expected late 2026), it says "requires a newer version of Expo Go". In that case, open [Expo Go 58.0.4](https://github.com/expo/expo-go-releases/releases/download/Expo-Go-58.0.4/Expo-Go-58.0.4.apk) on the phone and install it (Android asks you to allow installing from your browser), or use the [installable app](#installing-the-app-on-your-android-phone-apk) instead.
 2. On your computer, run `./run.sh app`. The first run installs packages, which takes a minute.
 3. Open Expo Go and scan the QR code shown in the terminal. Phone and computer must be on the same Wi-Fi; if they can't be, stop it and run `cd mobile && npx expo start --tunnel` instead.
 4. Allow notifications when asked. The app shows today's message and schedules the next 14 days at 08:00 (change the time under **Settings**).

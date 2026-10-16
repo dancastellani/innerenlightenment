@@ -233,12 +233,4 @@ Settings (time, on/off, language, recently shown messages) are saved on the phon
 
 ## Quick reference
 
-| Task | Command |
-|---|---|
-| Check Node version | `node --version` (24 or newer) |
-| Run tests | `node --test scripts/*.test.ts` |
-| Export messages | `node scripts/export-fonteviva.ts` |
-| Export from GitHub | Actions tab → Export messages → Run workflow |
-| Translate messages | `GEMINI_API_KEY=... node scripts/translate.ts en` |
-| Run specs (planned) | `npx cucumber-js specs` |
-| Run the app (planned) | `npx expo start` |
+The everyday commands are in [`run.sh`](development.md#runsh). The GitHub workflows are in [Updating the messages](development.md#updating-the-messages) and [Translating the messages](development.md#translating-the-messages).

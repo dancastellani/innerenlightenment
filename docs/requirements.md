@@ -2,10 +2,11 @@
 
 This document lists what the app must do, as use cases. Each use case becomes one GitHub issue with acceptance criteria, and issues are grouped into milestones. The issue is where the details and discussion live; this file is the overview.
 
-Source plan: messages from [fonteviva.org](https://fonteviva.org/) (724 excerpts in 4 books), shown in a mobile app (Expo, iOS and Android) that runs entirely on the device with no server of our own.
+Source plan: messages from [fonteviva.org](https://fonteviva.org/) (724 excerpts in 4 books), shown in an app (Expo) that runs entirely on the device with no server of our own.
 
 ## Constraints
 
+- **Platforms:** Android first; iOS and macOS possibly later.
 - **No server.** Content is bundled in the app; notifications are local.
 - **Works offline** once installed (and once a downloaded language is saved).
 - **English is the default language; Portuguese is also bundled.** Other languages are downloaded on demand from this repository.
@@ -58,7 +59,6 @@ Supporting work for v1 (issues, not use cases): content export to JSON (PR #1), 
 
 ## Out of scope for now
 
-- WhatsApp delivery (needs a server and the WhatsApp Business API).
 - Server push, accounts, analytics.
 
 ## How we work with these

@@ -1,5 +1,7 @@
 # Publishes each app PR with EAS Update and comments a QR code that opens it in Expo Go.
-# Skipped until the EXPO_TOKEN secret exists (see docs/development.md).
+# Turned off: Dan chose not to store an Expo token in GitHub and publishes previews from
+# his laptop instead (docs/tech-stack.md). To turn it back on, remove `if: false` below
+# and add the EXPO_TOKEN secret.
 name: Expo preview
 
 on:
@@ -8,6 +10,7 @@ on:
 
 jobs:
   preview:
+    if: false
     runs-on: ubuntu-latest
     permissions:
       contents: read

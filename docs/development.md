@@ -22,6 +22,7 @@ The scripts themselves only use what ships with Node; Cucumber is the one develo
 | `./run.sh export` | Downloads all messages from fonteviva.org into `content/pt.json` |
 | `./run.sh translate [lang]` | Translates `content/pt.json` into `content/<lang>.json` (default `en`) with Gemini; needs `GEMINI_API_KEY` |
 | `./run.sh app` | Installs the app's packages and starts it; scan the QR code with Expo Go |
+| `./run.sh preview` | Publishes the checked-out branch to Expo (EAS Update) as `preview-<branch>`; open the printed link for its QR code |
 
 ## Trying the app on your Android phone
 
@@ -70,7 +71,13 @@ Messages already in the output file are skipped, so if a run stops halfway (for 
 
 ## Previewing an app PR in Expo Go
 
-Every PR that changes `mobile/` or `content/` gets a comment with a QR code from the **Expo preview** Action; scan it with Expo Go to try that PR on your phone. How it works and the one-time setup are in [tech-stack.md](tech-stack.md#pr-previews-in-expo-go-eas-update).
+PRs don't get a QR code automatically. To try a PR on your phone from anywhere (no shared Wi-Fi needed), publish it from your laptop:
+
+1. Once: `npx eas-cli@latest login` with your Expo account.
+2. Check out the PR's branch: `git fetch origin && git switch <branch>`.
+3. Run `./run.sh preview`. It publishes that branch as `preview-<branch>` and prints a link to expo.dev; open it and scan the QR code with Expo Go.
+
+How it works is in [tech-stack.md](tech-stack.md#pr-previews-in-expo-go-eas-update).
 
 ## Working with Claude Code locally
 

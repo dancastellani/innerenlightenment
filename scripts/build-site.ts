@@ -14,7 +14,8 @@ import { originalLink, withOriginal } from '../mobile/language.ts';
 import { showWindows1252 } from '../mobile/text.ts';
 
 type Content = { language: string; books: { slug: string; name: string }[]; messages: Message[] };
-// translationDisclaimer is shown on translated messages, so every language but Portuguese (the original) has one.
+// One disclaimer per message page: `disclaimer` (the source, no liability), followed on translated messages
+// by `translationDisclaimer` (made by AI), which every language but Portuguese (the original) has.
 // `original` is the button that shows the Portuguese original (UC-18), and in Portuguese the mark that it is the original.
 type Labels = {
   name: string;
@@ -22,6 +23,7 @@ type Labels = {
   anotherMessage: string;
   readOriginal: string;
   original: string;
+  disclaimer: string;
   translationDisclaimer?: string;
 };
 
@@ -119,10 +121,10 @@ class Website {
       ...this.original(content, message),
       signature: signature(message),
       note: message.note ? `<p class="note">${escapeHtml(message.note)}</p>` : '',
-      translationDisclaimer: labels.translationDisclaimer ? `<p class="translation">${labels.translationDisclaimer}</p>` : '',
       url: escapeHtml(originalLink(message.url, content.language)),
       readOriginal: labels.readOriginal,
       credit: this.render('credit', {}),
+      disclaimer: `<p class="disclaimer">${[labels.disclaimer, labels.translationDisclaimer].filter((text) => text).join(' ')}</p>`,
     });
     return this.page(content.language, message.title, '../../', body);
   }

@@ -1,5 +1,6 @@
 node_modules/
 test-reports/
+translation-reports/
 site/
 __pycache__/
 .DS_Store

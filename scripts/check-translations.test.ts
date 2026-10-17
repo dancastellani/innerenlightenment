@@ -1,6 +1,5 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readdirSync, readFileSync } from 'node:fs';
 import { checkTranslation, type Content } from './check-translations.ts';
 
 function message(id: number, paragraphs: string[], note: string | null = null) {
@@ -152,10 +151,3 @@ test('a changed, added or dropped number in a Bible reference is reported', () =
   assert.match(checkEpigraph('“Curto.” — (I Pedro, 3.17)', '“Short.” — (Peter, 3.17)')[0], /changed from/);
 });
 
-test('every translation in content/ passes the check', () => {
-  const pt: Content = JSON.parse(readFileSync('content/pt.json', 'utf8'));
-  for (const file of readdirSync('content').filter((f) => f.endsWith('.json') && f !== 'pt.json')) {
-    const translation: Content = JSON.parse(readFileSync(`content/${file}`, 'utf8'));
-    assert.deepEqual(checkTranslation(pt, translation, file.replace('.json', '')), [], `${file}: run node scripts/check-translations.ts`);
-  }
-});

@@ -203,15 +203,20 @@ Everything runs on the phone: there is **no server** of our own.
 
 **EAS Update** is Expo's hosting for app bundles (the JavaScript and assets, not a full app). Each PR is published to its own update branch, and scanning its QR code with Expo Go opens that PR's version of the app, so several open PRs can be tried side by side. Nothing reaches users: a store build only receives updates from the channel it was built for, and previews never go there.
 
-Previews are published by hand from a laptop with `./run.sh preview` ([steps](development.md#previewing-an-app-pr-in-expo-go)), so no Expo token is stored in GitHub. It runs `eas update --branch preview-<git branch>` in `mobile/`, which prints a link to the update on expo.dev with the QR code.
+Every PR that changes `mobile/` or `content/` is published automatically by **EAS Workflows**, Expo's own CI: `mobile/.eas/workflows/pr-preview.yml` runs `eas update --branch pr-<PR number>` on Expo's servers, then comments on the PR with a link to the update on expo.dev and its QR code. A branch can still be published by hand from a laptop with `./run.sh preview` ([steps](development.md#previewing-an-app-pr-in-expo-go)), as `preview-<git branch>`.
 
-The *Expo preview* Action (`.github/workflows/expo-preview.yml`) can do this on every PR and comment the QR code, but it is turned off (`if: false`) because it needs an Expo access token as a GitHub secret. To turn it on, remove that line and do step 3 below.
+**Security model.** Dan chose not to store an Expo token in GitHub (2026-10-16), and this keeps that:
+
+- **No token in GitHub.** GitHub only tells Expo's GitHub app that a PR was opened or pushed to (a webhook). Expo then runs the workflow on its own machines with its own credentials for the project, so there is no secret in the repository for a workflow file or a third-party Action to print or send away. This replaced the earlier *Expo preview* GitHub Action, which needed an `EXPO_TOKEN` secret.
+- **What Expo's GitHub app can reach.** It is installed for this repository only (choose *Only select repositories* when installing). It reads the code to publish it and writes comments on PRs; GitHub lists its exact permissions on the install screen, and it can be removed any time in GitHub → Settings → Applications. Expo already hosts the project and its updates, so this adds read access to the code, not a new party.
+- **Who can start a run.** PRs from forks don't start EAS workflows ([Expo docs](https://docs.expo.dev/eas/workflows/syntax/)), so only people who can push branches to this repository can. That matters because a run installs the PR's packages and bundles its code on Expo's machine, which is signed in to the project: a malicious PR from someone with push access could publish to any update branch, including the store app's channel once it exists. Keep push access to people you trust.
+- **What a preview can reach.** Each PR goes to its own `pr-<number>` update branch, which no channel points to, so it only opens in Expo Go and never in an installed app. The job uses the EAS `preview` environment; don't put secrets in its environment variables, because a PR's code can read them.
 
 One-time setup, already done for this repo (except step 3):
 
 1. Sign up at [expo.dev/signup](https://expo.dev/signup) (Google sign-in works) and create a project named `innerenlightenmentapp`.
 2. Link the app to it: `cd mobile && npx eas-cli@latest init --id <project id>`. This writes the ID into `mobile/app.json` (`extra.eas.projectId`); the app also needs `updates.url` (`https://u.expo.dev/<project id>`), `runtimeVersion` (`{ "policy": "sdkVersion" }`, which matches Expo Go) and the `expo-updates` package.
-3. Create an access token at [expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens) and save it as the repository secret `EXPO_TOKEN` (Settings → Secrets and variables → Actions). Only needed for the Action.
+3. Connect the repository to the project on expo.dev ([steps](development.md#connecting-github-to-expo)). The workflow is read from `main`, so it starts on PRs once this file is merged.
 
 ### Local notifications (planned)
 

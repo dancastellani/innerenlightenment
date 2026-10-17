@@ -1,0 +1,21 @@
+# Publishes each app PR with EAS Update and comments a link with its QR code on the PR,
+# to open it in Expo Go. Runs on Expo's servers through Expo's GitHub app, so no Expo
+# token is stored in GitHub (docs/tech-stack.md#pr-previews-in-expo-go-eas-update).
+name: PR preview
+
+on:
+  pull_request:
+    paths: ['mobile/**', 'content/**']
+
+jobs:
+  publish:
+    name: Publish the PR
+    type: update
+    environment: preview
+    params:
+      # Each PR gets its own update branch, so previews of open PRs coexist and none reaches a store build.
+      branch: pr-${{ github.event.pull_request.number }}
+  comment:
+    name: Comment the QR code on the PR
+    needs: [publish]
+    type: github-comment

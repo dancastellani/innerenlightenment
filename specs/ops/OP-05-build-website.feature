@@ -137,13 +137,21 @@ Feature: Build and publish the website
     When the menu is tapped
     Then the browser does not show "Index" and "Português"
 
+  @OP-05.29
+  Scenario: In a browser, the app's name stays at the top of the screen while the page scrolls
+    When the website is built
+    And the page "en/o-tempo/" is opened in a browser
+    Then "My Inner Enlightenment" is at the top of the screen
+    When the page is scrolled to the end
+    Then "My Inner Enlightenment" is at the top of the screen
+
   @OP-05.26
   Scenario: The Portuguese page is marked as the original and has no "Original" switch
     When the website is built
     Then the page "pt/o-tempo/" contains "Texto original"
     And the page "pt/o-tempo/" does not contain "show-original"
 
-  @OP-05.27
+  @OP-05.28
   Scenario: Every page shows the app's icon in the browser tab
     When the website is built
     Then the page "" contains "favicon.svg"

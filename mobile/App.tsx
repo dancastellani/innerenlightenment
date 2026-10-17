@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
-import { AppState, Linking, Modal, Pressable, ScrollView, Share, StyleSheet, Switch, Text, View } from 'react-native';
+import { useEffect, useState, type ReactNode } from 'react';
+import { AppState, Image, Linking, Modal, Pressable, ScrollView, Share, StyleSheet, Switch, Text, View } from 'react-native';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import portugueseContent from '../content/pt.json';
 import englishContent from '../content/en.json';
 import labels from '../website/languages.json';
+import { expo } from './app.json';
 import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
 import { findMessage, languageFor, originalLink, withOriginal, type Language } from './language';
@@ -101,6 +102,20 @@ function Action({ title, onPress, main = false }: { title: string; onPress: () =
     >
       <Text style={[styles.actionText, main && styles.mainActionText]}>{title}</Text>
     </Pressable>
+  );
+}
+
+// Every screen: the app's name fixed at the top, so people always know which app this is,
+// and the page scrolling under it.
+function Screen({ children }: { children: ReactNode }) {
+  return (
+    <View style={styles.app}>
+      <View style={styles.appBar}>
+        <Image source={require('./assets/icon.png')} style={styles.appIcon} />
+        <Text style={styles.appName}>{expo.name}</Text>
+      </View>
+      <ScrollView contentContainerStyle={styles.page}>{children}</ScrollView>
+    </View>
   );
 }
 
@@ -211,7 +226,7 @@ export default function App() {
   if (screen === 'index') {
     const bookMessages = portuguese.filter((m) => m.book === indexBook).map((m) => messageIn(settings.language, m.id)!);
     return (
-      <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
+      <Screen>
         <Text style={styles.title}>Index</Text>
         <View style={styles.actions}>
           {books.map((book) => (
@@ -234,13 +249,13 @@ export default function App() {
         <View style={styles.backButton}>
           <Action title="Back" onPress={() => (indexBook ? setIndexBook(undefined) : setScreen('message'))} />
         </View>
-      </ScrollView>
+      </Screen>
     );
   }
 
   if (screen === 'settings') {
     return (
-      <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
+      <Screen>
         <Text style={styles.title}>Settings</Text>
         <View style={styles.settings}>
           <View style={styles.row}>
@@ -275,7 +290,7 @@ export default function App() {
           <Action title="Test notification in 10 seconds" onPress={sendTest} />
           <Action title="Back" onPress={() => setScreen('message')} main />
         </View>
-      </ScrollView>
+      </Screen>
     );
   }
 
@@ -287,7 +302,7 @@ export default function App() {
     : message.paragraphs.map((text) => ({ text, isOriginal: false }));
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
+    <Screen>
       <View style={styles.topBar}>
         {isTranslation ? (
           <Pressable
@@ -351,13 +366,16 @@ export default function App() {
         {labels.en.disclaimer}
         {isTranslation && ` ${labels.en.translationDisclaimer}`}
       </Text>
-    </ScrollView>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { backgroundColor: colors.paper },
-  page: { padding: 24, paddingTop: 64, paddingBottom: 48 },
+  app: { flex: 1, backgroundColor: colors.paper },
+  appBar: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 48, paddingBottom: 12, paddingHorizontal: 24, borderBottomWidth: 1, borderColor: colors.rule },
+  appIcon: { width: 28, height: 28, borderRadius: 6 },
+  appName: { fontSize: 17, fontWeight: '600', color: colors.ink },
+  page: { padding: 24, paddingBottom: 48 },
   title: { fontFamily: 'serif', fontSize: 34, lineHeight: 40, fontWeight: '600', color: colors.ink, marginBottom: 6 },
   source: { fontSize: 14, color: colors.muted, marginBottom: 28 },
   paragraph: { fontFamily: 'serif', fontSize: 19, lineHeight: 31, color: colors.ink, marginBottom: 16 },
@@ -372,7 +390,7 @@ const styles = StyleSheet.create({
   menuButton: { width: 48, height: 48, marginTop: -8, marginRight: -8, alignItems: 'center', justifyContent: 'center', gap: 5 },
   bar: { width: 22, height: 2, borderRadius: 1, backgroundColor: colors.ink },
   backdrop: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.15)' },
-  menu: { position: 'absolute', top: 104, right: 16, minWidth: 200, paddingVertical: 8, borderRadius: 12, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.rule, elevation: 6 },
+  menu: { position: 'absolute', top: 168, right: 16, minWidth: 200, paddingVertical: 8, borderRadius: 12, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.rule, elevation: 6 },
   menuItem: { paddingVertical: 14, paddingHorizontal: 20 },
   menuItemText: { fontSize: 17, color: colors.ink },
   settings: { gap: 12, marginTop: 24 },

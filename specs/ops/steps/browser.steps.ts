@@ -58,6 +58,15 @@ When('the menu is tapped', async function (this: World) {
   await this.page.getByLabel('Menu').click();
 });
 
+When('the page is scrolled to the end', async function (this: World) {
+  await this.page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+});
+
+Then('{string} is at the top of the screen', async function (this: World, text: string) {
+  const box = await this.page.getByText(text, { exact: true }).boundingBox();
+  assert.ok(box && box.y >= 0 && box.y < 60, `"${text}" is at ${box?.y} pixels from the top`);
+});
+
 Then(/^the browser shows (.+)$/, async function (this: World, texts: string) {
   for (const text of quoted(texts)) assert.ok(await this.page.getByText(text, { exact: true }).isVisible(), text);
 });

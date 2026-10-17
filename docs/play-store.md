@@ -12,7 +12,7 @@ Nothing is uploaded to Google Play automatically: each step below is done by Dan
 ## Google Play Console
 
 1. **Developer account.** Sign up at [play.google.com/console](https://play.google.com/console) (one-time US$25 fee) and verify your identity. A new personal account must run a **closed test with at least 12 testers for 14 days** before it can publish to everyone.
-2. **Create the app.** Name *Inner Enlightenment*, free, app (not game).
+2. **Create the app.** Name *My Inner Enlightenment*, free, app (not game).
 3. **App content.** Fill in: privacy policy link, ads (none), app access (no login), content rating questionnaire, target audience, and the **Data safety** form (no data collected or shared).
 4. **Store listing.** Short and full description, the icon and feature graphic from above, and at least two phone screenshots (`docs/screenshots/` has some).
 

@@ -6,6 +6,7 @@ import * as Notifications from 'expo-notifications';
 import portugueseContent from '../content/pt.json';
 import englishContent from '../content/en.json';
 import labels from '../website/languages.json';
+import studyGroups from '../website/study-groups.json';
 import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
 import { findMessage, languageFor, originalLink, withOriginal, type Language } from './language';
@@ -108,7 +109,7 @@ export default function App() {
   const [messageId, setMessageId] = useState<number>();
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [allowed, setAllowed] = useState(true);
-  const [screen, setScreen] = useState<'message' | 'settings' | 'index'>('message');
+  const [screen, setScreen] = useState<'message' | 'settings' | 'index' | 'study-groups'>('message');
   const [indexBook, setIndexBook] = useState<string>(); // UC-20: the book picked on the index
   const [showOriginal, setShowOriginal] = useState(false); // UC-18: the Portuguese text after each paragraph
   const tapped = Notifications.useLastNotificationResponse();
@@ -220,6 +221,22 @@ export default function App() {
     );
   }
 
+  // UC-19: links to Spiritist organizations that hold study meetings, the same as the website.
+  if (screen === 'study-groups') {
+    return (
+      <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
+        <Text style={styles.title}>{labels[settings.language].studyGroups}</Text>
+        <Text style={styles.paragraph}>{labels[settings.language].studyGroupsIntro}</Text>
+        <View style={styles.actions}>
+          {studyGroups.map((group) => (
+            <Action key={group.url} title={group.name} onPress={() => Linking.openURL(group.url)} />
+          ))}
+          <Action title="Back" onPress={() => setScreen('message')} main />
+        </View>
+      </ScrollView>
+    );
+  }
+
   if (screen === 'settings') {
     return (
       <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
@@ -303,6 +320,9 @@ export default function App() {
         <Pressable accessibilityRole="button" onPress={() => setScreen('index')} style={styles.link}>
           <Text style={styles.linkText}>Index</Text>
         </Pressable>
+        <Pressable accessibilityRole="button" onPress={() => setScreen('study-groups')} style={styles.link}>
+          <Text style={styles.linkText}>{labels[settings.language].studyGroups}</Text>
+        </Pressable>
         <Pressable accessibilityRole="button" onPress={() => setScreen('settings')} style={styles.link}>
           <Text style={styles.linkText}>Settings</Text>
         </Pressable>
@@ -324,7 +344,7 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.7 },
   actionText: { fontSize: 17, fontWeight: '600', color: colors.spring },
   mainActionText: { color: colors.paper },
-  links: { flexDirection: 'row', justifyContent: 'center', gap: 24, marginTop: 28 },
+  links: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 24, marginTop: 28 },
   link: { padding: 12 },
   linkText: { fontSize: 16, color: colors.muted, textDecorationLine: 'underline' },
   settings: { gap: 12, marginTop: 24 },

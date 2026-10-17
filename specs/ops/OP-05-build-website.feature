@@ -131,6 +131,20 @@ Feature: Build and publish the website
     Then the page "pt/o-tempo/" contains "Texto original"
     And the page "pt/o-tempo/" does not contain "show-original"
 
+  # UC-19 on the website: find a study group.
+  @OP-05.27
+  Scenario: Each language has a study groups page with the three organizations
+    When the website is built
+    Then the page "en/study-groups/" links to "https://www.innerenlightenment.com/", "https://spiritist.us/" and "https://www.tssfederation.org/"
+    And the page "en/study-groups/" contains "in-person and online"
+    And the page "pt/study-groups/" contains "Grupos de estudo" and "presenciais e online"
+
+  @OP-05.28
+  Scenario: A message page links to the study groups page of its language
+    When the website is built
+    Then the page "en/o-tempo/" has the link "Study groups" to "../study-groups/"
+    And the page "pt/o-tempo/" has the link "Grupos de estudo" to "../study-groups/"
+
   # Edge cases
 
   @OP-05.6

@@ -3,14 +3,14 @@ Feature: Read the message in English or Portuguese
 
   @UC-05.1
   Scenario: English by default
-    Given the phone language is not Portuguese
+    Given I have not chosen a language
     When I open the app for the first time
     Then messages are shown in English
 
   @UC-05.2
-  Scenario: Portuguese phone
-    Given the phone language is Portuguese
-    When I open the app for the first time
+  Scenario: A saved choice is kept
+    Given I chose "Português" in settings
+    When I open the app again
     Then messages are shown in Portuguese
 
   @UC-05.3
@@ -43,14 +43,15 @@ Feature: Read the message in English or Portuguese
   # Edge cases
 
   @UC-05.5
-  Scenario: Any Portuguese variant
-    Given the phone language is "pt-PT" or "pt-BR"
+  Scenario: A Portuguese phone
+    Given the phone language is Portuguese ("pt-PT" or "pt-BR")
     When I open the app for the first time
-    Then messages are shown in Portuguese
+    Then messages are shown in English
+    And "Português" is one tap away in settings
 
   @UC-05.6
   Scenario: A language the app does not have yet
-    Given the phone language is Spanish and Spanish is not available
+    Given the phone language is Spanish
     When I open the app for the first time
     Then messages are shown in English
 

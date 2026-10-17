@@ -5,7 +5,8 @@
 import { readdirSync, readFileSync } from 'node:fs';
 
 type Message = { id: number; url: string; paragraphs: string[]; note: string | null; [field: string]: unknown };
-export type Content = { language: string; messages: Message[] };
+export type Labels = Record<string, string>;
+export type Content = { language: string; labels?: Labels; messages: Message[] };
 
 // Fields that are copied from the original as they are, never translated.
 const KEPT_FIELDS = ['slug', 'url', 'book', 'chapter', 'spirit', 'medium', 'signature'];
@@ -31,7 +32,7 @@ function referenceNumbers(text: string): string {
 }
 
 // True when the text has enough words and nearly all of them are also in the original.
-function isStillPortuguese(text: string, original: string): boolean {
+function isUntranslated(text: string, original: string): boolean {
   const textWords = words(text);
   const originalWords = new Set(words(original));
   const shared = textWords.filter((word) => originalWords.has(word)).length;
@@ -92,17 +93,32 @@ export function checkMessage(o: Message, m: Message): string[] {
   }
   m.paragraphs.forEach((paragraph, i) => {
     const original = o.paragraphs[i] ?? '';
-    if (isStillPortuguese(paragraph, original)) {
+    if (isUntranslated(paragraph, original)) {
       findings.push(`${where} paragraph ${i + 1} is still in Portuguese: "${paragraph}"`);
     }
   });
-  if (m.note !== null && isStillPortuguese(m.note, o.note ?? '')) {
+  if (m.note !== null && isUntranslated(m.note, o.note ?? '')) {
     findings.push(`${where} note is still in Portuguese: "${m.note}"`);
   }
   const epigraph = m.paragraphs[0] ?? '';
   const originalEpigraph = o.paragraphs[0] ?? '';
   if (originalEpigraph.startsWith('“') && epigraph.length > originalEpigraph.length * EXPANDED_EPIGRAPH_RATIO) {
     findings.push(`${where} epigraph is ${epigraph.length} characters, the original ${originalEpigraph.length}: "${epigraph}"`);
+  }
+  return findings;
+}
+
+// The labels (app and website text) of a translation against the English ones: the same keys, none empty or
+// left in English. The Portuguese labels are in pt.labels.json and are not checked.
+export function checkLabels(english: Labels, labels: Labels | undefined): string[] {
+  if (!labels) return ['has no labels'];
+  const findings: string[] = [];
+  for (const [name, text] of Object.entries(english)) {
+    if (!labels[name]?.trim()) findings.push(`label "${name}" is missing`);
+    else if (isUntranslated(labels[name], text)) findings.push(`label "${name}" is still in English: "${labels[name]}"`);
+  }
+  for (const name of Object.keys(labels)) {
+    if (!(name in english)) findings.push(`label "${name}" is not in en.json`);
   }
   return findings;
 }
@@ -116,16 +132,28 @@ export function checkTranslation(original: Content, translation: Content, lang: 
   return findings;
 }
 
+// Checks every translation in the folder and returns the findings of each file.
+export function checkContentFolder(folder: string): Record<string, { messages: number; findings: string[] }> {
+  const original: Content = JSON.parse(readFileSync(`${folder}/pt.json`, 'utf8'));
+  const english: Content = JSON.parse(readFileSync(`${folder}/en.json`, 'utf8'));
+  const results: Record<string, { messages: number; findings: string[] }> = {};
+  const files = readdirSync(folder).filter((f) => f.endsWith('.json') && !f.endsWith('.labels.json') && f !== 'pt.json');
+  for (const file of files) {
+    const lang = file.replace('.json', '');
+    const translation: Content = JSON.parse(readFileSync(`${folder}/${file}`, 'utf8'));
+    const findings = checkTranslation(original, translation, lang);
+    if (lang !== 'en') findings.push(...checkLabels(english.labels ?? {}, translation.labels));
+    results[file] = { messages: translation.messages.length, findings };
+  }
+  return results;
+}
+
 if (import.meta.main) {
-  const original: Content = JSON.parse(readFileSync('content/pt.json', 'utf8'));
   let problems = 0;
   console.log('# Translation check\n');
-  for (const file of readdirSync('content').filter((f) => f.endsWith('.json') && f !== 'pt.json')) {
-    const lang = file.replace('.json', '');
-    const translation: Content = JSON.parse(readFileSync(`content/${file}`, 'utf8'));
-    const findings = checkTranslation(original, translation, lang);
+  for (const [file, { messages, findings }] of Object.entries(checkContentFolder('content'))) {
     problems += findings.length;
-    console.log(`## ${file}: ${findings.length} problems in ${translation.messages.length} messages\n`);
+    console.log(`## ${file}: ${findings.length} problems in ${messages} messages\n`);
     for (const finding of findings) console.log(`- ${finding}`);
     if (findings.length > 0) console.log();
   }

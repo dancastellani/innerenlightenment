@@ -145,6 +145,13 @@ Feature: Build and publish the website
     When the website is built
     Then it fails with "Add \"xx\" to website/languages.json"
 
+  # Bugs #67, #71: content/pt.json keeps fonteviva.org's Windows-1252 codes; pages show them as browsers do.
+  @OP-05.20
+  Scenario: Windows-1252 codes in the Portuguese text show as their characters
+    Given the Portuguese message "o-tempo" ends its first paragraph with the Windows-1252 code 133
+    When the website is built
+    Then the page "pt/o-tempo/" contains "Primeiro parágrafo.…"
+
   @OP-05.15
   Scenario: Every translated language has its AI translation disclaimer
     Then every language but "pt" in website/languages.json has a "translationDisclaimer"

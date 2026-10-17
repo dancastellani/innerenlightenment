@@ -73,6 +73,10 @@ Then(/^the page "([^"]*)" does not contain (.+)$/, function (this: World, page: 
   for (const text of quoted(texts)) assert.ok(!html.includes(text), text);
 });
 
+Then('the page {string} has {string} only once', function (this: World, page: string, text: string) {
+  assert.equal(readPage(this, page).split(text).length - 1, 1, text);
+});
+
 Then(/^the page "([^"]*)" links to (.+)$/, function (this: World, page: string, links: string) {
   const html = readPage(this, page);
   // In HTML a link's "&" is written "&amp;".
@@ -98,6 +102,13 @@ Then(/^the page "([^"]*)" opens a random message of "([^"]*)" from (.+)$/, funct
 Then(/^without JavaScript the page "([^"]*)" links to (.+)$/, function (this: World, page: string, links: string) {
   const noscript = readPage(this, page).split('<noscript>')[1];
   for (const link of quoted(links)) assert.ok(noscript.includes(`href="${link}"`), link);
+});
+
+Then('every language in website\\/languages.json has a {string}', function (label: string) {
+  const labels = JSON.parse(readFileSync('website/languages.json', 'utf8'));
+  for (const [language, values] of Object.entries(labels)) {
+    assert.ok((values as Record<string, string>)[label], `${language} has no ${label}`);
+  }
 });
 
 Then('every language but {string} in website\\/languages.json has a {string}', function (original: string, label: string) {

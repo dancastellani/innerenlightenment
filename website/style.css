@@ -34,9 +34,9 @@ li { border-bottom: 1px solid var(--rule); }
 li a { display: block; padding: 0.6rem 0; text-decoration: none; }
 li a:hover { text-decoration: underline; }
 
-/* The top bar: the main action on the left, the menu on the right. */
-nav { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
-nav, footer, .meta, .note, .translation, .medium { font-family: var(--sans); font-size: 0.9rem; color: var(--muted); }
+/* The top bar: the main action on the left, the languages on the right. */
+nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; }
+nav, footer, .meta, .note, .medium { font-family: var(--sans); font-size: 0.9rem; color: var(--muted); }
 nav a { display: inline-block; padding: 0.6rem 0; }
 nav .another {
   padding: 0.6rem 1.1rem;
@@ -91,6 +91,8 @@ nav .another {
 .menu-items a { text-decoration: none; }
 .menu-items .current { color: var(--ink); }
 .menu-items a:first-child { border-bottom: 1px solid var(--rule); }
+.note { border-left: 3px solid var(--rule); padding-left: 1rem; }
+nav .current { color: var(--ink); }
 footer { margin-top: 4rem; border-top: 1px solid var(--rule); padding-top: 1.5rem; line-height: 1.6; }
 
 /* UC-18: the "Original" switch is a checkbox drawn as a button; when on, the Portuguese paragraphs show. */

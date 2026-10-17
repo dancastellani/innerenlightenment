@@ -11,6 +11,7 @@ Feature: Translate the messages into another language
     When the translation into "en" runs
     Then content/en.json has 3 messages and the language "en"
     And each message keeps its id, book, address and number of paragraphs
+    And each translated message is logged with its Portuguese and translated titles, like "translated: Nos mesmos pratos -> In the Same Dishes"
 
   @OP-02.2
   Scenario: An interrupted run resumes where it stopped
@@ -38,3 +39,10 @@ Feature: Translate the messages into another language
     Given GEMINI_API_KEY is not set
     When the translation into "en" runs
     Then it fails asking for GEMINI_API_KEY
+
+  @OP-02.6
+  Scenario: The translator answers with broken JSON
+    Given the translator answers once with JSON that does not parse, such as unescaped quotes
+    When the translation into "zh" runs
+    Then that batch is counted as failed with a warning, and the run goes on
+    And running the translation again translates the failed messages

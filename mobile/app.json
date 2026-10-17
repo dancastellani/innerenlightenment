@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Inner Enlightenment",
+    "name": "My Inner Enlightenment",
     "slug": "innerenlightenmentapp",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,7 +16,7 @@
     "android": {
       "package": "com.innerenlightenment.app",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#1d2b2c",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"

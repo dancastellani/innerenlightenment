@@ -59,14 +59,16 @@ Feature: Build and publish the website
     And the page "pt/random/" opens a random message of "../" from "o-tempo" and "fe-e-obras"
 
   @OP-05.11
-  Scenario: Every message page credits fonteviva.org
+  Scenario: Every message page credits fonteviva.org and has one disclaimer in its language
     When the website is built
-    Then the page "pt/o-tempo/" contains "Marcelo Paiva" and "not responsible or liable"
+    Then the page "en/o-tempo/" contains "Marcelo Paiva" and "not responsible or liable"
+    And the page "pt/o-tempo/" contains "Marcelo Paiva" and "não se responsabiliza"
+    And the page "en/o-tempo/" has "Disclaimer:" only once
 
   @OP-05.14
-  Scenario: A translated message says it was translated by AI, without guarantee
+  Scenario: A translated message's disclaimer says it was translated by AI, without guarantee
     When the website is built
-    Then the page "en/o-tempo/" contains "translated from the Portuguese original by AI" and "without guarantee"
+    Then the page "en/o-tempo/" contains "for their content. This message was translated from the Portuguese original by AI" and "without guarantee"
     And the page "pt/o-tempo/" does not contain "translated from the Portuguese original"
 
   @OP-05.5
@@ -131,8 +133,14 @@ Feature: Build and publish the website
     Then the page "pt/o-tempo/" contains "Texto original"
     And the page "pt/o-tempo/" does not contain "show-original"
 
-  # UC-19 on the website: find a study group.
   @OP-05.27
+  Scenario: Every page shows the app's icon in the browser tab
+    When the website is built
+    Then the page "" contains "favicon.svg"
+    And the page "pt/o-tempo/" contains "../../favicon.svg"
+
+  # UC-19 on the website: find a study group.
+  @OP-05.28
   Scenario: Each language has a study groups page with the three organizations
     When the website is built
     Then the page "en/study-groups/" links to "https://www.innerenlightenment.com/", "https://www.tssfederation.org/" and "https://spiritist.us/spiritist-movement/"
@@ -140,7 +148,7 @@ Feature: Build and publish the website
     And the page "en/study-groups/" contains "United States Spiritist Federation" and "in-person and online"
     And the page "pt/study-groups/" contains "Grupos de estudo" and "presenciais e online"
 
-  @OP-05.28
+  @OP-05.29
   Scenario: A message page links to the study groups page of its language
     When the website is built
     Then the page "en/o-tempo/" has the link "Study groups" to "../study-groups/"
@@ -185,5 +193,6 @@ Feature: Build and publish the website
     Then the page "pt/o-tempo/" contains "Primeiro parágrafo.…"
 
   @OP-05.15
-  Scenario: Every translated language has its AI translation disclaimer
-    Then every language but "pt" in website/languages.json has a "translationDisclaimer"
+  Scenario: Every language has its disclaimer, and every translated language its AI translation part
+    Then every language in website/languages.json has a "disclaimer"
+    And every language but "pt" in website/languages.json has a "translationDisclaimer"

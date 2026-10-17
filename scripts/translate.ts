@@ -49,7 +49,15 @@ async function translate(batch: Translation[]): Promise<Translation[]> {
   }
   if (!response.ok) throw new Error(`${response.status} ${response.statusText}: ${await response.text()}`);
   const result = await response.json();
-  return JSON.parse(result.candidates[0].content.parts[0].text);
+  const text = result.candidates[0].content.parts[0].text;
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    // Gemini sometimes returns broken JSON, for example with unescaped quotes. Count the batch as failed
+    // and go on; the next run translates it again.
+    console.error(`warning: batch failed, the answer is not valid JSON: ${error}`);
+    return [];
+  }
 }
 
 async function save() {
@@ -75,7 +83,7 @@ for (let i = 0; i < todo.length; i += BATCH_SIZE) {
       failed++;
       continue;
     }
-    console.info(`translated: ${t.title}`);
+    console.info(`translated: ${original.title} -> ${t.title}`);
     done.push({ ...original, title: t.title, paragraphs: t.paragraphs, note: t.note });
     translated++;
   }

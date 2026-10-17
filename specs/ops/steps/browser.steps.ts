@@ -2,26 +2,31 @@
 // to check what only a browser shows: scripts running, links opening, the layout on a phone.
 // The site is served straight from its folder at http://site.test/, so no web server is needed.
 
-import { After, When, Then } from '@cucumber/cucumber';
+import { AfterAll, When, Then } from '@cucumber/cucumber';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { chromium, type Browser, type Page } from 'playwright-core';
 
-type World = { siteFolder: string; browser?: Browser; page: Page };
+type World = { siteFolder: string; page: Page };
 
 const siteUrl = 'http://site.test/';
+
+// One browser for all scenarios, started by the first one that needs it.
+let browser: Browser | undefined;
 
 // The quoted values in a step, e.g. `"pt/" or "en/"` gives ["pt/", "en/"].
 function quoted(text: string): string[] {
   return [...text.matchAll(/"([^"]*)"/g)].map((match) => match[1]);
 }
 
-When('the page {string} is opened in a browser', async function (this: World, path: string) {
+// Starting Chrome the first time can take longer than Cucumber's 5 seconds per step,
+// and a step stopped while Chrome starts leaves it running, so the tests never end.
+When('the page {string} is opened in a browser', { timeout: 30_000 }, async function (this: World, path: string) {
   // Uses the installed Google Chrome; CHROME_PATH points to another Chrome or Chromium instead.
-  this.browser = await chromium.launch({ channel: 'chrome', executablePath: process.env.CHROME_PATH });
+  browser ??= await chromium.launch({ channel: 'chrome', executablePath: process.env.CHROME_PATH });
   // The smallest common phone screen.
-  this.page = await this.browser.newPage({ viewport: { width: 320, height: 640 } });
+  this.page = await browser.newPage({ viewport: { width: 320, height: 640 } });
   // Fails within Cucumber's 5 seconds per step, with Playwright's message saying what it waited for.
   this.page.setDefaultTimeout(3000);
   await this.page.route('**/*', async (route) => {
@@ -65,6 +70,6 @@ Then('it does not scroll sideways', async function (this: World) {
   assert.ok(scrollWidth <= 320, `the page is ${scrollWidth} pixels wide`);
 });
 
-After(async function (this: World) {
-  await this.browser?.close();
+AfterAll(async function () {
+  await browser?.close();
 });

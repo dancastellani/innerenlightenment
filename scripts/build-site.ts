@@ -20,6 +20,7 @@ type Content = { language: string; books: { slug: string; name: string }[]; mess
 type Labels = {
   name: string;
   index: string;
+  menu: string;
   anotherMessage: string;
   readOriginal: string;
   original: string;
@@ -129,11 +130,12 @@ class Website {
     const meta = [book?.name, message.chapter].filter((text) => text).map((text) => escapeHtml(text!)).join(' · ');
     const otherLanguages = this.contents
       .filter((c) => c !== content && c.messages.some((m) => m.id === message.id))
-      .map((c) => ` · <a href="../../${c.language}/${message.slug}/">${this.labels[c.language].name}</a>`)
+      .map((c) => `<a href="../../${c.language}/${message.slug}/">${this.labels[c.language].name}</a>`)
       .join('');
     const body = this.render('message', {
       anotherMessage: labels.anotherMessage,
       index: labels.index,
+      menu: labels.menu,
       languageName: labels.name,
       otherLanguages,
       meta,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AppState, Linking, Pressable, ScrollView, Share, StyleSheet, Switch, Text, View } from 'react-native';
+import { AppState, Linking, Modal, Pressable, ScrollView, Share, StyleSheet, Switch, Text, View } from 'react-native';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
@@ -105,6 +105,27 @@ function Action({ title, onPress, main = false }: { title: string; onPress: () =
   );
 }
 
+// The options in the menu at the top right, each opening its own screen.
+// Study groups (UC-19) is named in the reader's language, as on the website.
+function menu(language: Language) {
+  return [
+    { title: 'Index', screen: 'index' },
+    { title: labels[language].studyGroups, screen: 'study-groups' },
+    { title: 'Settings', screen: 'settings' },
+  ] as const;
+}
+
+// The menu button: three bars, like the website's.
+function MenuButton({ onPress }: { onPress: () => void }) {
+  return (
+    <Pressable accessibilityRole="button" accessibilityLabel="Menu" onPress={onPress} style={styles.menuButton}>
+      <View style={styles.bar} />
+      <View style={styles.bar} />
+      <View style={styles.bar} />
+    </Pressable>
+  );
+}
+
 export default function App() {
   const [messageId, setMessageId] = useState<number>();
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
@@ -112,6 +133,7 @@ export default function App() {
   const [screen, setScreen] = useState<'message' | 'settings' | 'index' | 'study-groups'>('message');
   const [indexBook, setIndexBook] = useState<string>(); // UC-20: the book picked on the index
   const [showOriginal, setShowOriginal] = useState(false); // UC-18: the Portuguese text after each paragraph
+  const [menuOpen, setMenuOpen] = useState(false);
   const tapped = Notifications.useLastNotificationResponse();
 
   // On open, and when the app comes back to the front on a new day (UC-03.4):
@@ -287,18 +309,41 @@ export default function App() {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
-      {isTranslation ? (
-        <Pressable
-          accessibilityRole="switch"
-          accessibilityState={{ checked: showOriginal }}
-          onPress={() => setShowOriginal(!showOriginal)}
-          style={[styles.pill, showOriginal && styles.pillOn]}
-        >
-          <Text style={[styles.pillText, showOriginal && styles.pillTextOn]}>{labels.en.original}</Text>
+      <View style={styles.topBar}>
+        {isTranslation ? (
+          <Pressable
+            accessibilityRole="switch"
+            accessibilityState={{ checked: showOriginal }}
+            onPress={() => setShowOriginal(!showOriginal)}
+            style={[styles.pill, showOriginal && styles.pillOn]}
+          >
+            <Text style={[styles.pillText, showOriginal && styles.pillTextOn]}>{labels.en.original}</Text>
+          </Pressable>
+        ) : (
+          <Text style={[styles.pill, styles.originalMark]}>{labels.pt.original}</Text>
+        )}
+        <MenuButton onPress={() => setMenuOpen(true)} />
+      </View>
+      {/* The menu opens under the button at the top right; tapping outside closes it. */}
+      <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={() => setMenuOpen(false)}>
+        <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)}>
+          <View style={styles.menu}>
+            {menu(settings.language).map((item) => (
+              <Pressable
+                key={item.screen}
+                accessibilityRole="button"
+                onPress={() => {
+                  setMenuOpen(false);
+                  setScreen(item.screen);
+                }}
+                style={({ pressed }) => [styles.menuItem, pressed && styles.pressed]}
+              >
+                <Text style={styles.menuItemText}>{item.title}</Text>
+              </Pressable>
+            ))}
+          </View>
         </Pressable>
-      ) : (
-        <Text style={[styles.pill, styles.originalMark]}>{labels.pt.original}</Text>
-      )}
+      </Modal>
       <Text style={styles.title}>{message.title}</Text>
       {comparing && <Text style={[styles.paragraph, styles.original]}>{original.title}</Text>}
       <Text style={styles.source}>
@@ -314,17 +359,6 @@ export default function App() {
         <Action title="Another message" onPress={showAnother} main />
         <Action title="Share" onPress={share} />
         <Action title="Open on fonteviva.org" onPress={() => Linking.openURL(originalLink(message.url, settings.language))} />
-      </View>
-      <View style={styles.links}>
-        <Pressable accessibilityRole="button" onPress={() => setScreen('index')} style={styles.link}>
-          <Text style={styles.linkText}>Index</Text>
-        </Pressable>
-        <Pressable accessibilityRole="button" onPress={() => setScreen('study-groups')} style={styles.link}>
-          <Text style={styles.linkText}>{labels[settings.language].studyGroups}</Text>
-        </Pressable>
-        <Pressable accessibilityRole="button" onPress={() => setScreen('settings')} style={styles.link}>
-          <Text style={styles.linkText}>Settings</Text>
-        </Pressable>
       </View>
       <Text style={styles.disclaimer}>
         {labels.en.disclaimer}
@@ -347,9 +381,13 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.7 },
   actionText: { fontSize: 17, fontWeight: '600', color: colors.spring },
   mainActionText: { color: colors.paper },
-  links: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 24, marginTop: 28 },
-  link: { padding: 12 },
-  linkText: { fontSize: 16, color: colors.muted, textDecorationLine: 'underline' },
+  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  menuButton: { width: 48, height: 48, marginTop: -8, marginRight: -8, alignItems: 'center', justifyContent: 'center', gap: 5 },
+  bar: { width: 22, height: 2, borderRadius: 1, backgroundColor: colors.ink },
+  backdrop: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.15)' },
+  menu: { position: 'absolute', top: 104, right: 16, minWidth: 200, paddingVertical: 8, borderRadius: 12, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.rule, elevation: 6 },
+  menuItem: { paddingVertical: 14, paddingHorizontal: 20 },
+  menuItemText: { fontSize: 17, color: colors.ink },
   settings: { gap: 12, marginTop: 24 },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 52, borderBottomWidth: 1, borderColor: colors.rule },
   label: { fontSize: 18, color: colors.ink },

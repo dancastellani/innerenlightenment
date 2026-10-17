@@ -4,7 +4,7 @@ Feature: Find a study group
   @UC-19.1
   Scenario: See study groups
     Given I am in the app
-    When I tap "Study groups" under the message
+    When I open the menu at the top right and tap "Study groups"
     Then I see a button for the Inner Enlightenment Spiritist Society in NYC, the Tri-State Spiritist Federation and the United States Spiritist Federation
     And each says it holds in-person and online meetings
 
@@ -19,7 +19,7 @@ Feature: Find a study group
   @UC-19.3
   Scenario: In Portuguese
     Given messages are shown in Portuguese
-    When I tap "Grupos de estudo" under the message
+    When I open the menu at the top right and tap "Grupos de estudo"
     Then the screen is titled "Grupos de estudo" and says the organizations meet in person and online
 
   @UC-19.4

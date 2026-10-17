@@ -11,6 +11,7 @@ import { copyFileSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSy
 import { join } from 'node:path';
 import type { Message } from './parse-message.ts';
 import { originalLink } from '../mobile/language.ts';
+import { showWindows1252 } from '../mobile/text.ts';
 
 type Content = { language: string; books: { slug: string; name: string }[]; messages: Message[] };
 // translationDisclaimer is shown on translated messages, so every language but Portuguese (the original) has one.
@@ -18,8 +19,9 @@ type Labels = { name: string; index: string; anotherMessage: string; readOrigina
 
 const WEBSITE_FOLDER = join(import.meta.dirname, '..', 'website');
 
+// Also shows Windows-1252 codes as their characters (bugs #67, #71), since every text goes through here.
 function escapeHtml(text: string): string {
-  return text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+  return showWindows1252(text).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');
 }
 
 // Replaces each {{name}} in the template with values[name]. Values are HTML, already escaped.

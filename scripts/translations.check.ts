@@ -6,11 +6,12 @@
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
-import { checkBibleReferences, checkFile, checkMessage, type Content } from './check-translations.ts';
+import { checkBibleReferences, checkFile, checkLabels, checkMessage, type Content } from './check-translations.ts';
 
 const original: Content = JSON.parse(readFileSync('content/pt.json', 'utf8'));
+const english: Content = JSON.parse(readFileSync('content/en.json', 'utf8'));
 const translations = readdirSync('content')
-  .filter((file) => file.endsWith('.json') && file !== 'pt.json')
+  .filter((file) => file.endsWith('.json') && !file.endsWith('.labels.json') && file !== 'pt.json')
   .map((file) => ({ lang: file.replace('.json', ''), content: JSON.parse(readFileSync(`content/${file}`, 'utf8')) as Content }));
 
 for (const o of original.messages) {
@@ -25,6 +26,6 @@ for (const o of original.messages) {
 
 describe('translation files', () => {
   for (const { lang, content } of translations) {
-    test(lang, () => assert.deepEqual(checkFile(original, content, lang), []));
+    test(lang, () => assert.deepEqual([...checkFile(original, content, lang), ...(lang === 'en' ? [] : checkLabels(english.labels ?? {}, content.labels))], []));
   }
 });

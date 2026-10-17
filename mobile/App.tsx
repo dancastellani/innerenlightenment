@@ -229,10 +229,7 @@ export default function App() {
         <Text style={styles.paragraph}>{labels[settings.language].studyGroupsIntro}</Text>
         <View style={styles.actions}>
           {studyGroups.map((group) => (
-            <View key={group.url}>
-              <Action title={group.name} onPress={() => Linking.openURL(group.url)} />
-              <Text style={styles.website}>{group.url}</Text>
-            </View>
+            <Action key={group.url} title={group.name} onPress={() => Linking.openURL(group.url)} />
           ))}
           <Action title="Back" onPress={() => setScreen('message')} main />
         </View>
@@ -362,7 +359,6 @@ const styles = StyleSheet.create({
   original: { fontStyle: 'italic', color: colors.muted, borderLeftWidth: 3, borderColor: colors.rule, paddingLeft: 12 },
   translation: { fontSize: 14, fontStyle: 'italic', color: colors.muted, marginTop: 24 },
   backButton: { marginTop: 32 },
-  website: { fontSize: 14, color: colors.muted, textAlign: 'center', marginTop: 4 },
   bookTitle: { fontFamily: 'serif', fontSize: 24, fontWeight: '600', color: colors.ink, marginTop: 36, marginBottom: 8 },
   indexItem: { fontFamily: 'serif', fontSize: 18, color: colors.spring, paddingVertical: 14, borderBottomWidth: 1, borderColor: colors.rule },
 });

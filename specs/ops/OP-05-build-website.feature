@@ -131,6 +131,12 @@ Feature: Build and publish the website
     Then the page "pt/o-tempo/" contains "Texto original"
     And the page "pt/o-tempo/" does not contain "show-original"
 
+  @OP-05.27
+  Scenario: Every page shows the app's icon in the browser tab
+    When the website is built
+    Then the page "" contains "favicon.svg"
+    And the page "pt/o-tempo/" contains "../../favicon.svg"
+
   # Edge cases
 
   @OP-05.6

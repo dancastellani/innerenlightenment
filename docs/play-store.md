@@ -4,7 +4,7 @@ Nothing is uploaded to Google Play automatically: each step below is done by Dan
 
 ## Before the first release
 
-1. **App icon.** `mobile/assets/` still has Expo's placeholder icons (the blue "A"). Replace `icon.png` (1024×1024) and the three `android-icon-*.png` files (foreground, background, monochrome) with the real icon. Google Play also needs a 512×512 icon and a 1024×500 feature graphic.
+1. **App icon.** Done: the flame icon is in `mobile/assets/` (source `icon.svg`). Google Play also needs a 512×512 icon (export `icon.svg` at that size) and a 1024×500 feature graphic.
 2. **Package name.** `mobile/app.json` sets `android.package` to `com.innerenlightenment.app`. Google Play never lets it change after the first upload, so confirm it (or pick another) before then.
 3. **Privacy policy.** Google Play asks every app for a public privacy policy link. Ours is short: the app collects nothing and sends nothing; settings and the planned messages stay on the phone. It can live on the GitHub Pages site (issue #35).
 4. **Content rights.** Confirm with Marcelo that the messages may be published in the app (and the translations).

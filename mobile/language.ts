@@ -3,11 +3,6 @@ import type { Message } from '../scripts/parse-message';
 // UC-05: the languages bundled in the app. Portuguese is the original; English is the default.
 export type Language = 'en' | 'pt';
 
-// UC-05.1, UC-05.2, UC-05.5, UC-05.6: Portuguese for any Portuguese phone, otherwise English.
-export function languageFor(locale: string): Language {
-  return locale.toLowerCase().startsWith('pt') ? 'pt' : 'en';
-}
-
 // UC-05.7: the message in the chosen language, or the Portuguese original when it has no translation.
 export function findMessage(id: number | undefined, translated: Message[], original: Message[]): Message | undefined {
   return translated.find((m) => m.id === id) ?? original.find((m) => m.id === id);

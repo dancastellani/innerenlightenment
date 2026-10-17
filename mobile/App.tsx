@@ -10,7 +10,7 @@ import studyGroups from '../website/study-groups.json';
 import { expo } from './app.json';
 import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
-import { bookName, findMessage, languageFor, originalLink, withOriginal, type Book, type Language } from './language';
+import { bookName, findMessage, originalLink, withOriginal, type Book, type Language } from './language';
 import { readable } from './text';
 
 // UC-05: Portuguese is the original; translations may leave a message out, so the plan uses the Portuguese ids.
@@ -27,13 +27,13 @@ function messageIn(language: Language, id: number | undefined): Message | undefi
   return findMessage(id, translations[language], portuguese);
 }
 
-// UC-05, UC-08, UC-09: saved on the phone. The language starts as the phone's.
+// UC-05, UC-08, UC-09: saved on the phone. The language starts as English, whatever the phone's language.
 type Settings = { hour: number; minute: number; enabled: boolean; language: Language };
 const DEFAULT_SETTINGS: Settings = {
   hour: 8,
   minute: 0,
   enabled: true,
-  language: languageFor(Intl.DateTimeFormat().resolvedOptions().locale),
+  language: 'en',
 };
 
 async function loadSettings(): Promise<Settings> {

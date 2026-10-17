@@ -53,6 +53,11 @@ When('{string} is tapped', async function (this: World, text: string) {
   await this.page.getByText(text, { exact: true }).click();
 });
 
+// The menu button at the top right is an icon, found by its label.
+When('the menu is tapped', async function (this: World) {
+  await this.page.getByLabel('Menu').click();
+});
+
 Then(/^the browser shows (.+)$/, async function (this: World, texts: string) {
   for (const text of quoted(texts)) assert.ok(await this.page.getByText(text, { exact: true }).isVisible(), text);
 });

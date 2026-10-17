@@ -17,7 +17,7 @@ Feature: Change the notification time
   @UC-08.8
   Scenario: Settings have their own screen
     Given I am reading a message
-    When I tap "Settings"
+    When I open the menu at the top right and tap "Settings"
     Then a Settings screen shows the notification switch and the time
     When I tap "Back"
     Then I see the message again

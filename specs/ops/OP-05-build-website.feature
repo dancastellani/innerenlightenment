@@ -125,6 +125,16 @@ Feature: Build and publish the website
     When "Original" is tapped
     Then the browser does not show "Primeiro parágrafo." and "Segundo parágrafo."
 
+  @OP-05.27
+  Scenario: In a browser, the menu at the top right opens the index and the languages, and closes again
+    When the website is built
+    And the page "en/o-tempo/" is opened in a browser
+    Then the browser does not show "Index" and "Português"
+    When the menu is tapped
+    Then the browser shows "Index", "English" and "Português"
+    When the menu is tapped
+    Then the browser does not show "Index" and "Português"
+
   @OP-05.26
   Scenario: The Portuguese page is marked as the original and has no "Original" switch
     When the website is built

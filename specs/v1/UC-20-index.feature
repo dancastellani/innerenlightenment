@@ -5,8 +5,16 @@ Feature: Browse the messages by book
   @UC-20.1
   Scenario: Open the index
     Given I am viewing a message
-    When I tap "Index"
+    When I open the menu at the top right and tap "Index"
     Then I see the four books at the top: "Caminho Verdade e Vida", "Fonte Viva", "Pao Nosso" and "Vinha de Luz"
+
+  @UC-20.8
+  Scenario: The menu closes without opening anything
+    Given I am viewing a message
+    When I open the menu at the top right
+    Then I see "Index" and "Settings"
+    When I tap outside the menu, or press the phone's Back button
+    Then the menu closes and I still see the message
 
   @UC-20.2
   Scenario: Pick a book

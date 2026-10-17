@@ -1,13 +1,13 @@
 {
-  "en": { "name": "English", "index": "Index", "anotherMessage": "Another message", "readOriginal": "Read it on fonteviva.org", "original": "Original",
+  "en": { "name": "English", "index": "Index", "menu": "Menu", "anotherMessage": "Another message", "readOriginal": "Read it on fonteviva.org", "original": "Original",
     "disclaimer": "Disclaimer: the messages come from publicly available data on fonteviva.org, and this project is not responsible or liable for their content.",
     "translationDisclaimer": "This message was translated from the Portuguese original by AI and is provided without guarantee." },
-  "pt": { "name": "Português", "index": "Índice", "anotherMessage": "Outra mensagem", "readOriginal": "Leia em fonteviva.org", "original": "Texto original",
+  "pt": { "name": "Português", "index": "Índice", "menu": "Menu", "anotherMessage": "Outra mensagem", "readOriginal": "Leia em fonteviva.org", "original": "Texto original",
     "disclaimer": "Aviso: as mensagens vêm de dados públicos de fonteviva.org, e este projeto não se responsabiliza pelo seu conteúdo." },
-  "es": { "name": "Español", "index": "Índice", "anotherMessage": "Otro mensaje", "readOriginal": "Léalo en fonteviva.org", "original": "Original",
+  "es": { "name": "Español", "index": "Índice", "menu": "Menú", "anotherMessage": "Otro mensaje", "readOriginal": "Léalo en fonteviva.org", "original": "Original",
     "disclaimer": "Aviso: los mensajes provienen de datos públicos de fonteviva.org, y este proyecto no se hace responsable de su contenido.",
     "translationDisclaimer": "Este mensaje fue traducido del original en portugués con IA y se ofrece sin garantía." },
-  "fr": { "name": "Français", "index": "Sommaire", "anotherMessage": "Un autre message", "readOriginal": "Lisez-le sur fonteviva.org", "original": "Original",
+  "fr": { "name": "Français", "index": "Sommaire", "menu": "Menu", "anotherMessage": "Un autre message", "readOriginal": "Lisez-le sur fonteviva.org", "original": "Original",
     "disclaimer": "Avertissement : les messages proviennent de données publiques de fonteviva.org, et ce projet n'est pas responsable de leur contenu.",
     "translationDisclaimer": "Ce message a été traduit de l'original portugais par IA et est fourni sans garantie." }
 }

@@ -135,8 +135,9 @@ Feature: Build and publish the website
   @OP-05.27
   Scenario: Each language has a study groups page with the three organizations
     When the website is built
-    Then the page "en/study-groups/" links to "https://www.innerenlightenment.com/", "https://spiritist.us/" and "https://www.tssfederation.org/"
-    And the page "en/study-groups/" contains "in-person and online"
+    Then the page "en/study-groups/" links to "https://www.innerenlightenment.com/", "https://www.tssfederation.org/" and "https://spiritist.us/spiritist-movement/"
+    And the page "en/study-groups/" contains "Inner Enlightenment Spiritist Society in NYC" and "Tri-State Spiritist Federation"
+    And the page "en/study-groups/" contains "United States Spiritist Federation" and "in-person and online"
     And the page "pt/study-groups/" contains "Grupos de estudo" and "presenciais e online"
 
   @OP-05.28

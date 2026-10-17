@@ -5,7 +5,7 @@ Feature: Find a study group
   Scenario: See study groups
     Given I am in the app
     When I tap "Study groups" under the message
-    Then I see links to innerenlightenment.com, spiritist.us and tssfederation.org
+    Then I see the name and website of the Inner Enlightenment Spiritist Society in NYC, the Tri-State Spiritist Federation and the United States Spiritist Federation
     And each says it holds in-person and online meetings
 
   @UC-19.2

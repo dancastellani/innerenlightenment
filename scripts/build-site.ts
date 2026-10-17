@@ -110,7 +110,7 @@ class Website {
   // UC-19: links to Spiritist organizations that hold study meetings.
   studyGroupsPage(content: Content): string {
     const labels = this.labels[content.language];
-    const groups = this.studyGroups.map((g) => `<li><a href="${g.url}">${escapeHtml(g.name)}</a></li>`).join('\n');
+    const groups = this.studyGroups.map((g) => `<li><a href="${g.url}">${escapeHtml(g.name)}<br><small>${g.url}</small></a></li>`).join('\n');
     const body = this.render('study-groups', {
       index: labels.index,
       studyGroups: labels.studyGroups,

@@ -96,13 +96,25 @@ To look at it locally: `./run.sh site`, then `npx serve site` and open the print
 
 ## Previewing an app PR in Expo Go
 
-PRs don't get a QR code automatically. To try a PR on your phone from anywhere (no shared Wi-Fi needed), publish it from your laptop:
+Each PR that changes the app (`mobile/` or `content/`) gets a comment from Expo with a link to its preview: open it and scan the QR code with Expo Go. The comment comes once the update is published on Expo's servers.
+
+To publish a branch yourself instead (for example one without a PR), from your laptop:
 
 1. Once: `npx eas-cli@latest login` with your Expo account.
-2. Check out the PR's branch: `git fetch origin && git switch <branch>`.
+2. Check out the branch: `git fetch origin && git switch <branch>`.
 3. Run `./run.sh preview`. It publishes that branch as `preview-<branch>` and prints a link to expo.dev; open it and scan the QR code with Expo Go.
 
-How it works is in [tech-stack.md](tech-stack.md#pr-previews-in-expo-go-eas-update).
+### Connecting GitHub to Expo
+
+Done once by Dan, on expo.dev and GitHub, so Expo can run `mobile/.eas/workflows/pr-preview.yml` on PRs. No token is created or stored in GitHub.
+
+1. Check that your GitHub account is linked to Expo: [expo.dev](https://expo.dev) → your avatar → **Account settings** → **Connections** → connect **GitHub** if it isn't.
+2. Open the project: [expo.dev](https://expo.dev) → **Projects** → **innerenlightenmentapp** → **Project settings** → **GitHub** (the page `expo.dev/accounts/<your account>/projects/innerenlightenmentapp/github`).
+3. Click **Install GitHub app**. On GitHub, pick your account, choose **Only select repositories** → `dancastellani/innerenlightenment`, read the permissions it asks for, and click **Install**.
+4. Back on that Expo page, pick `dancastellani/innerenlightenment` in the repository list and click **Connect**.
+5. Set **Base directory** to `mobile` (the app isn't at the repository root) and save.
+
+The next PR that changes the app runs the workflow; you can follow it on expo.dev under the project's **Workflows**. How it works, and why it is safe, is in [tech-stack.md](tech-stack.md#pr-previews-in-expo-go-eas-update).
 
 ## Installing the app on your Android phone (APK)
 

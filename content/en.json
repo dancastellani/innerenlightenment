@@ -23,6 +23,29 @@
    "count": 181
   }
  ],
+ "labels": {
+  "index": "Index",
+  "menu": "Menu",
+  "anotherMessage": "Another message",
+  "readOriginal": "Read it on fonteviva.org",
+  "original": "Original",
+  "disclaimer": "Disclaimer: the messages come from publicly available data on fonteviva.org, and this project is not responsible or liable for their content.",
+  "translationDisclaimer": "This message was translated from the Portuguese original by AI and is provided without guarantee.",
+  "title": "Fonte Viva messages",
+  "credit": "The messages are published in Portuguese on fonteviva.org by Marcelo Paiva. Thank you for making this possible.",
+  "settings": "Settings",
+  "back": "Back",
+  "share": "Share",
+  "dailyNotification": "Daily notification",
+  "time": "Time",
+  "notificationsBlocked": "Notifications are blocked for this app in the phone settings.",
+  "openPhoneSettings": "Open phone settings",
+  "language": "Language",
+  "testNotification": "Test notification in 10 seconds",
+  "dailyMessage": "Daily message",
+  "studyGroups": "Study groups",
+  "studyGroupsIntro": "These Spiritist organizations hold in-person and online study meetings."
+ },
  "messages": [
   {
    "id": 761,

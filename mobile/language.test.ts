@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { findMessage, languageFor, originalLink, withOriginal } from './language.ts';
+import { completeLabels, findMessage, languageFor, originalLink, withOriginal } from './language.ts';
 import type { Message } from '../scripts/parse-message.ts';
 
 test('UC-05.1: English when the phone is not Portuguese', () => {
@@ -64,4 +64,10 @@ test('UC-18.4: paragraphs left over on either side are kept, and nothing gives n
   assert.deepEqual(withOriginal(['One.'], ['Um.', 'Dois.']).map((p) => p.text), ['One.', 'Um.', 'Dois.']);
   assert.deepEqual(withOriginal(['One.', 'Two.'], ['Um.']).map((p) => p.text), ['One.', 'Um.', 'Two.']);
   assert.deepEqual(withOriginal([], []), []);
+});
+
+test('UC-05.9: a label the language lacks falls back to English, and nothing missing keeps English', () => {
+  const english = { settings: 'Settings', back: 'Back' };
+  assert.deepEqual(completeLabels(english, { settings: 'Ajustes' }), { settings: 'Ajustes', back: 'Back' });
+  assert.deepEqual(completeLabels(english, {}), english);
 });

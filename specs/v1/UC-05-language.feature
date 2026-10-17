@@ -40,6 +40,12 @@ Feature: Read the message in English or Portuguese
     Then "English" is marked as the selected language
     And tapping it again keeps the current screen
 
+  @UC-05.8
+  Scenario: The app's text follows the language
+    Given messages are shown in Portuguese
+    When I open the menu and settings
+    Then the menu, buttons and notices are in Portuguese
+
   # Edge cases
 
   @UC-05.5
@@ -60,3 +66,9 @@ Feature: Read the message in English or Portuguese
     And today's message has no English translation
     When I open the app
     Then today's message is shown in Portuguese
+
+  @UC-05.9
+  Scenario: A text missing from the language package
+    Given the language package lacks the text of a button
+    When I open the screen with that button
+    Then the button shows its English text

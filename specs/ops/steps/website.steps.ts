@@ -2,7 +2,7 @@
 
 import { Given, When, Then } from '@cucumber/cucumber';
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { cp, mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -34,6 +34,14 @@ Given('the content also has the language {string}', async function (this: World,
   const folder = await mkdtemp(join(tmpdir(), 'content-'));
   await cp(this.contentFolder, folder, { recursive: true });
   const content = JSON.parse(readFileSync(join(folder, 'en.json'), 'utf8'));
+  await writeFile(join(folder, `${language}.json`), JSON.stringify({ ...content, language }));
+  this.contentFolder = folder;
+});
+
+Given('the content also has the language {string} without labels', async function (this: World, language: string) {
+  const folder = await mkdtemp(join(tmpdir(), 'content-'));
+  await cp(this.contentFolder, folder, { recursive: true });
+  const { labels, ...content } = JSON.parse(readFileSync(join(folder, 'en.json'), 'utf8'));
   await writeFile(join(folder, `${language}.json`), JSON.stringify({ ...content, language }));
   this.contentFolder = folder;
 });
@@ -104,18 +112,29 @@ Then(/^without JavaScript the page "([^"]*)" links to (.+)$/, function (this: Wo
   for (const link of quoted(links)) assert.ok(noscript.includes(`href="${link}"`), link);
 });
 
-Then('every language in website\\/languages.json has a {string}', function (label: string) {
-  const labels = JSON.parse(readFileSync('website/languages.json', 'utf8'));
-  for (const [language, values] of Object.entries(labels)) {
-    assert.ok((values as Record<string, string>)[label], `${language} has no ${label}`);
+// The labels of a language: in its content file, except pt.json, whose labels are in pt.labels.json.
+function labelsOf(language: string): Record<string, string> {
+  const content = JSON.parse(readFileSync(`content/${language}.json`, 'utf8'));
+  return content.labels ?? JSON.parse(readFileSync(`content/${language}.labels.json`, 'utf8'));
+}
+
+function languagesInContent(): string[] {
+  return readdirSync('content').filter((f) => f.endsWith('.json') && !f.endsWith('.labels.json')).map((f) => f.replace('.json', ''));
+}
+
+Then('every language in content\\/ has a {string}', function (label: string) {
+  for (const language of languagesInContent()) assert.ok(labelsOf(language)[label], `${language} has no ${label}`);
+});
+
+Then('every language but {string} in content\\/ has a {string}', function (original: string, label: string) {
+  for (const language of languagesInContent()) {
+    if (language !== original) assert.ok(labelsOf(language)[label], `${language} has no ${label}`);
   }
 });
 
-Then('every language but {string} in website\\/languages.json has a {string}', function (original: string, label: string) {
-  const labels = JSON.parse(readFileSync('website/languages.json', 'utf8'));
-  for (const [language, values] of Object.entries(labels)) {
-    if (language !== original) assert.ok((values as Record<string, string>)[label], `${language} has no ${label}`);
-  }
+Then('every language in website\\/languages.json has a name', function () {
+  const names = JSON.parse(readFileSync('website/languages.json', 'utf8'));
+  for (const language of languagesInContent()) assert.ok(names[language]?.name, `${language} has no name`);
 });
 
 Then('the page {string} marks {string} as the selected language', function (this: World, page: string, language: string) {

@@ -30,3 +30,8 @@ export function withOriginal(translated: string[], original: string[]): { text: 
   }
   return result;
 }
+
+// UC-05.8, UC-05.9: the app's text in the chosen language, with the English text for any label the language lacks.
+export function completeLabels<T extends Record<string, string>>(english: T, labels: Record<string, string>): T {
+  return { ...english, ...labels };
+}

@@ -86,7 +86,7 @@ Feature: Build and publish the website
   @OP-05.28
   Scenario: A translated language page shows the book names in its language (#115)
     When the website is built
-    Then the page "en/" has the link "Living Fountain" to "#fonte-viva"
+    Then the page "en/" has the link "Living Spring" to "#fonte-viva"
     And the page "en/" has the book heading "fonte-viva"
     And the page "en/" does not contain "Fonte Viva</a>" and "Fonte Viva</h2>"
     And the page "pt/" contains "Fonte Viva</a>" and "Fonte Viva</h2>"
@@ -94,7 +94,7 @@ Feature: Build and publish the website
   @OP-05.29
   Scenario: A translated message page shows its book name in its language (#115)
     When the website is built
-    Then the page "en/o-tempo/" contains "Living Fountain · Capítulo 1"
+    Then the page "en/o-tempo/" contains "Living Spring · Capítulo 1"
     And the page "en/o-tempo/" does not contain "Fonte Viva ·"
     And the page "pt/o-tempo/" contains "Fonte Viva · Capítulo 1"
 

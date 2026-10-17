@@ -65,7 +65,7 @@ Feature: Read the message in English or Portuguese
   Scenario: Book names are shown in the selected language (#115)
     Given messages are shown in English
     When I open the index, and a message
-    Then the books are named "The Way, the Truth and the Life", "Living Fountain", "Our Daily Bread" and "Vineyard of Light"
+    Then the books are named "The Way, the Truth and the Life", "Living Spring", "Our Daily Bread" and "Vineyard of Light"
     And the message shows its book name in English above its chapter
     And in Portuguese they are "Caminho Verdade e Vida", "Fonte Viva", "Pao Nosso" and "Vinha de Luz"
 

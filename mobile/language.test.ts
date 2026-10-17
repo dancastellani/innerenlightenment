@@ -67,10 +67,10 @@ test('UC-18.4: paragraphs left over on either side are kept, and nothing gives n
 });
 
 const portugueseBooks = [{ slug: 'fonte-viva', name: 'Fonte Viva' }, { slug: 'pao-nosso', name: 'Pao Nosso' }];
-const englishBooks = [{ slug: 'fonte-viva', name: 'Living Fountain' }];
+const englishBooks = [{ slug: 'fonte-viva', name: 'Living Spring' }];
 
 test('UC-05.10: a book is named in the chosen language (#115)', () => {
-  assert.equal(bookName('fonte-viva', englishBooks, portugueseBooks), 'Living Fountain');
+  assert.equal(bookName('fonte-viva', englishBooks, portugueseBooks), 'Living Spring');
   assert.equal(bookName('fonte-viva', portugueseBooks, portugueseBooks), 'Fonte Viva');
 });
 

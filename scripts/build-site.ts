@@ -10,12 +10,20 @@
 import { copyFileSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Message } from './parse-message.ts';
-import { originalLink } from '../mobile/language.ts';
+import { originalLink, withOriginal } from '../mobile/language.ts';
 import { showWindows1252 } from '../mobile/text.ts';
 
 type Content = { language: string; books: { slug: string; name: string }[]; messages: Message[] };
 // translationDisclaimer is shown on translated messages, so every language but Portuguese (the original) has one.
-type Labels = { name: string; index: string; anotherMessage: string; readOriginal: string; translationDisclaimer?: string };
+// `original` is the button that shows the Portuguese original (UC-18), and in Portuguese the mark that it is the original.
+type Labels = {
+  name: string;
+  index: string;
+  anotherMessage: string;
+  readOriginal: string;
+  original: string;
+  translationDisclaimer?: string;
+};
 
 const WEBSITE_FOLDER = join(import.meta.dirname, '..', 'website');
 
@@ -107,7 +115,7 @@ class Website {
       otherLanguages,
       meta,
       title: escapeHtml(message.title),
-      paragraphs: message.paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join('\n'),
+      ...this.original(content, message),
       signature: signature(message),
       note: message.note ? `<p class="note">${escapeHtml(message.note)}</p>` : '',
       translationDisclaimer: labels.translationDisclaimer ? `<p class="translation">${labels.translationDisclaimer}</p>` : '',
@@ -116,6 +124,27 @@ class Website {
       credit: this.render('credit', {}),
     });
     return this.page(content.language, message.title, '../../', body);
+  }
+
+  // UC-18: on a translation, an "Original" switch that shows the Portuguese text after each paragraph;
+  // it works without JavaScript (a checkbox, see style.css). The Portuguese page is marked as the original.
+  original(content: Content, message: Message): { originalToggle: string; originalTitle: string; paragraphs: string } {
+    const label = this.labels[content.language].original;
+    const original = this.contents.find((c) => c.language === 'pt')?.messages.find((m) => m.id === message.id);
+    if (content.language === 'pt' || !original) {
+      return {
+        originalToggle: content.language === 'pt' ? `<p class="original-mark">${label}</p>` : '',
+        originalTitle: '',
+        paragraphs: message.paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join('\n'),
+      };
+    }
+    return {
+      originalToggle: `<input type="checkbox" id="show-original" class="show-original"><label for="show-original">${label}</label>`,
+      originalTitle: `<p class="original" lang="pt">${escapeHtml(original.title)}</p>`,
+      paragraphs: withOriginal(message.paragraphs, original.paragraphs)
+        .map((p) => (p.isOriginal ? `<p class="original" lang="pt">${escapeHtml(p.text)}</p>` : `<p>${escapeHtml(p.text)}</p>`))
+        .join('\n'),
+    };
   }
 
   // `root` is the path from the page to the site's root folder, for the stylesheet.

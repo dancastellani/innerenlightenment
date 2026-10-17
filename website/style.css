@@ -54,3 +54,22 @@ nav .another {
 .translation { font-style: italic; }
 nav .current { color: var(--ink); }
 footer { margin-top: 4rem; border-top: 1px solid var(--rule); padding-top: 1.5rem; line-height: 1.6; }
+
+/* UC-18: the "Original" switch is a checkbox drawn as a button; when on, the Portuguese paragraphs show. */
+.show-original { position: absolute; opacity: 0; }
+.show-original + label, .original-mark {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 0.4rem 1rem;
+  border: 1.5px solid var(--spring);
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  color: var(--spring);
+}
+.show-original + label { cursor: pointer; }
+.show-original:checked + label { background: var(--spring); color: var(--paper); }
+.show-original:focus-visible + label { outline: 2px solid var(--spring); outline-offset: 3px; }
+.original-mark { border-color: var(--rule); color: var(--muted); }
+.original { display: none; color: var(--muted); font-style: italic; border-left: 3px solid var(--rule); padding-left: 1rem; }
+.show-original:checked ~ .original { display: block; }

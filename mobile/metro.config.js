@@ -1,9 +1,9 @@
-// Lets the app import the messages from ../content, outside this folder.
+// Lets the app import the messages and the website's language labels, outside this folder.
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
 const config = getDefaultConfig(__dirname);
-config.watchFolders = [path.resolve(__dirname, '../content')];
+config.watchFolders = ['../content', '../website'].map((folder) => path.resolve(__dirname, folder));
 
 // Expo Go on Android lacks the native module for push topics, and expo-notifications loads it on import,
 // so the app crashes on start (issue #83). We don't use topics: load the package's stand-in instead.

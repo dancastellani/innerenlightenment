@@ -157,6 +157,21 @@ Feature: Build and publish the website
     Then the page "" contains "favicon.svg"
     And the page "pt/o-tempo/" contains "../../favicon.svg"
 
+  # UC-19 on the website: find a study group.
+  @OP-05.28
+  Scenario: Each language has a study groups page with the three organizations
+    When the website is built
+    Then the page "en/study-groups/" links to "https://www.innerenlightenment.com/", "https://www.tssfederation.org/" and "https://spiritist.us/spiritist-movement/"
+    And the page "en/study-groups/" contains "Inner Enlightenment Spiritist Society in NYC" and "Tri-State Spiritist Federation"
+    And the page "en/study-groups/" contains "United States Spiritist Federation" and "in-person and online"
+    And the page "pt/study-groups/" contains "Grupos de estudo" and "presenciais e online"
+
+  @OP-05.29
+  Scenario: A message page links to the study groups page of its language
+    When the website is built
+    Then the page "en/o-tempo/" has the link "Study groups" to "../study-groups/"
+    And the page "pt/o-tempo/" has the link "Grupos de estudo" to "../study-groups/"
+
   # Edge cases
 
   @OP-05.6

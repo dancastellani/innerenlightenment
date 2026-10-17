@@ -6,6 +6,7 @@ import * as Notifications from 'expo-notifications';
 import portugueseContent from '../content/pt.json';
 import englishContent from '../content/en.json';
 import labels from '../website/languages.json';
+import studyGroups from '../website/study-groups.json';
 import { expo } from './app.json';
 import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
@@ -121,10 +122,14 @@ function Screen({ action, children }: { action?: ReactNode; children: ReactNode 
 }
 
 // The options in the menu at the top right, each opening its own screen.
-const MENU = [
-  { title: 'Index', screen: 'index' },
-  { title: 'Settings', screen: 'settings' },
-] as const;
+// Study groups (UC-19) is named in the reader's language, as on the website.
+function menu(language: Language) {
+  return [
+    { title: 'Index', screen: 'index' },
+    { title: labels[language].studyGroups, screen: 'study-groups' },
+    { title: 'Settings', screen: 'settings' },
+  ] as const;
+}
 
 // The menu button: three bars, like the website's.
 function MenuButton({ onPress }: { onPress: () => void }) {
@@ -141,7 +146,7 @@ export default function App() {
   const [messageId, setMessageId] = useState<number>();
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [allowed, setAllowed] = useState(true);
-  const [screen, setScreen] = useState<'message' | 'settings' | 'index'>('message');
+  const [screen, setScreen] = useState<'message' | 'settings' | 'index' | 'study-groups'>('message');
   const [indexBook, setIndexBook] = useState<string>(); // UC-20: the book picked on the index
   const [showOriginal, setShowOriginal] = useState(false); // UC-18: the Portuguese text after each paragraph
   const [menuOpen, setMenuOpen] = useState(false);
@@ -254,6 +259,22 @@ export default function App() {
     );
   }
 
+  // UC-19: links to Spiritist organizations that hold study meetings, the same as the website.
+  if (screen === 'study-groups') {
+    return (
+      <Screen>
+        <Text style={styles.title}>{labels[settings.language].studyGroups}</Text>
+        <Text style={styles.paragraph}>{labels[settings.language].studyGroupsIntro}</Text>
+        <View style={styles.actions}>
+          {studyGroups.map((group) => (
+            <Action key={group.url} title={group.name} onPress={() => Linking.openURL(group.url)} />
+          ))}
+          <Action title="Back" onPress={() => setScreen('message')} main />
+        </View>
+      </Screen>
+    );
+  }
+
   if (screen === 'settings') {
     return (
       <Screen>
@@ -325,7 +346,7 @@ export default function App() {
       <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={() => setMenuOpen(false)}>
         <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)}>
           <View style={styles.menu}>
-            {MENU.map((item) => (
+            {menu(settings.language).map((item) => (
               <Pressable
                 key={item.screen}
                 accessibilityRole="button"

@@ -56,6 +56,7 @@ class Website {
     rmSync(outFolder, { recursive: true, force: true });
     mkdirSync(outFolder, { recursive: true });
     copyFileSync(join(WEBSITE_FOLDER, 'style.css'), join(outFolder, 'style.css'));
+    copyFileSync(join(WEBSITE_FOLDER, 'favicon.svg'), join(outFolder, 'favicon.svg'));
     write(join(outFolder, 'index.html'), this.homePage());
     for (const content of this.contents) {
       const folder = join(outFolder, content.language);

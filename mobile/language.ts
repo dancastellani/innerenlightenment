@@ -1,5 +1,7 @@
 import type { Message } from '../scripts/parse-message';
 
+export type Book = { slug: string; name: string };
+
 // UC-05: the languages bundled in the app. Portuguese is the original; English is the default.
 export type Language = 'en' | 'pt';
 
@@ -11,6 +13,11 @@ export function languageFor(locale: string): Language {
 // UC-05.7: the message in the chosen language, or the Portuguese original when it has no translation.
 export function findMessage(id: number | undefined, translated: Message[], original: Message[]): Message | undefined {
   return translated.find((m) => m.id === id) ?? original.find((m) => m.id === id);
+}
+
+// UC-05.10: the name of a book in the chosen language, or in Portuguese when it has no translation.
+export function bookName(slug: string, translated: Book[], original: Book[]): string {
+  return (translated.find((b) => b.slug === slug) ?? original.find((b) => b.slug === slug))?.name ?? '';
 }
 
 // UC-07: the page on fonteviva.org, through Google Translate for languages other than Portuguese.

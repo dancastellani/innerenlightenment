@@ -11,7 +11,8 @@ const BATCH_SIZE = 10;
 const SECONDS_BETWEEN_REQUESTS = 6.5;
 
 type Message = { id: number; title: string; paragraphs: string[]; note: string | null; [field: string]: unknown };
-type Content = { source: string; language: string; books: unknown[]; messages: Message[] };
+type Book = { slug: string; name: string; [field: string]: unknown };
+type Content = { source: string; language: string; books: Book[]; messages: Message[] };
 type Translation = { id: number; title: string; paragraphs: string[]; note: string | null };
 
 const lang = process.argv[2] ?? 'en';
@@ -20,18 +21,14 @@ const key = process.env.GEMINI_API_KEY;
 if (!key) throw new Error('Set the GEMINI_API_KEY environment variable');
 
 const source: Content = JSON.parse(await readFile('content/pt.json', 'utf8'));
-const done: Message[] = existsSync(output) ? JSON.parse(await readFile(output, 'utf8')).messages : [];
+const existing: Content | undefined = existsSync(output) ? JSON.parse(await readFile(output, 'utf8')) : undefined;
+const done: Message[] = existing?.messages ?? [];
 
 const sleep = (seconds: number) => new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 let lastRequest = 0;
 
-async function translate(batch: Translation[]): Promise<Translation[]> {
-  const prompt =
-    `Translate these messages from Portuguese into the language with code "${lang}". ` +
-    'They are Spiritist (Christian-based) spiritual texts; keep their tone, meaning and Bible references. ' +
-    'Return the same JSON array with the same ids and the same number of paragraphs per message, ' +
-    'translating only "title", "paragraphs" and "note" (leave null as null).\n\n' +
-    JSON.stringify(batch);
+// Sends the prompt to Gemini and returns its answer as JSON, or undefined when the answer is broken JSON.
+async function ask(prompt: string): Promise<any> {
   await sleep(Math.max(0, SECONDS_BETWEEN_REQUESTS - (Date.now() - lastRequest) / 1000));
   lastRequest = Date.now();
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
@@ -45,7 +42,7 @@ async function translate(batch: Translation[]): Promise<Translation[]> {
   if (response.status === 429) {
     console.error(`rate limited, waiting a minute: ${await response.text()}`);
     await sleep(60);
-    return translate(batch);
+    return ask(prompt);
   }
   if (!response.ok) throw new Error(`${response.status} ${response.statusText}: ${await response.text()}`);
   const result = await response.json();
@@ -53,17 +50,51 @@ async function translate(batch: Translation[]): Promise<Translation[]> {
   try {
     return JSON.parse(text);
   } catch (error) {
-    // Gemini sometimes returns broken JSON, for example with unescaped quotes. Count the batch as failed
+    // Gemini sometimes returns broken JSON, for example with unescaped quotes. Count it as failed
     // and go on; the next run translates it again.
-    console.error(`warning: batch failed, the answer is not valid JSON: ${error}`);
-    return [];
+    console.error(`warning: the answer is not valid JSON: ${error}`);
+    return undefined;
   }
 }
+
+async function translate(batch: Translation[]): Promise<Translation[]> {
+  const prompt =
+    `Translate these messages from Portuguese into the language with code "${lang}". ` +
+    'They are Spiritist (Christian-based) spiritual texts; keep their tone, meaning and Bible references. ' +
+    'Return the same JSON array with the same ids and the same number of paragraphs per message, ' +
+    'translating only "title", "paragraphs" and "note" (leave null as null).\n\n' +
+    JSON.stringify(batch);
+  return (await ask(prompt)) ?? [];
+}
+
+// The books in the order of pt.json, keeping the names already translated in the output file
+// and translating the names of new books.
+async function translateBooks(): Promise<Book[]> {
+  const translatedName = (book: Book) => existing?.books.find((b) => b.slug === book.slug && b.name !== book.name)?.name;
+  const todo = source.books.filter((book) => !translatedName(book)).map(({ slug, name }) => ({ slug, name }));
+  let names: { slug: string; name: string }[] = [];
+  if (todo.length > 0) {
+    const prompt =
+      `Translate these Spiritist book titles from Portuguese into the language with code "${lang}", ` +
+      'using the published title when the book has one. Return the same JSON array with the same slugs, ' +
+      'translating only "name".\n\n' +
+      JSON.stringify(todo);
+    names = (await ask(prompt)) ?? [];
+  }
+  return source.books.map((book) => {
+    const name = translatedName(book) ?? names.find((n) => n.slug === book.slug)?.name;
+    if (!name) console.error(`warning: failed to translate the book name "${book.name}"`);
+    else console.info(`book: ${book.name} -> ${name}`);
+    return { ...book, name: name ?? book.name };
+  });
+}
+
+const books = await translateBooks();
 
 async function save() {
   // Keep the order of pt.json, whatever order the translations arrived in.
   const messages = source.messages.flatMap((m) => done.filter((d) => d.id === m.id));
-  const json = JSON.stringify({ ...source, language: lang, messages }, null, 1);
+  const json = JSON.stringify({ ...source, language: lang, books, messages }, null, 1);
   await writeFile(output, json + '\n');
 }
 
@@ -91,4 +122,6 @@ for (let i = 0; i < todo.length; i += BATCH_SIZE) {
   console.error(`batch ${i / BATCH_SIZE + 1}/${Math.ceil(todo.length / BATCH_SIZE)}: ${translated} translated, ${failed} failed`);
 }
 
+// Saves the book names also when no message was left to translate.
+await save();
 console.error(`done: ${translated} translated, ${skipped} skipped, ${failed} failed; ${done.length}/${source.messages.length} in ${output}`);

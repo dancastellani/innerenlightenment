@@ -8,14 +8,18 @@ import englishContent from '../content/en.json';
 import labels from '../website/languages.json';
 import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
-import { findMessage, languageFor, originalLink, withOriginal, type Language } from './language';
+import { bookName, findMessage, languageFor, originalLink, withOriginal, type Book, type Language } from './language';
 import { readable } from './text';
 
 // UC-05: Portuguese is the original; translations may leave a message out, so the plan uses the Portuguese ids.
 const portuguese = (portugueseContent.messages as Message[]).map(readable);
 const translations: Record<Language, Message[]> = { pt: portuguese, en: englishContent.messages as Message[] };
 const books = portugueseContent.books;
-const bookNames = Object.fromEntries(books.map((b) => [b.slug, b.name]));
+const bookTranslations: Record<Language, Book[]> = { pt: books, en: englishContent.books };
+
+function bookNameIn(language: Language, slug: string): string {
+  return bookName(slug, bookTranslations[language], books);
+}
 
 function messageIn(language: Language, id: number | undefined): Message | undefined {
   return findMessage(id, translations[language], portuguese);
@@ -215,10 +219,10 @@ export default function App() {
         <Text style={styles.title}>Index</Text>
         <View style={styles.actions}>
           {books.map((book) => (
-            <Action key={book.slug} title={book.name} onPress={() => setIndexBook(book.slug)} main={book.slug === indexBook} />
+            <Action key={book.slug} title={bookNameIn(settings.language, book.slug)} onPress={() => setIndexBook(book.slug)} main={book.slug === indexBook} />
           ))}
         </View>
-        {indexBook && <Text style={styles.bookTitle}>{bookNames[indexBook]}</Text>}
+        {indexBook && <Text style={styles.bookTitle}>{bookNameIn(settings.language, indexBook)}</Text>}
         {bookMessages.map((m) => (
           <Text
             key={m.id}
@@ -326,7 +330,7 @@ export default function App() {
       <Text style={styles.title}>{message.title}</Text>
       {comparing && <Text style={[styles.paragraph, styles.original]}>{original.title}</Text>}
       <Text style={styles.source}>
-        {bookNames[message.book ?? '']} · {message.chapter}
+        {bookNameIn(settings.language, message.book ?? '')} · {message.chapter}
       </Text>
       {paragraphs.map((paragraph, i) => (
         <Text key={i} style={paragraph.isOriginal ? [styles.paragraph, styles.original] : styles.paragraph}>

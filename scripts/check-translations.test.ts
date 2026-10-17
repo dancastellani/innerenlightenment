@@ -10,12 +10,14 @@ function message(id: number, paragraphs: string[], note: string | null = null) {
 
 const original: Content = {
   language: 'pt',
+  books: [{ slug: 'livro', name: 'Livro' }, { slug: 'luz', name: 'Luz' }],
   messages: [message(1, ['“Curto.” (João, 1.1)', 'Primeiro.']), message(2, ['Um.', 'Dois.'], 'Nota.'), message(3, ['Só.'])],
 };
 
 function translated(): Content {
   return {
     language: 'en',
+    books: [{ slug: 'livro', name: 'Book' }, { slug: 'luz', name: 'Light' }],
     messages: [message(1, ['“Short.” (John, 1:1)', 'First.']), message(2, ['One.', 'Two.'], 'Note.'), message(3, ['Only.'])],
   };
 }
@@ -29,7 +31,7 @@ test('the language must match the file name', () => {
 });
 
 test('an empty translation is missing every message', () => {
-  const findings = checkTranslation(original, { language: 'en', messages: [] }, 'en');
+  const findings = checkTranslation(original, { ...translated(), messages: [] }, 'en');
   assert.deepEqual(findings, [
     '[1](https://fonteviva.org/livro/1/) is missing',
     '[2](https://fonteviva.org/livro/2/) is missing',
@@ -89,8 +91,8 @@ test('a note must be kept, and not added', () => {
 test('a paragraph left in Portuguese is reported from 5 words on', () => {
   const fourWords = 'De salvador a desamparado';
   const fiveWords = 'E ele chamou os doze';
-  const source: Content = { language: 'pt', messages: [message(1, [fourWords, fiveWords])] };
-  const translation: Content = { language: 'es', messages: [message(1, [fourWords, fiveWords])] };
+  const source: Content = { language: 'pt', books: [], messages: [message(1, [fourWords, fiveWords])] };
+  const translation: Content = { language: 'es', books: [], messages: [message(1, [fourWords, fiveWords])] };
   assert.deepEqual(checkTranslation(source, translation, 'es'), [`[1](https://fonteviva.org/livro/1/) paragraph 2 is still in Portuguese: "${fiveWords}"`]);
 });
 
@@ -98,22 +100,22 @@ test('a paragraph is still in Portuguese when 90% of its words are', () => {
   const original = 'um dois três quatro cinco seis sete oito nove dez';
   const ninetyPercent = 'um dois três quatro cinco seis sete oito nove ten';
   const eightyPercent = 'um dois três quatro cinco seis sete oito nine ten';
-  const source: Content = { language: 'pt', messages: [message(1, [original, original])] };
-  const translation: Content = { language: 'en', messages: [message(1, [ninetyPercent, eightyPercent])] };
+  const source: Content = { language: 'pt', books: [], messages: [message(1, [original, original])] };
+  const translation: Content = { language: 'en', books: [], messages: [message(1, [ninetyPercent, eightyPercent])] };
   assert.deepEqual(checkTranslation(source, translation, 'en'), [`[1](https://fonteviva.org/livro/1/) paragraph 1 is still in Portuguese: "${ninetyPercent}"`]);
 });
 
 test('a note left in Portuguese is reported', () => {
   const note = 'Esta mensagem foi publicada originalmente em 1950';
-  const source: Content = { language: 'pt', messages: [message(1, ['Um.'], note)] };
-  const translation: Content = { language: 'en', messages: [message(1, ['One.'], note)] };
+  const source: Content = { language: 'pt', books: [], messages: [message(1, ['Um.'], note)] };
+  const translation: Content = { language: 'en', books: [], messages: [message(1, ['One.'], note)] };
   assert.deepEqual(checkTranslation(source, translation, 'en'), [`[1](https://fonteviva.org/livro/1/) note is still in Portuguese: "${note}"`]);
 });
 
 test('an epigraph more than 1.5 times longer than the original is reported', () => {
-  const source: Content = { language: 'pt', messages: [message(1, ['“' + 'x'.repeat(9)])] }; // 10 characters
-  const at15: Content = { language: 'en', messages: [message(1, ['“' + 'y'.repeat(14)])] };
-  const at16: Content = { language: 'en', messages: [message(1, ['“' + 'y'.repeat(15)])] };
+  const source: Content = { language: 'pt', books: [], messages: [message(1, ['“' + 'x'.repeat(9)])] }; // 10 characters
+  const at15: Content = { language: 'en', books: [], messages: [message(1, ['“' + 'y'.repeat(14)])] };
+  const at16: Content = { language: 'en', books: [], messages: [message(1, ['“' + 'y'.repeat(15)])] };
   assert.deepEqual(checkTranslation(source, at15, 'en'), []);
   assert.match(checkTranslation(source, at16, 'en')[0], /epigraph is 16 characters, the original 10/);
 });
@@ -124,4 +126,27 @@ test('every translation in content/ passes the check', () => {
     const translation: Content = JSON.parse(readFileSync(`content/${file}`, 'utf8'));
     assert.deepEqual(checkTranslation(pt, translation, file.replace('.json', '')), [], `${file}: run node scripts/check-translations.ts`);
   }
+});
+
+test('a book name left in Portuguese is reported (#115)', () => {
+  const translation = translated();
+  translation.books[1].name = 'Luz';
+  assert.deepEqual(checkTranslation(original, translation, 'en'), ['book name "Luz" is still in Portuguese']);
+});
+
+test('a book missing from the translation is reported', () => {
+  const translation = translated();
+  translation.books.pop();
+  assert.deepEqual(checkTranslation(original, translation, 'en'), ['book "luz" is missing']);
+});
+
+test('a translation without books is missing every book', () => {
+  const findings = checkTranslation(original, { ...translated(), books: [] }, 'en');
+  assert.deepEqual(findings, ['book "livro" is missing', 'book "luz" is missing']);
+});
+
+test('a book that is not in pt.json is reported', () => {
+  const translation = translated();
+  translation.books.push({ slug: 'novo', name: 'New' });
+  assert.deepEqual(checkTranslation(original, translation, 'en'), ['book "novo" is not in pt.json']);
 });

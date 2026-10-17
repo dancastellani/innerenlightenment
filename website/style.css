@@ -36,7 +36,7 @@ li a:hover { text-decoration: underline; }
 
 /* The top bar: the main action on the left, the languages on the right. */
 nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; }
-nav, footer, .meta, .note, .translation, .medium { font-family: var(--sans); font-size: 0.9rem; color: var(--muted); }
+nav, footer, .meta, .note, .medium { font-family: var(--sans); font-size: 0.9rem; color: var(--muted); }
 nav a { display: inline-block; padding: 0.6rem 0; }
 nav .another {
   padding: 0.6rem 1.1rem;
@@ -50,8 +50,7 @@ nav .another {
 .meta { margin-bottom: 2.5rem; }
 .signature { font-style: italic; text-align: right; margin-top: 2rem; }
 .medium { font-style: normal; }
-.note, .translation { border-left: 3px solid var(--rule); padding-left: 1rem; }
-.translation { font-style: italic; }
+.note { border-left: 3px solid var(--rule); padding-left: 1rem; }
 nav .current { color: var(--ink); }
 footer { margin-top: 4rem; border-top: 1px solid var(--rule); padding-top: 1.5rem; line-height: 1.6; }
 

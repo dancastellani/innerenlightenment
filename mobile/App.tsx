@@ -293,7 +293,6 @@ export default function App() {
         </Text>
       ))}
       {message.signature && <Text style={styles.signature}>{message.signature}</Text>}
-      {isTranslation && <Text style={styles.translation}>{labels.en.translationDisclaimer}</Text>}
       <View style={styles.actions}>
         <Action title="Another message" onPress={showAnother} main />
         <Action title="Share" onPress={share} />
@@ -307,6 +306,10 @@ export default function App() {
           <Text style={styles.linkText}>Settings</Text>
         </Pressable>
       </View>
+      <Text style={styles.disclaimer}>
+        {labels.en.disclaimer}
+        {isTranslation && ` ${labels.en.translationDisclaimer}`}
+      </Text>
     </ScrollView>
   );
 }
@@ -337,7 +340,7 @@ const styles = StyleSheet.create({
   pillTextOn: { color: colors.paper },
   originalMark: { borderColor: colors.rule, fontSize: 15, color: colors.muted },
   original: { fontStyle: 'italic', color: colors.muted, borderLeftWidth: 3, borderColor: colors.rule, paddingLeft: 12 },
-  translation: { fontSize: 14, fontStyle: 'italic', color: colors.muted, marginTop: 24 },
+  disclaimer: { fontSize: 13, color: colors.muted, marginTop: 24 },
   backButton: { marginTop: 32 },
   bookTitle: { fontFamily: 'serif', fontSize: 24, fontWeight: '600', color: colors.ink, marginTop: 36, marginBottom: 8 },
   indexItem: { fontFamily: 'serif', fontSize: 18, color: colors.spring, paddingVertical: 14, borderBottomWidth: 1, borderColor: colors.rule },

@@ -89,26 +89,26 @@ Feature: Build and publish the website
 
   # In a browser (headless Chrome, phone-sized): what only a browser shows
 
-  @OP-05.20
+  @OP-05.21
   Scenario: In a browser, the home page opens the English message
     When the website is built
     And the page "" is opened in a browser
     Then the browser is on the page "en/o-tempo/"
 
-  @OP-05.21
+  @OP-05.22
   Scenario: In a browser, "Another message" opens a message in the same language
     When the website is built
     And the page "pt/o-tempo/" is opened in a browser
     And the link "Outra mensagem" is clicked
     Then the browser is on the page "pt/o-tempo/" or "pt/fe-e-obras/"
 
-  @OP-05.22
+  @OP-05.23
   Scenario: In a browser, every link from a message page to the website opens a page
     When the website is built
     And the page "en/o-tempo/" is opened in a browser
     Then every link on it to the website opens a page
 
-  @OP-05.23
+  @OP-05.24
   Scenario: In a browser, a message page fits the smallest common phone screen, 320 pixels wide
     When the website is built
     And the page "pt/o-tempo/" is opened in a browser

@@ -43,10 +43,11 @@ The scripts themselves only use what ships with Node; Cucumber is the one develo
 
 ## Trying the app on your Android phone
 
-There are two ways, both with **Expo Go** from the Play Store:
+There are three ways, all with **Expo Go**:
 
 - **`npm run preview` (works anywhere).** Publishes your checked-out code to Expo and prints a link; open it and scan its QR code with Expo Go. The phone downloads the app once and needs no connection to your computer afterwards. Run it again after each change. This is the most reliable way to test (see [Previewing an app PR](#previewing-an-app-pr-in-expo-go)).
 - **`npm run app` (live reload while coding).** Starts a server on your computer; scan the QR code in the terminal with Expo Go, and changes appear on the phone as you save. The phone loads the app from your computer, so both must be on the same Wi-Fi, and that network must let devices talk to each other (office and public Wi-Fi often don't). If Expo Go says **"Cannot connect to Expo CLI"** or can't open the QR code, stop it and run `cd mobile && npx expo start --tunnel`, which goes through the internet instead (slower; the first time it asks to install `@expo/ngrok`).
+- **On your Mac, in the Android Emulator (no phone needed).** Install [Android Studio](https://developer.android.com/studio), open it, choose **More Actions → Virtual Device Manager** (or **Device Manager** once a project is open) and create a virtual phone: any recent Pixel with the latest Android works, also on Apple Silicon Macs. Start it with the ▶ button, then run `npm run app` and press `a` in the terminal: Expo installs Expo Go on the emulator and opens the app there, with live reload and no Wi-Fi to worry about. If Expo says it can't find the Android SDK, add `export ANDROID_HOME=$HOME/Library/Android/sdk` to `~/.zshrc` and open a new terminal.
 
 Then:
 

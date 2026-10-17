@@ -18,7 +18,8 @@ case "$1" in
     status=0
     # Besides the output, each writes a JUnit report to test-reports/, which GitHub shows in the Checks tab.
     mkdir -p test-reports
-    node --test --test-reporter=spec --test-reporter-destination=stdout \
+    # mobile/ can't be "type": "module" (Expo requires metro.config.js), so hide Node's warning about its tests (#92).
+    node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test --test-reporter=spec --test-reporter-destination=stdout \
       --test-reporter=junit --test-reporter-destination=test-reports/unit.xml \
       scripts/*.test.ts mobile/*.test.ts || status=1
     npx cucumber-js specs/ops --import 'specs/ops/steps/*.ts' --tags 'not @pending' \

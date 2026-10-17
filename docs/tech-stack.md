@@ -49,7 +49,7 @@ Two rules come with this:
 - Imports include the `.ts` extension: `import { parseMessage } from './parse-message.ts'`.
 - Only TypeScript features that can simply be erased are allowed (types, `type` imports). Features that generate code, like `enum`, don't run. Plain objects and string unions do the same job.
 
-Node also ships with what the scripts need, so the scripts have **no dependencies**: `fetch` for HTTP, `node:fs` for files, `node:test` for tests. `package.json` says `"type": "module"`, which turns on `import`/`export`, and lists Cucumber as the one development dependency, used to run the specs.
+Node also ships with what the scripts need, so the scripts have **no dependencies**: `fetch` for HTTP, `node:fs` for files, `node:test` for tests. `package.json` says `"type": "module"`, which turns on `import`/`export`, and lists two development dependencies for the tests: Cucumber, to run the specs, and Playwright, to open the built website in a real browser.
 
 Install: [nodejs.org](https://nodejs.org/), version 24 or newer. Check with `node --version`.
 

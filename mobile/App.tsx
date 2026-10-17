@@ -8,7 +8,7 @@ import englishContent from '../content/en.json';
 import labels from '../website/languages.json';
 import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
-import { findMessage, languageFor, originalLink, type Language } from './language';
+import { findMessage, languageFor, originalLink, withOriginal, type Language } from './language';
 import { readable } from './text';
 
 // UC-05: Portuguese is the original; translations may leave a message out, so the plan uses the Portuguese ids.
@@ -110,6 +110,7 @@ export default function App() {
   const [allowed, setAllowed] = useState(true);
   const [screen, setScreen] = useState<'message' | 'settings' | 'index'>('message');
   const [indexBook, setIndexBook] = useState<string>(); // UC-20: the book picked on the index
+  const [showOriginal, setShowOriginal] = useState(false); // UC-18: the Portuguese text after each paragraph
   const tapped = Notifications.useLastNotificationResponse();
 
   // On open, and when the app comes back to the front on a new day (UC-03.4):
@@ -260,15 +261,35 @@ export default function App() {
     );
   }
 
+  // UC-18: a translation can show the Portuguese original after each paragraph.
+  const original = messageIn('pt', message.id)!;
+  const comparing = isTranslation && showOriginal;
+  const paragraphs = comparing
+    ? withOriginal(message.paragraphs, original.paragraphs)
+    : message.paragraphs.map((text) => ({ text, isOriginal: false }));
+
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
+      {isTranslation ? (
+        <Pressable
+          accessibilityRole="switch"
+          accessibilityState={{ checked: showOriginal }}
+          onPress={() => setShowOriginal(!showOriginal)}
+          style={[styles.pill, showOriginal && styles.pillOn]}
+        >
+          <Text style={[styles.pillText, showOriginal && styles.pillTextOn]}>{labels.en.original}</Text>
+        </Pressable>
+      ) : (
+        <Text style={[styles.pill, styles.originalMark]}>{labels.pt.original}</Text>
+      )}
       <Text style={styles.title}>{message.title}</Text>
+      {comparing && <Text style={[styles.paragraph, styles.original]}>{original.title}</Text>}
       <Text style={styles.source}>
         {bookNames[message.book ?? '']} · {message.chapter}
       </Text>
-      {message.paragraphs.map((text, i) => (
-        <Text key={i} style={styles.paragraph}>
-          {text}
+      {paragraphs.map((paragraph, i) => (
+        <Text key={i} style={paragraph.isOriginal ? [styles.paragraph, styles.original] : styles.paragraph}>
+          {paragraph.text}
         </Text>
       ))}
       {message.signature && <Text style={styles.signature}>{message.signature}</Text>}
@@ -310,6 +331,12 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 52, borderBottomWidth: 1, borderColor: colors.rule },
   label: { fontSize: 18, color: colors.ink },
   warning: { color: colors.warning, marginBottom: 8 },
+  pill: { alignSelf: 'flex-start', borderWidth: 1.5, borderColor: colors.spring, borderRadius: 18, paddingVertical: 6, paddingHorizontal: 16, marginBottom: 16 },
+  pillOn: { backgroundColor: colors.spring },
+  pillText: { fontSize: 15, fontWeight: '600', color: colors.spring },
+  pillTextOn: { color: colors.paper },
+  originalMark: { borderColor: colors.rule, fontSize: 15, color: colors.muted },
+  original: { fontStyle: 'italic', color: colors.muted, borderLeftWidth: 3, borderColor: colors.rule, paddingLeft: 12 },
   translation: { fontSize: 14, fontStyle: 'italic', color: colors.muted, marginTop: 24 },
   backButton: { marginTop: 32 },
   bookTitle: { fontFamily: 'serif', fontSize: 24, fontWeight: '600', color: colors.ink, marginTop: 36, marginBottom: 8 },

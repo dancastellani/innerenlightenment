@@ -49,6 +49,18 @@ When('the link {string} is clicked', async function (this: World, name: string) 
   await this.page.getByRole('link', { name, exact: true }).click();
 });
 
+When('{string} is tapped', async function (this: World, text: string) {
+  await this.page.getByText(text, { exact: true }).click();
+});
+
+Then(/^the browser shows (.+)$/, async function (this: World, texts: string) {
+  for (const text of quoted(texts)) assert.ok(await this.page.getByText(text, { exact: true }).isVisible(), text);
+});
+
+Then(/^the browser does not show (.+)$/, async function (this: World, texts: string) {
+  for (const text of quoted(texts)) assert.equal(await this.page.getByText(text, { exact: true }).isVisible(), false, text);
+});
+
 // The page may still be redirecting, so this waits until it is on one of the expected pages.
 Then(/^the browser is on the page (.+)$/, async function (this: World, pages: string) {
   const expected = quoted(pages);

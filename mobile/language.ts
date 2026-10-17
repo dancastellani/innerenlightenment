@@ -19,3 +19,14 @@ export function originalLink(url: string, language: string): string {
   const translated = url.replace('https://fonteviva.org/', 'https://fonteviva-org.translate.goog/');
   return `${translated}?_x_tr_sl=pt&_x_tr_tl=${language}&_x_tr_hl=${language}&_x_tr_pto=wapp`;
 }
+
+// UC-18.1: each translated paragraph followed by the same paragraph of the Portuguese original,
+// as study groups compare them. Paragraphs left over on either side come at the end.
+export function withOriginal(translated: string[], original: string[]): { text: string; isOriginal: boolean }[] {
+  const result = [];
+  for (let i = 0; i < Math.max(translated.length, original.length); i++) {
+    if (i < translated.length) result.push({ text: translated[i], isOriginal: false });
+    if (i < original.length) result.push({ text: original[i], isOriginal: true });
+  }
+  return result;
+}

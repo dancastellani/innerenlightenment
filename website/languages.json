@@ -1,9 +1,9 @@
 {
-  "en": { "name": "English", "index": "Index", "anotherMessage": "Another message", "readOriginal": "Read it on fonteviva.org",
+  "en": { "name": "English", "index": "Index", "anotherMessage": "Another message", "readOriginal": "Read it on fonteviva.org", "original": "Original",
     "translationDisclaimer": "This message was translated from the Portuguese original by AI and is provided without guarantee." },
-  "pt": { "name": "Português", "index": "Índice", "anotherMessage": "Outra mensagem", "readOriginal": "Leia em fonteviva.org" },
-  "es": { "name": "Español", "index": "Índice", "anotherMessage": "Otro mensaje", "readOriginal": "Léalo en fonteviva.org",
+  "pt": { "name": "Português", "index": "Índice", "anotherMessage": "Outra mensagem", "readOriginal": "Leia em fonteviva.org", "original": "Texto original" },
+  "es": { "name": "Español", "index": "Índice", "anotherMessage": "Otro mensaje", "readOriginal": "Léalo en fonteviva.org", "original": "Original",
     "translationDisclaimer": "Este mensaje fue traducido del original en portugués con IA y se ofrece sin garantía." },
-  "fr": { "name": "Français", "index": "Sommaire", "anotherMessage": "Un autre message", "readOriginal": "Lisez-le sur fonteviva.org",
+  "fr": { "name": "Français", "index": "Sommaire", "anotherMessage": "Un autre message", "readOriginal": "Lisez-le sur fonteviva.org", "original": "Original",
     "translationDisclaimer": "Ce message a été traduit de l'original portugais par IA et est fourni sans garantie." }
 }

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { findMessage, languageFor, originalLink } from './language.ts';
+import { findMessage, languageFor, originalLink, withOriginal } from './language.ts';
 import type { Message } from '../scripts/parse-message.ts';
 
 test('UC-05.1: English when the phone is not Portuguese', () => {
@@ -49,4 +49,19 @@ test('UC-07.2: English opens the page through Google Translate', () => {
     originalLink(url, 'en'),
     'https://fonteviva-org.translate.goog/caminho-verdade-e-vida/filhos-e-servos/?_x_tr_sl=pt&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp',
   );
+});
+
+test('UC-18.1: each paragraph is followed by its original', () => {
+  assert.deepEqual(withOriginal(['One.', 'Two.'], ['Um.', 'Dois.']), [
+    { text: 'One.', isOriginal: false },
+    { text: 'Um.', isOriginal: true },
+    { text: 'Two.', isOriginal: false },
+    { text: 'Dois.', isOriginal: true },
+  ]);
+});
+
+test('UC-18.4: paragraphs left over on either side are kept, and nothing gives nothing', () => {
+  assert.deepEqual(withOriginal(['One.'], ['Um.', 'Dois.']).map((p) => p.text), ['One.', 'Um.', 'Dois.']);
+  assert.deepEqual(withOriginal(['One.', 'Two.'], ['Um.']).map((p) => p.text), ['One.', 'Um.', 'Two.']);
+  assert.deepEqual(withOriginal([], []), []);
 });

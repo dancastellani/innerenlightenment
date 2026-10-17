@@ -114,6 +114,23 @@ Feature: Build and publish the website
     And the page "pt/o-tempo/" is opened in a browser
     Then it does not scroll sideways
 
+  # UC-18 on the website: compare a translation with the Portuguese original.
+  @OP-05.25
+  Scenario: In a browser, "Original" shows the Portuguese text after each paragraph, and hides it again
+    When the website is built
+    And the page "en/o-tempo/" is opened in a browser
+    Then the browser does not show "Primeiro parágrafo."
+    When "Original" is tapped
+    Then the browser shows "First paragraph.", "Primeiro parágrafo.", "Second paragraph." and "Segundo parágrafo."
+    When "Original" is tapped
+    Then the browser does not show "Primeiro parágrafo." and "Segundo parágrafo."
+
+  @OP-05.26
+  Scenario: The Portuguese page is marked as the original and has no "Original" switch
+    When the website is built
+    Then the page "pt/o-tempo/" contains "Texto original"
+    And the page "pt/o-tempo/" does not contain "show-original"
+
   # Edge cases
 
   @OP-05.6

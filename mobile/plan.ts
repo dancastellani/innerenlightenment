@@ -9,13 +9,13 @@ export function dayKey(date: Date): string {
 }
 
 // Gives today and the next `days` days a random message, keeping days already planned
-// and forgetting days before today.
+// and forgetting days before today and messages no longer in `ids` (UC-01.13).
 export function fillPlan(plan: Plan, ids: number[], today: Date, days = 14, random = Math.random): Plan {
   // new Date(y, m, d + i) handles month ends and daylight-saving changes.
   const addDays = (i: number) => new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
   const result: Plan = {};
   for (const [day, id] of Object.entries(plan)) {
-    if (day >= dayKey(today)) result[day] = id;
+    if (day >= dayKey(today) && ids.includes(id)) result[day] = id;
   }
 
   for (let i = 0; i <= days; i++) {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Linking, Pressable, ScrollView, Share, StyleSheet, Switch, Text, View } from 'react-native';
+import { AppState, Linking, Pressable, ScrollView, Share, StyleSheet, Switch, Text, View } from 'react-native';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
@@ -112,14 +112,28 @@ export default function App() {
   const [indexBook, setIndexBook] = useState<string>(); // UC-20: the book picked on the index
   const tapped = Notifications.useLastNotificationResponse();
 
-  // On open: top up the schedule and show today's message.
+  // On open, and when the app comes back to the front on a new day (UC-03.4):
+  // top up the schedule and show today's message.
   useEffect(() => {
-    loadSettings().then(async (saved) => {
-      setSettings(saved);
-      const { plan, allowed } = await scheduleDays(saved);
-      setAllowed(allowed);
-      setMessageId((current) => current ?? plan[dayKey(new Date())]);
+    let shownDay = '';
+    function showToday() {
+      const today = dayKey(new Date());
+      if (today === shownDay) return;
+      const isNewDay = shownDay !== '';
+      shownDay = today;
+      loadSettings().then(async (saved) => {
+        setSettings(saved);
+        const { plan, allowed } = await scheduleDays(saved);
+        setAllowed(allowed);
+        // On the first open, a message opened from a notification (UC-02) stays.
+        setMessageId((current) => (isNewDay ? plan[today] : (current ?? plan[today])));
+      });
+    }
+    showToday();
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') showToday();
     });
+    return () => subscription.remove();
   }, []);
 
   // UC-02: tapping a notification shows that message.

@@ -29,6 +29,17 @@ test('UC-01.5 boundary: picks stay within the messages at both ends of the rando
   assert.equal(fillPlan({}, ids, today, 14, () => 0.9999)['2026-10-16'], 724);
 });
 
+test('UC-01.13: a day whose message is no longer in the content gets another one', () => {
+  const plan = fillPlan({ '2026-10-16': 999, '2026-10-17': 7 }, ids, today, 14, () => 0);
+  assert.equal(plan['2026-10-16'], 1);
+  assert.equal(plan['2026-10-17'], 7);
+});
+
+test('UC-01.13 boundary: the first and last ids are still in the content and kept', () => {
+  const plan = fillPlan({ '2026-10-16': 1, '2026-10-17': 724, '2026-10-18': 725 }, ids, today, 14, () => 0.5);
+  assert.deepEqual([plan['2026-10-16'], plan['2026-10-17'], plan['2026-10-18']], [1, 724, 363]);
+});
+
 test('dayKey uses local date', () => {
   assert.equal(dayKey(new Date(2026, 0, 5, 23, 59)), '2026-01-05');
 });

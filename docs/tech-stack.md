@@ -218,6 +218,16 @@ One-time setup, already done for this repo (except step 3):
 2. Link the app to it: `cd mobile && npx eas-cli@latest init --id <project id>`. This writes the ID into `mobile/app.json` (`extra.eas.projectId`); the app also needs `updates.url` (`https://u.expo.dev/<project id>`), `runtimeVersion` (`{ "policy": "sdkVersion" }`, which matches Expo Go) and the `expo-updates` package.
 3. Connect the repository to the project on expo.dev ([steps](development.md#connecting-github-to-expo)). The workflow is read from `main`, so it starts on PRs once this file is merged.
 
+### App builds (EAS Workflows)
+
+`mobile/.eas/workflows/builds.yml` runs on every merge to `main` that changes the app. It builds the installable Android APK and iOS app (the `preview` profile in `eas.json`) on Expo's servers, but only when the app's **fingerprint** changed: a hash of its native side (native packages, SDK, `app.json`), so a new build is needed. When a build with the same fingerprint already exists, it publishes the change to the `preview` channel instead, and installed preview builds download it on their next start. Each platform is handled on its own, so the iOS build failing (or not being set up yet) doesn't stop Android. Builds can still be started by hand with `./run.sh build`.
+
+The Free plan allows 15 Android and 15 iOS builds a month (then none until the 1st), 60 minutes of Workflows a month, and one macOS (iOS) job at a time ([pricing](https://expo.dev/pricing)). Building only on a fingerprint change keeps within that; Expo's docs don't say which jobs count toward the minutes, so check the project's usage on expo.dev after a few runs.
+
+iOS needs an Apple Developer Program membership (US$99 a year) and an iPhone registered with Expo before the first build ([steps](development.md#building-for-ios)); until then the iOS jobs fail and Android carries on. Production (store) builds are still started by hand.
+
+**Security.** The builds sign the app with the Android key and Apple certificate that Expo keeps for the project. Only code merged into `main` is built, but the PR previews run a PR's code on a machine signed in to the same project, so the rule from the previews above applies to the signing keys too: only people you trust get push access.
+
 ### Local notifications (planned)
 
 `expo-notifications` asks the phone to show a notification at a set time, even with the app closed and no network. The text is fixed when the notification is scheduled, so the app picks the next 14 messages and schedules one per day at 8:00. Each time the app opens, it tops the queue back up to 14 days (iOS allows at most 64 pending notifications). Tapping one opens that message.

@@ -138,6 +138,16 @@ To update it later, build again and install the new APK over the old one; settin
 
 Publishing on Google Play is a separate set of steps, most of them done by you: see [play-store.md](play-store.md).
 
+## Building for iOS
+
+The *Builds* workflow ([how it works](tech-stack.md#app-builds-eas-workflows)) builds the iOS app on every merge that changes its native side, but Expo can only sign it once these are done, once, from your laptop:
+
+1. Join the [Apple Developer Program](https://developer.apple.com/programs/enroll/) (US$99 a year; approval can take a day or two).
+2. Register your iPhone: `cd mobile && npx eas-cli@latest device:create`, then open the printed link on the iPhone and install the profile it offers.
+3. Build once by hand: `npx eas-cli@latest build --platform ios --profile preview`. Sign in with your Apple ID when asked and let Expo create and keep the certificate and provisioning profile. Open the link it prints on the iPhone to install the app.
+
+Each new iPhone has to be registered (step 2) and needs a new build before it can install the app. Android needs nothing new: the workflow uses the signing key Expo created on your first `npm run build-apk` (run that once if you never have).
+
 ## Working with Claude Code locally
 
 You can keep working with Claude on your own computer using [Claude Code](https://code.claude.com/docs):

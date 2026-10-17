@@ -14,14 +14,18 @@ case "$1" in
     npm ci && cd mobile && npm ci
     ;;
   test)
-    # Runs the unit tests and the specs, each with its own summary, and fails if either fails.
+    # Runs the unit tests, the translation checks and the specs, each with its own summary, and fails if either fails.
     status=0
     # Besides the output, each writes a JUnit report to test-reports/, which GitHub shows in the Checks tab.
-    mkdir -p test-reports
+    mkdir -p test-reports translation-reports
     # mobile/ can't be "type": "module" (Expo requires metro.config.js), so hide Node's warning about its tests (#92).
     node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test --test-reporter=spec --test-reporter-destination=stdout \
       --test-reporter=junit --test-reporter-destination=test-reports/unit.xml \
       scripts/*.test.ts mobile/*.test.ts || status=1
+    # Every message of every translation in content/ is a test of its own, grouped under the Portuguese message.
+    node --test --test-reporter=spec --test-reporter-destination=stdout \
+      --test-reporter=junit --test-reporter-destination=translation-reports/translations.xml \
+      scripts/translations.check.ts || status=1
     npx cucumber-js specs/ops --import 'specs/ops/steps/*.ts' --tags 'not @pending' \
       --format pretty --format junit:test-reports/specs.xml --format-options '{"junit":{"suiteName":"Specs"}}' || status=1
     exit $status

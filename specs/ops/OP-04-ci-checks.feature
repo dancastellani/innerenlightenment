@@ -23,3 +23,7 @@ Feature: Checks and jobs on GitHub Actions
   Scenario: The export is started by hand and proposes a pull request
     Then the "Export messages" workflow is started by hand
     And it opens a pull request that changes only "content/pt.json"
+
+  @OP-04.6
+  Scenario: Every translated message is listed in the pull request's Checks tab
+    Then the "Test" workflow publishes the translation checks as a "Translation report" check, also when a test failed

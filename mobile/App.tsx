@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { AppState, Linking, Modal, Pressable, ScrollView, Share, StyleSheet, Switch, Text, View } from 'react-native';
+import { useEffect, useState, type ReactNode } from 'react';
+import { AppState, Image, Linking, Modal, Pressable, ScrollView, Share, StyleSheet, Switch, Text, View } from 'react-native';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
@@ -7,6 +7,7 @@ import portugueseContent from '../content/pt.json';
 import englishContent from '../content/en.json';
 import labels from '../website/languages.json';
 import studyGroups from '../website/study-groups.json';
+import { expo } from './app.json';
 import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
 import { findMessage, languageFor, originalLink, withOriginal, type Language } from './language';
@@ -102,6 +103,21 @@ function Action({ title, onPress, main = false }: { title: string; onPress: () =
     >
       <Text style={[styles.actionText, main && styles.mainActionText]}>{title}</Text>
     </Pressable>
+  );
+}
+
+// Every screen: the app's name fixed at the top, so people always know which app this is,
+// and the page scrolling under it.
+function Screen({ action, children }: { action?: ReactNode; children: ReactNode }) {
+  return (
+    <View style={styles.app}>
+      <View style={styles.appBar}>
+        <Image source={require('./assets/icon.png')} style={styles.appIcon} />
+        <Text style={styles.appName}>{expo.name}</Text>
+        {action}
+      </View>
+      <ScrollView contentContainerStyle={styles.page}>{children}</ScrollView>
+    </View>
   );
 }
 
@@ -216,7 +232,7 @@ export default function App() {
   if (screen === 'index') {
     const bookMessages = portuguese.filter((m) => m.book === indexBook).map((m) => messageIn(settings.language, m.id)!);
     return (
-      <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
+      <Screen>
         <Text style={styles.title}>Index</Text>
         <View style={styles.actions}>
           {books.map((book) => (
@@ -239,14 +255,14 @@ export default function App() {
         <View style={styles.backButton}>
           <Action title="Back" onPress={() => (indexBook ? setIndexBook(undefined) : setScreen('message'))} />
         </View>
-      </ScrollView>
+      </Screen>
     );
   }
 
   // UC-19: links to Spiritist organizations that hold study meetings, the same as the website.
   if (screen === 'study-groups') {
     return (
-      <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
+      <Screen>
         <Text style={styles.title}>{labels[settings.language].studyGroups}</Text>
         <Text style={styles.paragraph}>{labels[settings.language].studyGroupsIntro}</Text>
         <View style={styles.actions}>
@@ -255,13 +271,13 @@ export default function App() {
           ))}
           <Action title="Back" onPress={() => setScreen('message')} main />
         </View>
-      </ScrollView>
+      </Screen>
     );
   }
 
   if (screen === 'settings') {
     return (
-      <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
+      <Screen>
         <Text style={styles.title}>Settings</Text>
         <View style={styles.settings}>
           <View style={styles.row}>
@@ -296,7 +312,7 @@ export default function App() {
           <Action title="Test notification in 10 seconds" onPress={sendTest} />
           <Action title="Back" onPress={() => setScreen('message')} main />
         </View>
-      </ScrollView>
+      </Screen>
     );
   }
 
@@ -307,21 +323,23 @@ export default function App() {
     ? withOriginal(message.paragraphs, original.paragraphs)
     : message.paragraphs.map((text) => ({ text, isOriginal: false }));
 
+  // UC-18: the "Original" switch sits in the fixed top bar, so it stays in reach while reading.
+  const originalSwitch = isTranslation ? (
+    <Pressable
+      accessibilityRole="switch"
+      accessibilityState={{ checked: showOriginal }}
+      onPress={() => setShowOriginal(!showOriginal)}
+      style={[styles.pill, showOriginal && styles.pillOn]}
+    >
+      <Text style={[styles.pillText, showOriginal && styles.pillTextOn]}>{labels.en.original}</Text>
+    </Pressable>
+  ) : (
+    <Text style={[styles.pill, styles.originalMark]}>{labels.pt.original}</Text>
+  );
+
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.page}>
+    <Screen action={originalSwitch}>
       <View style={styles.topBar}>
-        {isTranslation ? (
-          <Pressable
-            accessibilityRole="switch"
-            accessibilityState={{ checked: showOriginal }}
-            onPress={() => setShowOriginal(!showOriginal)}
-            style={[styles.pill, showOriginal && styles.pillOn]}
-          >
-            <Text style={[styles.pillText, showOriginal && styles.pillTextOn]}>{labels.en.original}</Text>
-          </Pressable>
-        ) : (
-          <Text style={[styles.pill, styles.originalMark]}>{labels.pt.original}</Text>
-        )}
         <MenuButton onPress={() => setMenuOpen(true)} />
       </View>
       {/* The menu opens under the button at the top right; tapping outside closes it. */}
@@ -364,13 +382,16 @@ export default function App() {
         {labels.en.disclaimer}
         {isTranslation && ` ${labels.en.translationDisclaimer}`}
       </Text>
-    </ScrollView>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { backgroundColor: colors.paper },
-  page: { padding: 24, paddingTop: 64, paddingBottom: 48 },
+  app: { flex: 1, backgroundColor: colors.paper },
+  appBar: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 48, paddingBottom: 12, paddingHorizontal: 16, borderBottomWidth: 1, borderColor: colors.rule },
+  appIcon: { width: 28, height: 28, borderRadius: 6 },
+  appName: { flex: 1, fontSize: 17, fontWeight: '600', color: colors.ink },
+  page: { padding: 24, paddingBottom: 48 },
   title: { fontFamily: 'serif', fontSize: 34, lineHeight: 40, fontWeight: '600', color: colors.ink, marginBottom: 6 },
   source: { fontSize: 14, color: colors.muted, marginBottom: 28 },
   paragraph: { fontFamily: 'serif', fontSize: 19, lineHeight: 31, color: colors.ink, marginBottom: 16 },
@@ -381,22 +402,22 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.7 },
   actionText: { fontSize: 17, fontWeight: '600', color: colors.spring },
   mainActionText: { color: colors.paper },
-  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  topBar: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-start' },
   menuButton: { width: 48, height: 48, marginTop: -8, marginRight: -8, alignItems: 'center', justifyContent: 'center', gap: 5 },
   bar: { width: 22, height: 2, borderRadius: 1, backgroundColor: colors.ink },
   backdrop: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.15)' },
-  menu: { position: 'absolute', top: 104, right: 16, minWidth: 200, paddingVertical: 8, borderRadius: 12, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.rule, elevation: 6 },
+  menu: { position: 'absolute', top: 168, right: 16, minWidth: 200, paddingVertical: 8, borderRadius: 12, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.rule, elevation: 6 },
   menuItem: { paddingVertical: 14, paddingHorizontal: 20 },
   menuItemText: { fontSize: 17, color: colors.ink },
   settings: { gap: 12, marginTop: 24 },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 52, borderBottomWidth: 1, borderColor: colors.rule },
   label: { fontSize: 18, color: colors.ink },
   warning: { color: colors.warning, marginBottom: 8 },
-  pill: { alignSelf: 'flex-start', borderWidth: 1.5, borderColor: colors.spring, borderRadius: 18, paddingVertical: 6, paddingHorizontal: 16, marginBottom: 16 },
+  pill: { alignSelf: 'flex-start', borderWidth: 1.5, borderColor: colors.spring, borderRadius: 18, paddingVertical: 4, paddingHorizontal: 12 },
   pillOn: { backgroundColor: colors.spring },
-  pillText: { fontSize: 15, fontWeight: '600', color: colors.spring },
+  pillText: { fontSize: 14, fontWeight: '600', color: colors.spring },
   pillTextOn: { color: colors.paper },
-  originalMark: { borderColor: colors.rule, fontSize: 15, color: colors.muted },
+  originalMark: { borderColor: colors.rule, fontSize: 14, color: colors.muted },
   original: { fontStyle: 'italic', color: colors.muted, borderLeftWidth: 3, borderColor: colors.rule, paddingLeft: 12 },
   disclaimer: { fontSize: 13, color: colors.muted, marginTop: 24 },
   backButton: { marginTop: 32 },

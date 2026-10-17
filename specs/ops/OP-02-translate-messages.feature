@@ -13,6 +13,18 @@ Feature: Translate the messages into another language
     And each message keeps its id, book, address and number of paragraphs
     And each translated message is logged with its Portuguese and translated titles, like "translated: Nos mesmos pratos -> In the Same Dishes"
 
+  @OP-02.5
+  Scenario: The book names are translated too (#115)
+    When the translation into "en" runs
+    Then each book of content/pt.json is in content/en.json with its slug and its name in English
+
+  @OP-02.6
+  Scenario: A book added later is translated, the others are not sent again
+    Given content/en.json already has the translated names of 3 of the 4 books
+    When the translation into "en" runs
+    Then only the name of the new book is sent to be translated
+    And the other 3 book names stay as they are
+
   @OP-02.2
   Scenario: An interrupted run resumes where it stopped
     Given content/en.json already has 2 of the 3 messages

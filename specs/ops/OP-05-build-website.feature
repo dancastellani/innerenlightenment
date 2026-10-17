@@ -83,6 +83,21 @@ Feature: Build and publish the website
     Then the page "pt/" has the link "Fonte Viva" to "#fonte-viva" before the first message
     And the page "pt/" has the book heading "fonte-viva"
 
+  @OP-05.30
+  Scenario: A translated language page shows the book names in its language (#115)
+    When the website is built
+    Then the page "en/" has the link "Living Spring" to "#fonte-viva"
+    And the page "en/" has the book heading "fonte-viva"
+    And the page "en/" does not contain "Fonte Viva</a>" and "Fonte Viva</h2>"
+    And the page "pt/" contains "Fonte Viva</a>" and "Fonte Viva</h2>"
+
+  @OP-05.31
+  Scenario: A translated message page shows its book name in its language (#115)
+    When the website is built
+    Then the page "en/o-tempo/" contains "Living Spring · Capítulo 1"
+    And the page "en/o-tempo/" does not contain "Fonte Viva ·"
+    And the page "pt/o-tempo/" contains "Fonte Viva · Capítulo 1"
+
   @OP-05.12
   Scenario: Every merge publishes the website
     Then the "Website" workflow runs on every push to main

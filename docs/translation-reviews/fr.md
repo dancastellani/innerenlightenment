@@ -7,12 +7,13 @@ Review of `content/fr.json` (724 messages), translated from `content/pt.json` wi
 | | Messages |
 | --- | --- |
 | Checked | 724 |
-| Fixed | 32 |
+| Fixed | 34 |
 | Open | 0 (one style note below) |
 
 - **Structure:** every message has the same id, order, fields, book, chapter, author, signature and link as the Portuguese, the same number of paragraphs, and a note only where the original has one. No problems.
 - **Found by the automatic check (12):** 9 epigraphs expanded into the full Bible verse or with the verse before it (two of them also had a Spanish word, « tienes », or a misspelling), 2 worded differently and longer than the original, and 1 quoting verses 3.2-3 instead of 3.3 (1220).
 - **Found by reading (20):** 18 references with the book name in Portuguese or misspelled (LUCAS, LUCAC, « LUCAS [LUC] ») instead of LUC, one verse ending in a made-up phrase (1252, « tu ne t'en es point espié »), and one Spanish or Portuguese word (1338, « porque »).
+- **Found by the Bible reference check (2, #113):** reference numbers that differed from the Portuguese; see the last fixes below.
 - **Style note, not fixed:** verse numbers are written in two ways, "(Jean, 16.32)" in 656 messages and "(1 Corinthiens, 3:2)" in 61. Both read fine; they can be made uniform later if wanted.
 
 ## Fixes
@@ -272,3 +273,19 @@ Problem: epigraph has its book name in Portuguese or misspelled (LUCAS) (found b
 - Portuguese: “Para alumiar os que estão assentados em trevas e sombra de morte, a fim de dirigir os nossos pés pelo caminho da paz.” — (LUCAS, 1.79)
 - Before: « Pour éclairer ceux qui sont assis dans les ténèbres et dans l'ombre de la mort, pour diriger nos pieds dans le chemin de la paix. » — (LUCAS, 1.79)
 - After: « Pour éclairer ceux qui sont assis dans les ténèbres et dans l'ombre de la mort, pour diriger nos pieds dans le chemin de la paix. » — (LUC, 1.79)
+
+### [889 Gardez-vous](https://fonteviva.org/caminho-verdade-e-vida/guardai-vos/)
+
+Problem: Bible reference numbers changed (found by the reference check, #113).
+
+- Portuguese: … — (JUDAS, 10)
+- Before: … — (JUDE, 1.10)
+- After: … — (JUDE, 10)
+
+### [1476 Miette et multitude](https://fonteviva.org/vinha-de-luz/migalha-e-multidao/)
+
+Problem: Bible reference numbers changed (found by the reference check, #113).
+
+- Portuguese: … — (MATEUS, 14.19)
+- Before: … — (MATTHIEU, 14.39)
+- After: … — (MATTHIEU, 14.19)

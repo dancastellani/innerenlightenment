@@ -7,11 +7,12 @@ Review of `content/en.json` (724 messages), translated from `content/pt.json` wi
 | | Messages |
 | --- | --- |
 | Checked | 724 |
-| Fixed | 21 |
+| Fixed | 23 |
 | Open | 0 (one style note below) |
 
 - **Structure:** every message has the same id, order, fields, book, chapter, author, signature and link as the Portuguese, the same number of paragraphs, and a note only where the original has one. No problems.
 - **Epigraphs:** 21 opening Bible quotes were fixed by hand: 10 left in Portuguese, 1 partly in Portuguese, 6 expanded into the full verse, 2 much wordier than the original, and 2 with the book name in Portuguese (Hebreus). On the file as Gemini wrote it, the automatic check in [scripts/check-translations.ts](../../scripts/check-translations.ts) finds 18 of them; reading found the other 3 (1150, which was Portuguese worded differently from the original, and the two book names).
+- **Found by the Bible reference check (2, #113):** reference numbers that differed from the Portuguese; see the last fixes below.
 - **Style note, not fixed:** Bible references are written in two ways, "(John, 16:32)" in 644 messages and "(Romans 14:6)" in 70. Both read fine; they can be made uniform later if wanted.
 
 ## Fixes
@@ -183,3 +184,19 @@ Problem: epigraph expanded into the full Bible verse (fixed in #41).
 - Portuguese: “Porei minhas leis em seus corações e as escreverei em seus entendimentos.” — PAULO (Hebreus, 10.16)
 - Before: “This is the covenant I will make with them after that time, says the Lord. I will put my laws in their hearts, and I will write them on their minds.” — PAUL (Hebrews, 10.16)
 - After: “I will put my laws into their hearts, and in their minds I will write them.” — PAUL (Hebrews, 10:16)
+
+### [793 Self-zeal](https://fonteviva.org/caminho-verdade-e-vida/zelo-proprio/)
+
+Problem: Bible reference numbers changed (found by the reference check, #113).
+
+- Portuguese: “Olhai por vós mesmos, para que não percais o vosso trabalho, mas antes recebais o inteiro galardão.” — (2 João, 8)
+- Before: … — (2 John 1:8)
+- After: … — (2 John, 8)
+
+### [1471 Let Us Know How to Trust](https://fonteviva.org/vinha-de-luz/saibamos-confiar/)
+
+Problem: Bible reference numbers changed (found by the reference check, #113).
+
+- Portuguese: “Não andeis, pois, inquietos.” — JESUS (Mateus, 6.31)
+- Before: “Take therefore no thought for the morrow.” — JESUS (Matthew, 6.34 / 6.31)
+- After: “Therefore, do not be anxious.” — JESUS (Matthew, 6.31)

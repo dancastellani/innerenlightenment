@@ -7,12 +7,13 @@ Review of `content/es.json` (724 messages), translated from `content/pt.json` wi
 | | Messages |
 | --- | --- |
 | Checked | 724 |
-| Fixed | 21 |
+| Fixed | 23 |
 | Open | 0 (one style note below) |
 
 - **Structure:** every message has the same id, order, fields, book, chapter, author, signature and link as the Portuguese, the same number of paragraphs, and a note only where the original has one. No problems.
 - **Found by the automatic check (11):** 8 epigraphs expanded into the full Bible verse, 2 epigraphs quoting a different passage or verse than the original (1092 and 1289), and 1 note left in Portuguese (1108).
 - **Found by reading (10):** 9 references with the book name still in Portuguese (Mateus, Hebreus) and 1 Portuguese word in a verse (humildade).
+- **Found by the Bible reference check (2, #113):** reference numbers that differed from the Portuguese; see the last fixes below.
 - **Style note, not fixed:** verse numbers are written in two ways, "(Romanos, 14.6)" in 529 messages and "(Mateo, 28:19)" in 187. Both read fine; they can be made uniform later if wanted.
 
 ## Fixes
@@ -184,3 +185,19 @@ Problem: epigraph expanded into the full verse (found by the check).
 - Portuguese: “Mas quem não possui o espírito do Cristo, esse tal não é dele.” — PAULO (Romanos, 8.9)
 - Before: “Mas vosotros no vivís según la carne, sino según el Espíritu, si es que el Espíritu de Dios mora en vosotros. Y si alguno no tiene el Espíritu de Cristo, el tal no es de él”. — PABLO (Romanos, 8:9)
 - After: “Pero quien no tiene el espíritu de Cristo, ese no es de él.” — PABLO (Romanos, 8:9)
+
+### [1158 Pecado y pecador](https://fonteviva.org/pao-nosso/pecado-e-pecador/)
+
+Problem: Bible reference numbers changed (found by the reference check, #113).
+
+- Portuguese: … — (3 João, 11)
+- Before: … — (3 Juan, 1:11)
+- After: … — (3 Juan, 11)
+
+### [1468 Examinad](https://fonteviva.org/vinha-de-luz/examinai/)
+
+Problem: Bible reference numbers changed (found by the reference check, #113).
+
+- Portuguese: … — JOÃO (2 João, 10)
+- Before: … — JUAN (2 Juan 1:10)
+- After: … — JUAN (2 Juan, 10)

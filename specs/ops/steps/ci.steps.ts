@@ -51,6 +51,14 @@ Then(
   },
 );
 
+Then(
+  'the {string} workflow publishes the translation checks as a {string} check, also when a test failed',
+  function (this: World, name: string, checkName: string) {
+    this.workflow = workflow(name);
+    assert.match(this.workflow, new RegExp(`- if: always\\(\\)\n +uses: dorny/test-reporter@v2\n +with:\n +name: ${checkName}\n +path: translation-reports/\\*\\.xml`));
+  },
+);
+
 Then('the {string} workflow is started by hand', function (this: World, name: string) {
   this.workflow = workflow(name);
   assert.match(this.workflow, /^on:\n {2}workflow_dispatch:/m);

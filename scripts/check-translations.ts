@@ -18,6 +18,18 @@ const EXPANDED_EPIGRAPH_RATIO = 1.5;
 
 const words = (text: string) => text.toLowerCase().match(/\p{L}+/gu) ?? [];
 
+// Bible references are the parts in brackets with a number, such as "(II Timóteo, 2.7)" or "(2 Timothy 2:7)".
+const references = (text: string) => text.match(/\([^()]*\d[^()]*\)/g) ?? [];
+
+// The numbers of a text's Bible references, such as "2 2 7" for "(II Timóteo, 2.7)". Book names are translated and
+// verses are written "2.7" or "2:7", so only the numbers are compared, with I, II and III read as 1, 2 and 3.
+function referenceNumbers(text: string): string {
+  const romanToNumber: Record<string, string> = { I: '1', II: '2', III: '3' };
+  return references(text)
+    .map((reference) => reference.replace(/\b(I|II|III)\b/g, (roman) => romanToNumber[roman]).match(/\d+/g)?.join(' '))
+    .join(' | ');
+}
+
 // True when the text has enough words and nearly all of them are also in the original.
 function isStillPortuguese(text: string, original: string): boolean {
   const textWords = words(text);
@@ -66,6 +78,12 @@ export function checkTranslation(original: Content, translation: Content, lang: 
     m.paragraphs.forEach((paragraph, i) => {
       if (isStillPortuguese(paragraph, o.paragraphs[i] ?? '')) {
         findings.push(`${where} paragraph ${i + 1} is still in Portuguese: "${paragraph}"`);
+      }
+      const original = o.paragraphs[i] ?? '';
+      if (referenceNumbers(paragraph) !== referenceNumbers(original)) {
+        const from = references(original).join(' ') || 'none';
+        const to = references(paragraph).join(' ') || 'none';
+        findings.push(`${where} paragraph ${i + 1} Bible reference changed from ${from} to ${to}`);
       }
     });
     if (m.note !== null && isStillPortuguese(m.note, o.note ?? '')) {

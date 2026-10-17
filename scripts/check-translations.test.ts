@@ -118,6 +118,40 @@ test('an epigraph more than 1.5 times longer than the original is reported', () 
   assert.match(checkTranslation(source, at16, 'en')[0], /epigraph is 16 characters, the original 10/);
 });
 
+function checkEpigraph(originalEpigraph: string, translatedEpigraph: string): string[] {
+  const source: Content = { language: 'pt', messages: [message(1, [originalEpigraph])] };
+  const translation: Content = { language: 'en', messages: [message(1, [translatedEpigraph])] };
+  return checkTranslation(source, translation, 'en');
+}
+
+test('a Bible reference may translate its book name and write its verse with a colon or Roman numerals', () => {
+  assert.deepEqual(checkEpigraph('“Curto.” — PAULO (II Timóteo, 2.7)', '“Short.” — PAUL (2 Timothy 2:7)'), []);
+  assert.deepEqual(checkEpigraph('“Curto.” — PAULO (2 Timóteo, 2.7)', '“Court.” — PAUL (II Timothée, 2.7)'), []);
+  assert.deepEqual(checkEpigraph('“Curto.” — (2\nJoão, 8)', '“Short.” — (2 John, 8)'), []);
+});
+
+test('a text without a Bible reference may not get one', () => {
+  assert.deepEqual(checkEpigraph('Sem referência.', 'No reference.'), []);
+  assert.deepEqual(checkEpigraph('Sem referência.', 'No reference (John, 1.1).'), [
+    '[1](https://fonteviva.org/livro/1/) paragraph 1 Bible reference changed from none to (John, 1.1)',
+  ]);
+});
+
+test('a Bible reference left out is reported', () => {
+  assert.deepEqual(checkEpigraph('“Curto.” — (João, 1.1)', '“Short.”'), [
+    '[1](https://fonteviva.org/livro/1/) paragraph 1 Bible reference changed from (João, 1.1) to none',
+  ]);
+});
+
+test('a changed, added or dropped number in a Bible reference is reported', () => {
+  assert.deepEqual(checkEpigraph('“Curto.” — (Mateus, 14.19)', '“Short.” — (Matthew, 14.39)'), [
+    '[1](https://fonteviva.org/livro/1/) paragraph 1 Bible reference changed from (Mateus, 14.19) to (Matthew, 14.39)',
+  ]);
+  assert.match(checkEpigraph('“Curto.” — (2 João, 8)', '“Short.” — (2 John 1:8)')[0], /changed from \(2 João, 8\) to \(2 John 1:8\)/);
+  assert.match(checkEpigraph('“Curto.” — (Mateus, 6.31)', '“Short.” — (Matthew, 6.34 / 6.31)')[0], /changed from/);
+  assert.match(checkEpigraph('“Curto.” — (I Pedro, 3.17)', '“Short.” — (Peter, 3.17)')[0], /changed from/);
+});
+
 test('every translation in content/ passes the check', () => {
   const pt: Content = JSON.parse(readFileSync('content/pt.json', 'utf8'));
   for (const file of readdirSync('content').filter((f) => f.endsWith('.json') && f !== 'pt.json')) {

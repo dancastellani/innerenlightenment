@@ -19,6 +19,18 @@ const EXPANDED_EPIGRAPH_RATIO = 1.5;
 
 const words = (text: string) => text.toLowerCase().match(/\p{L}+/gu) ?? [];
 
+// Bible references are the parts in brackets with a number, such as "(II Timóteo, 2.7)" or "(2 Timothy 2:7)".
+const references = (text: string) => text.match(/\([^()]*\d[^()]*\)/g) ?? [];
+
+// The numbers of a text's Bible references, such as "2 2 7" for "(II Timóteo, 2.7)". Book names are translated and
+// verses are written "2.7" or "2:7", so only the numbers are compared, with I, II and III read as 1, 2 and 3.
+function referenceNumbers(text: string): string {
+  const romanToNumber: Record<string, string> = { I: '1', II: '2', III: '3' };
+  return references(text)
+    .map((reference) => reference.replace(/\b(I|II|III)\b/g, (roman) => romanToNumber[roman]).match(/\d+/g)?.join(' '))
+    .join(' | ');
+}
+
 // True when the text has enough words and nearly all of them are also in the original.
 function isStillPortuguese(text: string, original: string): boolean {
   const textWords = words(text);
@@ -27,7 +39,8 @@ function isStillPortuguese(text: string, original: string): boolean {
   return textWords.length >= UNTRANSLATED_MIN_WORDS && shared >= textWords.length * UNTRANSLATED_SHARED_WORDS;
 }
 
-export function checkTranslation(original: Content, translation: Content, lang: string): string[] {
+// The problems of the whole file: its language, the order of its messages, and messages that are unknown or repeated.
+export function checkFile(original: Content, translation: Content, lang: string): string[] {
   const findings: string[] = [];
   if (translation.language !== lang) findings.push(`language is "${translation.language}", expected "${lang}"`);
 
@@ -46,46 +59,69 @@ export function checkTranslation(original: Content, translation: Content, lang: 
   if (ids.join() !== sameOrder.join() && new Set(ids).size === ids.length) {
     findings.push('messages are not in the order of pt.json');
   }
-  for (const o of original.messages) {
-    if (!ids.includes(o.id)) findings.push(`[${o.id}](${o.url}) is missing`);
-  }
 
   const seen = new Set<number>();
   for (const m of translation.messages) {
     const where = `[${m.id}](${m.url})`;
-    const o = original.messages.find((o) => o.id === m.id);
-    if (!o) {
-      findings.push(`${where} is not in pt.json`);
-      continue;
-    }
-    if (seen.has(m.id)) findings.push(`${where} appears more than once`);
+    if (!originalIds.includes(m.id)) findings.push(`${where} is not in pt.json`);
+    else if (seen.has(m.id)) findings.push(`${where} appears more than once`);
     seen.add(m.id);
+  }
+  return findings;
+}
 
-    if (Object.keys(m).join() !== Object.keys(o).join()) {
-      findings.push(`${where} has the fields ${Object.keys(m).join(', ')}, expected ${Object.keys(o).join(', ')}`);
+// The Bible references of one translated message must have the numbers of the original, in every paragraph.
+export function checkBibleReferences(o: Message, m: Message): string[] {
+  const findings: string[] = [];
+  m.paragraphs.forEach((paragraph, i) => {
+    const original = o.paragraphs[i] ?? '';
+    if (referenceNumbers(paragraph) !== referenceNumbers(original)) {
+      const from = references(original).join(' ') || 'none';
+      const to = references(paragraph).join(' ') || 'none';
+      findings.push(`[${m.id}](${m.url}) paragraph ${i + 1} Bible reference changed from ${from} to ${to}`);
     }
-    for (const field of KEPT_FIELDS) {
-      if (m[field] !== o[field]) findings.push(`${where} ${field} changed from "${o[field]}" to "${m[field]}"`);
+  });
+  return findings;
+}
+
+// The other problems of one translated message, compared with its original.
+export function checkMessage(o: Message, m: Message): string[] {
+  const findings: string[] = [];
+  const where = `[${m.id}](${m.url})`;
+  if (Object.keys(m).join() !== Object.keys(o).join()) {
+    findings.push(`${where} has the fields ${Object.keys(m).join(', ')}, expected ${Object.keys(o).join(', ')}`);
+  }
+  for (const field of KEPT_FIELDS) {
+    if (m[field] !== o[field]) findings.push(`${where} ${field} changed from "${o[field]}" to "${m[field]}"`);
+  }
+  if (m.paragraphs.length !== o.paragraphs.length) {
+    findings.push(`${where} has ${m.paragraphs.length} paragraphs, expected ${o.paragraphs.length}`);
+  }
+  if ((m.note === null) !== (o.note === null)) {
+    findings.push(`${where} ${o.note === null ? 'has a note the original does not have' : 'lost its note'}`);
+  }
+  m.paragraphs.forEach((paragraph, i) => {
+    const original = o.paragraphs[i] ?? '';
+    if (isStillPortuguese(paragraph, original)) {
+      findings.push(`${where} paragraph ${i + 1} is still in Portuguese: "${paragraph}"`);
     }
-    if (m.paragraphs.length !== o.paragraphs.length) {
-      findings.push(`${where} has ${m.paragraphs.length} paragraphs, expected ${o.paragraphs.length}`);
-    }
-    if ((m.note === null) !== (o.note === null)) {
-      findings.push(`${where} ${o.note === null ? 'has a note the original does not have' : 'lost its note'}`);
-    }
-    m.paragraphs.forEach((paragraph, i) => {
-      if (isStillPortuguese(paragraph, o.paragraphs[i] ?? '')) {
-        findings.push(`${where} paragraph ${i + 1} is still in Portuguese: "${paragraph}"`);
-      }
-    });
-    if (m.note !== null && isStillPortuguese(m.note, o.note ?? '')) {
-      findings.push(`${where} note is still in Portuguese: "${m.note}"`);
-    }
-    const epigraph = m.paragraphs[0] ?? '';
-    const originalEpigraph = o.paragraphs[0] ?? '';
-    if (originalEpigraph.startsWith('“') && epigraph.length > originalEpigraph.length * EXPANDED_EPIGRAPH_RATIO) {
-      findings.push(`${where} epigraph is ${epigraph.length} characters, the original ${originalEpigraph.length}: "${epigraph}"`);
-    }
+  });
+  if (m.note !== null && isStillPortuguese(m.note, o.note ?? '')) {
+    findings.push(`${where} note is still in Portuguese: "${m.note}"`);
+  }
+  const epigraph = m.paragraphs[0] ?? '';
+  const originalEpigraph = o.paragraphs[0] ?? '';
+  if (originalEpigraph.startsWith('“') && epigraph.length > originalEpigraph.length * EXPANDED_EPIGRAPH_RATIO) {
+    findings.push(`${where} epigraph is ${epigraph.length} characters, the original ${originalEpigraph.length}: "${epigraph}"`);
+  }
+  return findings;
+}
+
+export function checkTranslation(original: Content, translation: Content, lang: string): string[] {
+  const findings = checkFile(original, translation, lang);
+  for (const o of original.messages) {
+    const m = translation.messages.find((m) => m.id === o.id);
+    findings.push(...(m ? [...checkMessage(o, m), ...checkBibleReferences(o, m)] : [`[${o.id}](${o.url}) is missing`]));
   }
   return findings;
 }

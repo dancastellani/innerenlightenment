@@ -42,3 +42,11 @@ jobs:
           path: test-reports/*.xml
           reporter: java-junit
           use-actions-summary: false # create a check run instead of a summary section
+      # Lists every message of every translation, grouped under the Portuguese message, as its own check run.
+      - if: always()
+        uses: dorny/test-reporter@v2
+        with:
+          name: Translation report
+          path: translation-reports/*.xml
+          reporter: java-junit
+          use-actions-summary: false

@@ -7,6 +7,7 @@ Feature: Compare with the original
     When I tap "Original"
     Then the Portuguese title is shown under the translated title
     And each translated paragraph is followed by the same paragraph in Portuguese
+    And the "Original" button is in the top bar, next to the app's name, so it stays in reach while I scroll
 
   @UC-18.2
   Scenario: Hide the original again

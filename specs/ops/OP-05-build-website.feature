@@ -83,7 +83,7 @@ Feature: Build and publish the website
     Then the page "pt/" has the link "Fonte Viva" to "#fonte-viva" before the first message
     And the page "pt/" has the book heading "fonte-viva"
 
-  @OP-05.28
+  @OP-05.30
   Scenario: A translated language page shows the book names in its language (#115)
     When the website is built
     Then the page "en/" has the link "Living Spring" to "#fonte-viva"
@@ -91,7 +91,7 @@ Feature: Build and publish the website
     And the page "en/" does not contain "Fonte Viva</a>" and "Fonte Viva</h2>"
     And the page "pt/" contains "Fonte Viva</a>" and "Fonte Viva</h2>"
 
-  @OP-05.29
+  @OP-05.31
   Scenario: A translated message page shows its book name in its language (#115)
     When the website is built
     Then the page "en/o-tempo/" contains "Living Spring · Capítulo 1"
@@ -152,17 +152,40 @@ Feature: Build and publish the website
     When the menu is tapped
     Then the browser does not show "Index" and "Português"
 
+  @OP-05.29
+  Scenario: In a browser, the app's name and the "Original" switch stay at the top of the screen while the page scrolls
+    When the website is built
+    And the page "en/o-tempo/" is opened in a browser
+    Then "My Inner Enlightenment" and "Original" are at the top of the screen
+    When the page is scrolled to the end
+    Then "My Inner Enlightenment" and "Original" are at the top of the screen
+
   @OP-05.26
   Scenario: The Portuguese page is marked as the original and has no "Original" switch
     When the website is built
     Then the page "pt/o-tempo/" contains "Texto original"
     And the page "pt/o-tempo/" does not contain "show-original"
 
-  @OP-05.27
+  @OP-05.28
   Scenario: Every page shows the app's icon in the browser tab
     When the website is built
     Then the page "" contains "favicon.svg"
     And the page "pt/o-tempo/" contains "../../favicon.svg"
+
+  # UC-19 on the website: find a study group.
+  @OP-05.28
+  Scenario: Each language has a study groups page with the three organizations
+    When the website is built
+    Then the page "en/study-groups/" links to "https://www.innerenlightenment.com/", "https://www.tssfederation.org/" and "https://spiritist.us/spiritist-movement/"
+    And the page "en/study-groups/" contains "Inner Enlightenment Spiritist Society in NYC" and "Tri-State Spiritist Federation"
+    And the page "en/study-groups/" contains "United States Spiritist Federation" and "in-person and online"
+    And the page "pt/study-groups/" contains "Grupos de estudo" and "presenciais e online"
+
+  @OP-05.29
+  Scenario: A message page links to the study groups page of its language
+    When the website is built
+    Then the page "en/o-tempo/" has the link "Study groups" to "../study-groups/"
+    And the page "pt/o-tempo/" has the link "Grupos de estudo" to "../study-groups/"
 
   # Edge cases
 

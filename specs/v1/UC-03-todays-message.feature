@@ -12,6 +12,11 @@ Feature: See today's message when I open the app
     When a message is shown
     Then I see its book, chapter, title, body paragraphs and signature
 
+  @UC-03.6
+  Scenario: The app's name stays at the top
+    When any screen is shown and I scroll it to the end
+    Then "My Inner Enlightenment" and the app's logo are still at the top of the screen
+
   @UC-03.3
   Scenario: Notifications are off
     Given notifications are turned off

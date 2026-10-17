@@ -58,3 +58,10 @@ Feature: Translate the messages into another language
     When the translation into "zh" runs
     Then that batch is counted as failed with a warning, and the run goes on
     And running the translation again translates the failed messages
+
+  @OP-02.7
+  Scenario: A Bible reference with different numbers is reported
+    Given a message whose epigraph ends with "(Mateus, 14.19)"
+    When its translation ends with "(Matthew, 14.39)"
+    Then the translation check reports that the Bible reference changed
+    But "(Matthew, 14:19)" and "(II Timóteo, 2.7)" written as "(2 Timothy, 2.7)" pass

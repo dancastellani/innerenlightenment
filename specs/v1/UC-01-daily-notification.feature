@@ -94,3 +94,10 @@ Feature: Receive a message every day at 8am
     When the phone is back on and I open the app
     Then today's message is shown
     And notifications are scheduled for the next 14 days, one per day
+
+  # Regression for #90: in Expo Go the channel couldn't be created, so nothing was scheduled.
+  @UC-01.15
+  Scenario: The phone can't create the notification channel
+    Given the phone refuses to create the "Daily message" notification channel
+    When I open the app
+    Then notifications are still scheduled for the next 14 days, one per day

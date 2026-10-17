@@ -61,10 +61,11 @@ async function scheduleDays(settings: Settings): Promise<{ plan: Plan; allowed: 
   const plan = fillPlan(saved ? JSON.parse(saved) : {}, portuguese.map((m) => m.id), new Date());
   await AsyncStorage.setItem('plan', JSON.stringify(plan));
 
+  // Expo Go can't create channels (#90); Android then uses expo-notifications' fallback channel.
   await Notifications.setNotificationChannelAsync('daily', {
     name: 'Daily message',
     importance: Notifications.AndroidImportance.HIGH,
-  });
+  }).catch(() => {});
   await Notifications.cancelAllScheduledNotificationsAsync();
   if (!settings.enabled) return { plan, allowed: true };
   const { granted } = await Notifications.requestPermissionsAsync();

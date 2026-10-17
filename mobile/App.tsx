@@ -14,6 +14,9 @@ import { findMessage, languageFor, originalLink, withOriginal } from './language
 import { isDownloaded, loadLanguage } from './download';
 import { readable } from './text';
 
+// UC-12: every language in the list has a name and the study groups texts, whether or not it is downloaded yet.
+const languages: Record<string, { name: string; studyGroups: string; studyGroupsIntro: string }> = labels;
+
 // UC-05: Portuguese is the original; translations may leave a message out, so the plan uses the Portuguese ids.
 const portuguese = (portugueseContent.messages as Message[]).map(readable);
 // UC-12: other languages are added once they are downloaded.
@@ -137,10 +140,10 @@ function Screen({ action, children }: { action?: ReactNode; children: ReactNode 
 
 // The options in the menu at the top right, each opening its own screen.
 // Study groups (UC-19) is named in the reader's language, as on the website.
-function menu(language: Language) {
+function menu(language: string) {
   return [
     { title: 'Index', screen: 'index' },
-    { title: labels[language].studyGroups, screen: 'study-groups' },
+    { title: languages[language].studyGroups, screen: 'study-groups' },
     { title: 'Settings', screen: 'settings' },
   ] as const;
 }
@@ -291,8 +294,8 @@ export default function App() {
   if (screen === 'study-groups') {
     return (
       <Screen>
-        <Text style={styles.title}>{labels[settings.language].studyGroups}</Text>
-        <Text style={styles.paragraph}>{labels[settings.language].studyGroupsIntro}</Text>
+        <Text style={styles.title}>{languages[settings.language].studyGroups}</Text>
+        <Text style={styles.paragraph}>{languages[settings.language].studyGroupsIntro}</Text>
         <View style={styles.actions}>
           {studyGroups.map((group) => (
             <Action key={group.url} title={group.name} onPress={() => Linking.openURL(group.url)} />
@@ -345,7 +348,7 @@ export default function App() {
           ))}
           {failedDownload && (
             <Text style={styles.warning}>
-              {labels[failedDownload as keyof typeof labels].name} could not be downloaded. Try again when the phone is online.
+              {languages[failedDownload].name} could not be downloaded. Try again when the phone is online.
             </Text>
           )}
           <Action title="Test notification in 10 seconds" onPress={sendTest} />

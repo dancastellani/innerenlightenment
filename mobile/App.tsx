@@ -107,12 +107,13 @@ function Action({ title, onPress, main = false }: { title: string; onPress: () =
 
 // Every screen: the app's name fixed at the top, so people always know which app this is,
 // and the page scrolling under it.
-function Screen({ children }: { children: ReactNode }) {
+function Screen({ action, children }: { action?: ReactNode; children: ReactNode }) {
   return (
     <View style={styles.app}>
       <View style={styles.appBar}>
         <Image source={require('./assets/icon.png')} style={styles.appIcon} />
         <Text style={styles.appName}>{expo.name}</Text>
+        {action}
       </View>
       <ScrollView contentContainerStyle={styles.page}>{children}</ScrollView>
     </View>
@@ -301,21 +302,23 @@ export default function App() {
     ? withOriginal(message.paragraphs, original.paragraphs)
     : message.paragraphs.map((text) => ({ text, isOriginal: false }));
 
+  // UC-18: the "Original" switch sits in the fixed top bar, so it stays in reach while reading.
+  const originalSwitch = isTranslation ? (
+    <Pressable
+      accessibilityRole="switch"
+      accessibilityState={{ checked: showOriginal }}
+      onPress={() => setShowOriginal(!showOriginal)}
+      style={[styles.pill, showOriginal && styles.pillOn]}
+    >
+      <Text style={[styles.pillText, showOriginal && styles.pillTextOn]}>{labels.en.original}</Text>
+    </Pressable>
+  ) : (
+    <Text style={[styles.pill, styles.originalMark]}>{labels.pt.original}</Text>
+  );
+
   return (
-    <Screen>
+    <Screen action={originalSwitch}>
       <View style={styles.topBar}>
-        {isTranslation ? (
-          <Pressable
-            accessibilityRole="switch"
-            accessibilityState={{ checked: showOriginal }}
-            onPress={() => setShowOriginal(!showOriginal)}
-            style={[styles.pill, showOriginal && styles.pillOn]}
-          >
-            <Text style={[styles.pillText, showOriginal && styles.pillTextOn]}>{labels.en.original}</Text>
-          </Pressable>
-        ) : (
-          <Text style={[styles.pill, styles.originalMark]}>{labels.pt.original}</Text>
-        )}
         <MenuButton onPress={() => setMenuOpen(true)} />
       </View>
       {/* The menu opens under the button at the top right; tapping outside closes it. */}
@@ -364,9 +367,9 @@ export default function App() {
 
 const styles = StyleSheet.create({
   app: { flex: 1, backgroundColor: colors.paper },
-  appBar: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 48, paddingBottom: 12, paddingHorizontal: 24, borderBottomWidth: 1, borderColor: colors.rule },
+  appBar: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 48, paddingBottom: 12, paddingHorizontal: 16, borderBottomWidth: 1, borderColor: colors.rule },
   appIcon: { width: 28, height: 28, borderRadius: 6 },
-  appName: { fontSize: 17, fontWeight: '600', color: colors.ink },
+  appName: { flex: 1, fontSize: 17, fontWeight: '600', color: colors.ink },
   page: { padding: 24, paddingBottom: 48 },
   title: { fontFamily: 'serif', fontSize: 34, lineHeight: 40, fontWeight: '600', color: colors.ink, marginBottom: 6 },
   source: { fontSize: 14, color: colors.muted, marginBottom: 28 },
@@ -378,7 +381,7 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.7 },
   actionText: { fontSize: 17, fontWeight: '600', color: colors.spring },
   mainActionText: { color: colors.paper },
-  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  topBar: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-start' },
   menuButton: { width: 48, height: 48, marginTop: -8, marginRight: -8, alignItems: 'center', justifyContent: 'center', gap: 5 },
   bar: { width: 22, height: 2, borderRadius: 1, backgroundColor: colors.ink },
   backdrop: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.15)' },
@@ -389,11 +392,11 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 52, borderBottomWidth: 1, borderColor: colors.rule },
   label: { fontSize: 18, color: colors.ink },
   warning: { color: colors.warning, marginBottom: 8 },
-  pill: { alignSelf: 'flex-start', borderWidth: 1.5, borderColor: colors.spring, borderRadius: 18, paddingVertical: 6, paddingHorizontal: 16, marginBottom: 16 },
+  pill: { alignSelf: 'flex-start', borderWidth: 1.5, borderColor: colors.spring, borderRadius: 18, paddingVertical: 4, paddingHorizontal: 12 },
   pillOn: { backgroundColor: colors.spring },
-  pillText: { fontSize: 15, fontWeight: '600', color: colors.spring },
+  pillText: { fontSize: 14, fontWeight: '600', color: colors.spring },
   pillTextOn: { color: colors.paper },
-  originalMark: { borderColor: colors.rule, fontSize: 15, color: colors.muted },
+  originalMark: { borderColor: colors.rule, fontSize: 14, color: colors.muted },
   original: { fontStyle: 'italic', color: colors.muted, borderLeftWidth: 3, borderColor: colors.rule, paddingLeft: 12 },
   disclaimer: { fontSize: 13, color: colors.muted, marginTop: 24 },
   backButton: { marginTop: 32 },

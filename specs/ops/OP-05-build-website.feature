@@ -138,12 +138,12 @@ Feature: Build and publish the website
     Then the browser does not show "Index" and "Português"
 
   @OP-05.29
-  Scenario: In a browser, the app's name stays at the top of the screen while the page scrolls
+  Scenario: In a browser, the app's name and the "Original" switch stay at the top of the screen while the page scrolls
     When the website is built
     And the page "en/o-tempo/" is opened in a browser
-    Then "My Inner Enlightenment" is at the top of the screen
+    Then "My Inner Enlightenment" and "Original" are at the top of the screen
     When the page is scrolled to the end
-    Then "My Inner Enlightenment" is at the top of the screen
+    Then "My Inner Enlightenment" and "Original" are at the top of the screen
 
   @OP-05.26
   Scenario: The Portuguese page is marked as the original and has no "Original" switch

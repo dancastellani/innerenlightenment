@@ -112,6 +112,7 @@ class Website {
       .filter((c) => c !== content && c.messages.some((m) => m.id === message.id))
       .map((c) => `<a href="../../${c.language}/${message.slug}/">${this.labels[c.language].name}</a>`)
       .join('');
+    const original = this.original(content, message);
     const body = this.render('message', {
       anotherMessage: labels.anotherMessage,
       index: labels.index,
@@ -120,7 +121,8 @@ class Website {
       otherLanguages,
       meta,
       title: escapeHtml(message.title),
-      ...this.original(content, message),
+      originalTitle: original.originalTitle,
+      paragraphs: original.paragraphs,
       signature: signature(message),
       note: message.note ? `<p class="note">${escapeHtml(message.note)}</p>` : '',
       url: escapeHtml(originalLink(message.url, content.language)),
@@ -128,23 +130,26 @@ class Website {
       credit: this.render('credit', {}),
       disclaimer: `<p class="disclaimer">${[labels.disclaimer, labels.translationDisclaimer].filter((text) => text).join(' ')}</p>`,
     });
-    return this.page(content.language, message.title, '../../', body);
+    return this.page(content.language, message.title, '../../', body, original);
   }
 
   // UC-18: on a translation, an "Original" switch that shows the Portuguese text after each paragraph;
   // it works without JavaScript (a checkbox, see style.css). The Portuguese page is marked as the original.
-  original(content: Content, message: Message): { originalToggle: string; originalTitle: string; paragraphs: string } {
+  // The switch sits in the page's top bar, so `checkbox` and `label` go to the layout, apart from the text.
+  original(content: Content, message: Message): { checkbox: string; label: string; originalTitle: string; paragraphs: string } {
     const label = this.labels[content.language].original;
     const original = this.contents.find((c) => c.language === 'pt')?.messages.find((m) => m.id === message.id);
     if (content.language === 'pt' || !original) {
       return {
-        originalToggle: content.language === 'pt' ? `<p class="original-mark">${label}</p>` : '',
+        checkbox: '',
+        label: content.language === 'pt' ? `<span class="original-mark">${label}</span>` : '',
         originalTitle: '',
         paragraphs: message.paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join('\n'),
       };
     }
     return {
-      originalToggle: `<input type="checkbox" id="show-original" class="show-original"><label for="show-original">${label}</label>`,
+      checkbox: '<input type="checkbox" id="show-original" class="show-original">',
+      label: `<label for="show-original">${label}</label>`,
       originalTitle: `<p class="original" lang="pt">${escapeHtml(original.title)}</p>`,
       paragraphs: withOriginal(message.paragraphs, original.paragraphs)
         .map((p) => (p.isOriginal ? `<p class="original" lang="pt">${escapeHtml(p.text)}</p>` : `<p>${escapeHtml(p.text)}</p>`))
@@ -153,8 +158,9 @@ class Website {
   }
 
   // `root` is the path from the page to the site's root folder, for the stylesheet.
-  page(language: string, title: string, root: string, body: string): string {
-    return this.render('layout', { language, title: escapeHtml(title), root, body: body.trimEnd() });
+  page(language: string, title: string, root: string, body: string, original = { checkbox: '', label: '' }): string {
+    const values = { language, title: escapeHtml(title), root, body: body.trimEnd() };
+    return this.render('layout', { ...values, originalCheckbox: original.checkbox, originalLabel: original.label });
   }
 
   // `prefix` is the path from the page to the language folder. Without JavaScript it shows `fallback`.

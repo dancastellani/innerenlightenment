@@ -50,7 +50,9 @@ li a:hover { text-decoration: underline; }
   font-weight: 600;
   color: var(--ink);
 }
-.app-bar img { width: 1.75rem; height: 1.75rem; }
+.app-bar { font-size: 0.95rem; }
+.app-bar img { width: 1.5rem; height: 1.5rem; }
+.app-bar .app-name { flex: 1; }
 
 /* The top bar: the main action on the left, the languages on the right. */
 nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; }
@@ -115,19 +117,16 @@ footer { margin-top: 4rem; border-top: 1px solid var(--rule); padding-top: 1.5re
 
 /* UC-18: the "Original" switch is a checkbox drawn as a button; when on, the Portuguese paragraphs show. */
 .show-original { position: absolute; opacity: 0; }
-.show-original + label, .original-mark {
-  display: inline-block;
-  margin-top: 1.5rem;
-  padding: 0.4rem 1rem;
+.app-bar label, .original-mark {
+  padding: 0.2rem 0.7rem;
   border: 1.5px solid var(--spring);
   border-radius: 999px;
-  font-family: var(--sans);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--spring);
 }
-.show-original + label { cursor: pointer; }
-.show-original:checked + label { background: var(--spring); color: var(--paper); }
-.show-original:focus-visible + label { outline: 2px solid var(--spring); outline-offset: 3px; }
+.app-bar label { cursor: pointer; }
+.show-original:checked ~ .app-bar label { background: var(--spring); color: var(--paper); }
+.show-original:focus-visible ~ .app-bar label { outline: 2px solid var(--spring); outline-offset: 3px; }
 .original-mark { border-color: var(--rule); color: var(--muted); }
 .original { display: none; color: var(--muted); font-style: italic; border-left: 3px solid var(--rule); padding-left: 1rem; }
 .show-original:checked ~ .original { display: block; }

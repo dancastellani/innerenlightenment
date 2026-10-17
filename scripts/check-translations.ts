@@ -60,7 +60,21 @@ export function checkFile(original: Content, translation: Content, lang: string)
   return findings;
 }
 
-// The problems of one translated message, compared with its original.
+// The Bible references of one translated message must have the numbers of the original, in every paragraph.
+export function checkBibleReferences(o: Message, m: Message): string[] {
+  const findings: string[] = [];
+  m.paragraphs.forEach((paragraph, i) => {
+    const original = o.paragraphs[i] ?? '';
+    if (referenceNumbers(paragraph) !== referenceNumbers(original)) {
+      const from = references(original).join(' ') || 'none';
+      const to = references(paragraph).join(' ') || 'none';
+      findings.push(`[${m.id}](${m.url}) paragraph ${i + 1} Bible reference changed from ${from} to ${to}`);
+    }
+  });
+  return findings;
+}
+
+// The other problems of one translated message, compared with its original.
 export function checkMessage(o: Message, m: Message): string[] {
   const findings: string[] = [];
   const where = `[${m.id}](${m.url})`;
@@ -81,11 +95,6 @@ export function checkMessage(o: Message, m: Message): string[] {
     if (isStillPortuguese(paragraph, original)) {
       findings.push(`${where} paragraph ${i + 1} is still in Portuguese: "${paragraph}"`);
     }
-    if (referenceNumbers(paragraph) !== referenceNumbers(original)) {
-      const from = references(original).join(' ') || 'none';
-      const to = references(paragraph).join(' ') || 'none';
-      findings.push(`${where} paragraph ${i + 1} Bible reference changed from ${from} to ${to}`);
-    }
   });
   if (m.note !== null && isStillPortuguese(m.note, o.note ?? '')) {
     findings.push(`${where} note is still in Portuguese: "${m.note}"`);
@@ -102,7 +111,7 @@ export function checkTranslation(original: Content, translation: Content, lang: 
   const findings = checkFile(original, translation, lang);
   for (const o of original.messages) {
     const m = translation.messages.find((m) => m.id === o.id);
-    findings.push(...(m ? checkMessage(o, m) : [`[${o.id}](${o.url}) is missing`]));
+    findings.push(...(m ? [...checkMessage(o, m), ...checkBibleReferences(o, m)] : [`[${o.id}](${o.url}) is missing`]));
   }
   return findings;
 }

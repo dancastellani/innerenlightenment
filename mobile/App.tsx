@@ -354,14 +354,6 @@ export default function App() {
         <Action title="Share" onPress={share} />
         <Action title="Open on fonteviva.org" onPress={() => Linking.openURL(originalLink(message.url, settings.language))} />
       </View>
-      <View style={styles.links}>
-        <Pressable accessibilityRole="button" onPress={() => setScreen('index')} style={styles.link}>
-          <Text style={styles.linkText}>Index</Text>
-        </Pressable>
-        <Pressable accessibilityRole="button" onPress={() => setScreen('settings')} style={styles.link}>
-          <Text style={styles.linkText}>Settings</Text>
-        </Pressable>
-      </View>
       <Text style={styles.disclaimer}>
         {labels.en.disclaimer}
         {isTranslation && ` ${labels.en.translationDisclaimer}`}

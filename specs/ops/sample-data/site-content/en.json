@@ -1,7 +1,13 @@
 {
  "source": "https://fonteviva.org/",
  "language": "en",
- "books": [{ "slug": "fonte-viva", "name": "Fonte Viva", "count": 2 }],
+ "books": [
+  {
+   "slug": "fonte-viva",
+   "name": "Fonte Viva",
+   "count": 2
+  }
+ ],
  "labels": {
   "index": "Index",
   "menu": "Menu",
@@ -21,7 +27,9 @@
   "openPhoneSettings": "Open phone settings",
   "language": "Language",
   "testNotification": "Test notification in 10 seconds",
-  "dailyMessage": "Daily message"
+  "dailyMessage": "Daily message",
+  "studyGroups": "Study groups",
+  "studyGroupsIntro": "These Spiritist organizations hold in-person and online study meetings."
  },
  "messages": [
   {
@@ -33,7 +41,10 @@
    "chapter": "Capítulo 1",
    "spirit": "Emmanuel",
    "medium": "via: Francisco Candido Xavier",
-   "paragraphs": ["First paragraph.", "Second paragraph."],
+   "paragraphs": [
+    "First paragraph.",
+    "Second paragraph."
+   ],
    "signature": "Emmanuel",
    "note": null
   }

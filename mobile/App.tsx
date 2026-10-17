@@ -7,6 +7,7 @@ import portugueseContent from '../content/pt.json';
 import englishContent from '../content/en.json';
 import portugueseLabels from '../content/pt.labels.json';
 import names from '../website/languages.json';
+import studyGroups from '../website/study-groups.json';
 import { expo } from './app.json';
 import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
@@ -127,6 +128,7 @@ function Screen({ action, children }: { action?: ReactNode; children: ReactNode 
 // The options in the menu at the top right, each opening its own screen.
 const MENU = [
   { label: 'index', screen: 'index' },
+  { label: 'studyGroups', screen: 'study-groups' },
   { label: 'settings', screen: 'settings' },
 ] as const;
 
@@ -145,7 +147,7 @@ export default function App() {
   const [messageId, setMessageId] = useState<number>();
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [allowed, setAllowed] = useState(true);
-  const [screen, setScreen] = useState<'message' | 'settings' | 'index'>('message');
+  const [screen, setScreen] = useState<'message' | 'settings' | 'index' | 'study-groups'>('message');
   const [indexBook, setIndexBook] = useState<string>(); // UC-20: the book picked on the index
   const [showOriginal, setShowOriginal] = useState(false); // UC-18: the Portuguese text after each paragraph
   const [menuOpen, setMenuOpen] = useState(false);
@@ -254,6 +256,22 @@ export default function App() {
         ))}
         <View style={styles.backButton}>
           <Action title={t.back} onPress={() => (indexBook ? setIndexBook(undefined) : setScreen('message'))} />
+        </View>
+      </Screen>
+    );
+  }
+
+  // UC-19: links to Spiritist organizations that hold study meetings, the same as the website.
+  if (screen === 'study-groups') {
+    return (
+      <Screen>
+        <Text style={styles.title}>{t.studyGroups}</Text>
+        <Text style={styles.paragraph}>{t.studyGroupsIntro}</Text>
+        <View style={styles.actions}>
+          {studyGroups.map((group) => (
+            <Action key={group.url} title={group.name} onPress={() => Linking.openURL(group.url)} />
+          ))}
+          <Action title="Back" onPress={() => setScreen('message')} main />
         </View>
       </Screen>
     );

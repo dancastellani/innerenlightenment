@@ -20,16 +20,22 @@ type Content = { language: string; books: { slug: string; name: string }[]; labe
 // `original` is the button that shows the Portuguese original (UC-18), and in Portuguese the mark that it is the original.
 type Labels = {
   title: string;
+  studyGroups: string;
+  studyGroupsIntro: string;
   credit: string;
   index: string;
   menu: string;
   anotherMessage: string;
   readOriginal: string;
   original: string;
+  studyGroups: string;
+  studyGroupsIntro: string;
   disclaimer: string;
   translationDisclaimer?: string;
 };
 type Names = Record<string, { name: string }>;
+// UC-19: Spiritist organizations with study meetings, the same list the app shows.
+type StudyGroup = { name: string; url: string };
 
 const WEBSITE_FOLDER = join(import.meta.dirname, '..', 'website');
 
@@ -49,13 +55,15 @@ function fill(template: string, values: Record<string, string>): string {
 class Website {
   contents: Content[];
   names: Names;
+  studyGroups: StudyGroup[];
 
-  constructor(contents: Content[], names: Names) {
+  constructor(contents: Content[], names: Names, studyGroups: StudyGroup[]) {
     for (const content of contents) {
       if (!names[content.language]) throw new Error(`Add "${content.language}" to website/languages.json`);
     }
     this.contents = contents;
     this.names = names;
+    this.studyGroups = studyGroups;
   }
 
   build(outFolder: string) {
@@ -68,6 +76,7 @@ class Website {
       const folder = join(outFolder, content.language);
       write(join(folder, 'index.html'), this.languagePage(content));
       write(join(folder, 'random', 'index.html'), this.randomPage(content));
+      write(join(folder, 'study-groups', 'index.html'), this.studyGroupsPage(content));
       for (const message of content.messages) {
         write(join(folder, message.slug, 'index.html'), this.messagePage(content, message));
       }
@@ -107,6 +116,19 @@ class Website {
     return this.page(content.language, content.labels.title, '../', this.randomScript(content, '../', fallback));
   }
 
+  // UC-19: links to Spiritist organizations that hold study meetings.
+  studyGroupsPage(content: Content): string {
+    const labels = content.labels;
+    const groups = this.studyGroups.map((g) => `<li><a href="${g.url}">${escapeHtml(g.name)}</a></li>`).join('\n');
+    const body = this.render('study-groups', {
+      index: labels.index,
+      studyGroups: labels.studyGroups,
+      studyGroupsIntro: labels.studyGroupsIntro,
+      groups,
+    });
+    return this.page(content.language, labels.studyGroups, '../../', body);
+  }
+
   messagePage(content: Content, message: Message): string {
     const labels = content.labels;
     const book = content.books.find((b) => b.slug === message.book);
@@ -130,6 +152,7 @@ class Website {
       note: message.note ? `<p class="note">${escapeHtml(message.note)}</p>` : '',
       url: escapeHtml(originalLink(message.url, content.language)),
       readOriginal: labels.readOriginal,
+      studyGroups: labels.studyGroups,
       credit: this.credit(content),
       disclaimer: `<p class="disclaimer">${[labels.disclaimer, labels.translationDisclaimer].filter((text) => text).join(' ')}</p>`,
     });
@@ -212,6 +235,7 @@ function write(file: string, html: string) {
 const [contentFolder = 'content', outFolder = 'site'] = process.argv.slice(2);
 const contents = readContents(contentFolder);
 const names = JSON.parse(readFileSync(join(WEBSITE_FOLDER, 'languages.json'), 'utf8'));
-new Website(contents, names).build(outFolder);
+const studyGroups = JSON.parse(readFileSync(join(WEBSITE_FOLDER, 'study-groups.json'), 'utf8'));
+new Website(contents, names, studyGroups).build(outFolder);
 const pages = contents.reduce((sum, c) => sum + c.messages.length, 0);
 console.log(`Wrote ${pages} message pages in ${contents.length} languages to ${outFolder}`);

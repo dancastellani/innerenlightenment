@@ -42,7 +42,9 @@
   "openPhoneSettings": "Open phone settings",
   "language": "Language",
   "testNotification": "Test notification in 10 seconds",
-  "dailyMessage": "Daily message"
+  "dailyMessage": "Daily message",
+  "studyGroups": "Study groups",
+  "studyGroupsIntro": "These Spiritist organizations hold in-person and online study meetings."
  },
  "messages": [
   {

@@ -42,7 +42,9 @@
   "openPhoneSettings": "Ouvrir les réglages du téléphone",
   "language": "Langue",
   "testNotification": "Tester la notification dans 10 secondes",
-  "dailyMessage": "Message quotidien"
+  "dailyMessage": "Message quotidien",
+  "studyGroups": "Groupes d'étude",
+  "studyGroupsIntro": "Ces organisations spirites tiennent des réunions d'étude en présentiel et en ligne."
  },
  "messages": [
   {

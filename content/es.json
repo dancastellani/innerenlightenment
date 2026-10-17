@@ -42,7 +42,9 @@
   "openPhoneSettings": "Abrir los ajustes del teléfono",
   "language": "Idioma",
   "testNotification": "Probar notificación en 10 segundos",
-  "dailyMessage": "Mensaje diario"
+  "dailyMessage": "Mensaje diario",
+  "studyGroups": "Grupos de estudio",
+  "studyGroupsIntro": "Estas organizaciones espíritas realizan reuniones de estudio presenciales y en línea."
  },
  "messages": [
   {

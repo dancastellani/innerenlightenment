@@ -16,5 +16,7 @@
  "openPhoneSettings": "Abrir configurações do telefone",
  "language": "Idioma",
  "testNotification": "Testar notificação em 10 segundos",
- "dailyMessage": "Mensagem diária"
+ "dailyMessage": "Mensagem diária",
+ "studyGroups": "Grupos de estudo",
+ "studyGroupsIntro": "Estas organizações espíritas fazem reuniões de estudo presenciais e online."
 }

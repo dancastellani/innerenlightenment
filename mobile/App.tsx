@@ -3,7 +3,10 @@ import { AppState, Image, Linking, Modal, Pressable, ScrollView, Share, StyleShe
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { useFonts, Literata_400Regular, Literata_400Regular_Italic, Literata_600SemiBold } from '@expo-google-fonts/literata';
+import { useFonts } from 'expo-font';
+import { Literata_400Regular } from '@expo-google-fonts/literata/400Regular';
+import { Literata_400Regular_Italic } from '@expo-google-fonts/literata/400Regular_Italic';
+import { Literata_600SemiBold } from '@expo-google-fonts/literata/600SemiBold';
 import portugueseContent from '../content/pt/messages.json';
 import englishContent from '../content/en/messages.json';
 import portugueseLabels from '../content/pt/labels.json';

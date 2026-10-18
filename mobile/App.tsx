@@ -335,6 +335,7 @@ export default function App() {
               <Action title="Open phone settings" onPress={() => Linking.openSettings()} />
             </View>
           )}
+          <Action title="Test notification in 10 seconds" onPress={sendTest} />
           <Text style={styles.label}>Language</Text>
           {Object.entries(labels).map(([language, { name }]) => (
             <Action
@@ -355,7 +356,6 @@ export default function App() {
               {languages[failedDownload].name} could not be downloaded. Try again when the phone is online.
             </Text>
           )}
-          <Action title="Test notification in 10 seconds" onPress={sendTest} />
           <Action title="Back" onPress={() => setScreen('message')} main />
         </View>
       </Screen>

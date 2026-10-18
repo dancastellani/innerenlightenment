@@ -4,22 +4,22 @@
  "books": [
   {
    "slug": "caminho-verdade-e-vida",
-   "name": "Caminho Verdade e Vida",
+   "name": "The Way, the Truth and the Life",
    "count": 181
   },
   {
    "slug": "fonte-viva",
-   "name": "Fonte Viva",
+   "name": "Living Spring",
    "count": 181
   },
   {
    "slug": "pao-nosso",
-   "name": "Pao Nosso",
+   "name": "Our Daily Bread",
    "count": 181
   },
   {
    "slug": "vinha-de-luz",
-   "name": "Vinha de Luz",
+   "name": "Vineyard of Light",
    "count": 181
   }
  ],

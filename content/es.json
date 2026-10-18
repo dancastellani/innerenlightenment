@@ -4,22 +4,22 @@
  "books": [
   {
    "slug": "caminho-verdade-e-vida",
-   "name": "Caminho Verdade e Vida",
+   "name": "Camino, Verdad y Vida",
    "count": 181
   },
   {
    "slug": "fonte-viva",
-   "name": "Fonte Viva",
+   "name": "Fuente Viva",
    "count": 181
   },
   {
    "slug": "pao-nosso",
-   "name": "Pao Nosso",
+   "name": "Pan Nuestro",
    "count": 181
   },
   {
    "slug": "vinha-de-luz",
-   "name": "Vinha de Luz",
+   "name": "Viña de Luz",
    "count": 181
   }
  ],

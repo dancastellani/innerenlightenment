@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { findMessage, originalLink, withOriginal } from './language.ts';
+import { bookName, findMessage, originalLink, withOriginal } from './language.ts';
 import type { Message } from '../scripts/parse-message.ts';
 
 const message = (id: number, title: string) => ({ id, title }) as Message;
@@ -48,4 +48,18 @@ test('UC-18.4: paragraphs left over on either side are kept, and nothing gives n
   assert.deepEqual(withOriginal(['One.'], ['Um.', 'Dois.']).map((p) => p.text), ['One.', 'Um.', 'Dois.']);
   assert.deepEqual(withOriginal(['One.', 'Two.'], ['Um.']).map((p) => p.text), ['One.', 'Um.', 'Two.']);
   assert.deepEqual(withOriginal([], []), []);
+});
+
+const portugueseBooks = [{ slug: 'fonte-viva', name: 'Fonte Viva' }, { slug: 'pao-nosso', name: 'Pao Nosso' }];
+const englishBooks = [{ slug: 'fonte-viva', name: 'Living Spring' }];
+
+test('UC-05.10: a book is named in the chosen language (#115)', () => {
+  assert.equal(bookName('fonte-viva', englishBooks, portugueseBooks), 'Living Spring');
+  assert.equal(bookName('fonte-viva', portugueseBooks, portugueseBooks), 'Fonte Viva');
+});
+
+test('UC-05.10: a book without a translation is named in Portuguese, an unknown book has no name', () => {
+  assert.equal(bookName('pao-nosso', englishBooks, portugueseBooks), 'Pao Nosso');
+  assert.equal(bookName('novo', englishBooks, portugueseBooks), '');
+  assert.equal(bookName('fonte-viva', [], []), '');
 });

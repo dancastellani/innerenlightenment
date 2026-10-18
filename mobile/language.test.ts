@@ -1,6 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { bookName, findMessage, originalLink, withOriginal } from './language.ts';
+import { existsSync } from 'node:fs';
+import { bookName, contentUrl, findMessage, originalLink, withOriginal } from './language.ts';
+import labels from '../website/languages.json' with { type: 'json' };
 import type { Message } from '../scripts/parse-message.ts';
 
 const message = (id: number, title: string) => ({ id, title }) as Message;
@@ -48,6 +50,16 @@ test('UC-18.4: paragraphs left over on either side are kept, and nothing gives n
   assert.deepEqual(withOriginal(['One.'], ['Um.', 'Dois.']).map((p) => p.text), ['One.', 'Um.', 'Dois.']);
   assert.deepEqual(withOriginal(['One.', 'Two.'], ['Um.']).map((p) => p.text), ['One.', 'Um.', 'Two.']);
   assert.deepEqual(withOriginal([], []), []);
+});
+
+test('UC-12.2: a language is downloaded from the content folder on main', () => {
+  assert.equal(contentUrl('es'), 'https://raw.githubusercontent.com/dancastellani/innerenlightenment/main/content/es.json');
+});
+
+test('UC-12.1: every language offered in settings has a file to download', () => {
+  for (const language of Object.keys(labels)) {
+    assert.ok(existsSync(new URL(`../content/${language}.json`, import.meta.url)), language);
+  }
 });
 
 const portugueseBooks = [{ slug: 'fonte-viva', name: 'Fonte Viva' }, { slug: 'pao-nosso', name: 'Pao Nosso' }];

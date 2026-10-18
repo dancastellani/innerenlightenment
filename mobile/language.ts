@@ -32,3 +32,8 @@ export function withOriginal(translated: string[], original: string[]): { text: 
   }
   return result;
 }
+
+// UC-12: where the app downloads a language that is not built in.
+export function contentUrl(language: string): string {
+  return `https://raw.githubusercontent.com/dancastellani/innerenlightenment/main/content/${language}.json`;
+}

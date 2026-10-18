@@ -1,6 +1,6 @@
 name: Translate messages
 
-# Translates content/pt.json with the Gemini API and opens a PR with content/<language>.json.
+# Translates content/pt/messages.json and the labels with the Gemini API and opens a PR with content/<language>/.
 # Needs the GEMINI_API_KEY repository secret.
 on:
   workflow_dispatch:
@@ -32,5 +32,5 @@ jobs:
           branch: content/translate-${{ inputs.language }}
           commit-message: Translate messages into ${{ inputs.language }}
           title: Translate messages into ${{ inputs.language }}
-          body: Automated translation of content/pt.json with the Gemini API. Spot-check a few messages before merging.
-          add-paths: content/${{ inputs.language }}.json
+          body: Automated translation of content/pt/messages.json and the labels with the Gemini API. Spot-check a few messages before merging.
+          add-paths: content/${{ inputs.language }}/

@@ -1,7 +1,7 @@
 @OP-01 @ops
 Feature: Export the messages from fonteviva.org
   The export downloads every message from the site's WordPress API
-  and writes them to content/pt.json, the file the app bundles.
+  and writes them to content/pt/messages.json, the file the app bundles.
   These scenarios run against saved sample data, not the real site.
 
   Background:

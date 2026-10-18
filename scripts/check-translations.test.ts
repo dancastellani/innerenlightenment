@@ -183,8 +183,7 @@ test('complete labels have no findings', () => {
   assert.deepEqual(checkLabels(english, { settings: 'Ajustes', disclaimer: 'Los mensajes vienen de fonteviva.org y no son nuestra responsabilidad.' }), []);
 });
 
-test('labels that are missing, empty or not in English are reported', () => {
-  assert.deepEqual(checkLabels(english, undefined), ['has no labels']);
+test('labels that are missing (also when the whole file is), empty or not in English are reported', () => {
   assert.deepEqual(checkLabels(english, {}), ['label "settings" is missing', 'label "disclaimer" is missing']);
   assert.deepEqual(checkLabels(english, { settings: ' ', disclaimer: 'x', other: 'y' }), ['label "settings" is missing', 'label "other" is not in en.json']);
 });

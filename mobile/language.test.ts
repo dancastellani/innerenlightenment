@@ -52,13 +52,16 @@ test('UC-18.4: paragraphs left over on either side are kept, and nothing gives n
   assert.deepEqual(withOriginal([], []), []);
 });
 
-test('UC-12.2: a language is downloaded from the content folder on main', () => {
-  assert.equal(contentUrl('es'), 'https://raw.githubusercontent.com/dancastellani/innerenlightenment/main/content/es.json');
+test('UC-12.2: a language is downloaded from the content folder on main, messages and labels', () => {
+  assert.equal(contentUrl('es', 'messages'), 'https://raw.githubusercontent.com/dancastellani/innerenlightenment/main/content/es/messages.json');
+  assert.equal(contentUrl('es', 'labels'), 'https://raw.githubusercontent.com/dancastellani/innerenlightenment/main/content/es/labels.json');
 });
 
 test('UC-12.1: every language offered in settings has a file to download', () => {
   for (const language of Object.keys(names)) {
-    assert.ok(existsSync(new URL(`../content/${language}.json`, import.meta.url)), language);
+    for (const name of ['messages', 'labels']) {
+      assert.ok(existsSync(new URL(`../content/${language}/${name}.json`, import.meta.url)), `${language} ${name}`);
+    }
   }
 });
 

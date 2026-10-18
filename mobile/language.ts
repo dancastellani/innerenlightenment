@@ -38,7 +38,7 @@ export function completeLabels<T extends Record<string, string>>(english: T, lab
   return { ...english, ...labels };
 }
 
-// UC-12: where the app downloads a language that is not built in.
-export function contentUrl(language: string): string {
-  return `https://raw.githubusercontent.com/dancastellani/innerenlightenment/main/content/${language}.json`;
+// UC-12: where the app downloads a language that is not built in: its messages and its labels.
+export function contentUrl(language: string, name: 'messages' | 'labels'): string {
+  return `https://raw.githubusercontent.com/dancastellani/innerenlightenment/main/content/${language}/${name}.json`;
 }

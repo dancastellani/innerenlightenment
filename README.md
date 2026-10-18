@@ -16,10 +16,10 @@ The messages come from Spiritism, a Christian-based philosophy, science, and rel
 
 Early setup. The plan:
 
-- **Content:** all messages from fonteviva.org, exported to JSON (`content/pt.json`) through the site's public WordPress REST API.
+- **Content:** all messages from fonteviva.org, exported to JSON (`content/pt/messages.json`) through the site's public WordPress REST API.
 - **App:** Expo (React Native) for iOS and Android, running entirely on the phone with no server. Daily messages arrive as local notifications at a time the user picks (8am by default).
 - **Website:** one page per message, in every language, at https://dancastellani.github.io/innerenlightenment/, built by `scripts/build-site.ts` and published with GitHub Pages.
-- **Languages:** messages are translated once and stored as one file per language (`content/<lang>.json`). English and Portuguese ship with the app; other languages download from this repository on demand.
+- **Languages:** messages are translated once and stored as a folder per language (`content/<lang>/` with `messages.json` and `labels.json`). English and Portuguese ship with the app; other languages download from this repository on demand.
 - **Later:** a link to chat about the message with a Gemini gem, and per-user frequency.
 
 ## Acknowledgements
@@ -36,10 +36,10 @@ Scripts are TypeScript with no dependencies. Install [Node.js 24](https://nodejs
 
 ```sh
 npm test                  # tests and specs
-npm run export-messages   # writes content/pt.json
+npm run export-messages   # writes content/pt/messages.json
 ```
 
-Or run the **Export messages** workflow from the Actions tab, which opens a PR with the updated file. The **Translate messages** workflow does the same for `content/<lang>.json` (see [docs/development.md](docs/development.md#translating-the-messages)).
+Or run the **Export messages** workflow from the Actions tab, which opens a PR with the updated file. The **Translate messages** workflow does the same for `content/<lang>/messages.json` (see [docs/development.md](docs/development.md#translating-the-messages)).
 
 ## License
 

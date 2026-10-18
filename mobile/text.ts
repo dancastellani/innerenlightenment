@@ -1,6 +1,6 @@
 import type { Message } from '../scripts/parse-message';
 
-// content/pt.json is an exact copy of fonteviva.org, which writes some characters with their
+// content/pt/messages.json is an exact copy of fonteviva.org, which writes some characters with their
 // Windows-1252 codes (128 to 159), e.g. 133 for "…" and 146 for "’". Browsers show these codes
 // as the Windows-1252 characters, so the app and the website do the same when they show the text.
 // Codes 129, 141, 143, 144 and 157 have no character and stay as they are.

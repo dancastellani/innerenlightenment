@@ -1,5 +1,5 @@
 // Exports every message from fonteviva.org (WordPress REST API) to JSON.
-// Usage: node scripts/export-fonteviva.ts [output-path]   (default: content/pt.json)
+// Usage: node scripts/export-fonteviva.ts [output-path]   (default: content/pt/messages.json)
 
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
@@ -23,7 +23,7 @@ async function fetchAll<T>(path: string): Promise<T[]> {
   return items;
 }
 
-const output = process.argv[2] ?? 'content/pt.json';
+const output = process.argv[2] ?? 'content/pt/messages.json';
 
 const categories = await fetchAll<Category>('categories?_fields=id,name,slug,count');
 const books = categories.filter((c) => c.count > 0);

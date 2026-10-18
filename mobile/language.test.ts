@@ -1,25 +1,9 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
-import { contentUrl, findMessage, languageFor, originalLink, withOriginal } from './language.ts';
+import { bookName, contentUrl, findMessage, originalLink, withOriginal } from './language.ts';
 import labels from '../website/languages.json' with { type: 'json' };
 import type { Message } from '../scripts/parse-message.ts';
-
-test('UC-05.1: English when the phone is not Portuguese', () => {
-  assert.equal(languageFor('en-US'), 'en');
-  assert.equal(languageFor('de-DE'), 'en');
-});
-
-test('UC-05.2, UC-05.5: Portuguese for any Portuguese variant', () => {
-  assert.equal(languageFor('pt'), 'pt');
-  assert.equal(languageFor('pt-BR'), 'pt');
-  assert.equal(languageFor('pt-PT'), 'pt');
-});
-
-test('UC-05.6: a language the app does not have yet falls back to English', () => {
-  assert.equal(languageFor('es-ES'), 'en');
-  assert.equal(languageFor(''), 'en');
-});
 
 const message = (id: number, title: string) => ({ id, title }) as Message;
 const original = [message(1, 'O tempo'), message(2, 'Filhos e servos')];
@@ -76,4 +60,18 @@ test('UC-12.1: every language offered in settings has a file to download', () =>
   for (const language of Object.keys(labels)) {
     assert.ok(existsSync(new URL(`../content/${language}.json`, import.meta.url)), language);
   }
+});
+
+const portugueseBooks = [{ slug: 'fonte-viva', name: 'Fonte Viva' }, { slug: 'pao-nosso', name: 'Pao Nosso' }];
+const englishBooks = [{ slug: 'fonte-viva', name: 'Living Spring' }];
+
+test('UC-05.10: a book is named in the chosen language (#115)', () => {
+  assert.equal(bookName('fonte-viva', englishBooks, portugueseBooks), 'Living Spring');
+  assert.equal(bookName('fonte-viva', portugueseBooks, portugueseBooks), 'Fonte Viva');
+});
+
+test('UC-05.10: a book without a translation is named in Portuguese, an unknown book has no name', () => {
+  assert.equal(bookName('pao-nosso', englishBooks, portugueseBooks), 'Pao Nosso');
+  assert.equal(bookName('novo', englishBooks, portugueseBooks), '');
+  assert.equal(bookName('fonte-viva', [], []), '');
 });

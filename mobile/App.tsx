@@ -10,7 +10,7 @@ import studyGroups from '../website/study-groups.json';
 import { expo } from './app.json';
 import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
-import { findMessage, languageFor, originalLink, withOriginal } from './language';
+import { bookName, findMessage, originalLink, withOriginal, type Book } from './language';
 import { isDownloaded, loadLanguage } from './download';
 import { readable } from './text';
 
@@ -22,7 +22,11 @@ const portuguese = (portugueseContent.messages as Message[]).map(readable);
 // UC-12: other languages are added once they are downloaded.
 const translations: Record<string, Message[]> = { pt: portuguese, en: englishContent.messages as Message[] };
 const books = portugueseContent.books;
-const bookNames = Object.fromEntries(books.map((b) => [b.slug, b.name]));
+const bookTranslations: Record<string, Book[]> = { pt: books, en: englishContent.books };
+
+function bookNameIn(language: string, slug: string): string {
+  return bookName(slug, bookTranslations[language] ?? [], books);
+}
 
 function messageIn(language: string, id: number | undefined): Message | undefined {
   return findMessage(id, translations[language] ?? [], portuguese);
@@ -40,13 +44,13 @@ async function prepareLanguage(language: string): Promise<boolean> {
   }
 }
 
-// UC-05, UC-08, UC-09: saved on the phone. The language starts as the phone's.
+// UC-05, UC-08, UC-09: saved on the phone. The language starts as English, whatever the phone's language.
 type Settings = { hour: number; minute: number; enabled: boolean; language: string };
 const DEFAULT_SETTINGS: Settings = {
   hour: 8,
   minute: 0,
   enabled: true,
-  language: languageFor(Intl.DateTimeFormat().resolvedOptions().locale),
+  language: 'en',
 };
 
 async function loadSettings(): Promise<Settings> {
@@ -267,10 +271,10 @@ export default function App() {
         <Text style={styles.title}>Index</Text>
         <View style={styles.actions}>
           {books.map((book) => (
-            <Action key={book.slug} title={book.name} onPress={() => setIndexBook(book.slug)} main={book.slug === indexBook} />
+            <Action key={book.slug} title={bookNameIn(settings.language, book.slug)} onPress={() => setIndexBook(book.slug)} main={book.slug === indexBook} />
           ))}
         </View>
-        {indexBook && <Text style={styles.bookTitle}>{bookNames[indexBook]}</Text>}
+        {indexBook && <Text style={styles.bookTitle}>{bookNameIn(settings.language, indexBook)}</Text>}
         {bookMessages.map((m) => (
           <Text
             key={m.id}
@@ -407,7 +411,7 @@ export default function App() {
       <Text style={styles.title}>{message.title}</Text>
       {comparing && <Text style={[styles.paragraph, styles.original]}>{original.title}</Text>}
       <Text style={styles.source}>
-        {bookNames[message.book ?? '']} · {message.chapter}
+        {bookNameIn(settings.language, message.book ?? '')} · {message.chapter}
       </Text>
       {paragraphs.map((paragraph, i) => (
         <Text key={i} style={paragraph.isOriginal ? [styles.paragraph, styles.original] : styles.paragraph}>

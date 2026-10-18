@@ -3,14 +3,14 @@ Feature: Read the message in English or Portuguese
 
   @UC-05.1
   Scenario: English by default
-    Given the phone language is not Portuguese
+    Given I have not chosen a language
     When I open the app for the first time
     Then messages are shown in English
 
   @UC-05.2
-  Scenario: Portuguese phone
-    Given the phone language is Portuguese
-    When I open the app for the first time
+  Scenario: A saved choice is kept
+    Given I chose "Português" in settings
+    When I open the app again
     Then messages are shown in Portuguese
 
   @UC-05.3
@@ -43,14 +43,15 @@ Feature: Read the message in English or Portuguese
   # Edge cases
 
   @UC-05.5
-  Scenario: Any Portuguese variant
-    Given the phone language is "pt-PT" or "pt-BR"
+  Scenario: A Portuguese phone
+    Given the phone language is Portuguese ("pt-PT" or "pt-BR")
     When I open the app for the first time
-    Then messages are shown in Portuguese
+    Then messages are shown in English
+    And "Português" is one tap away in settings
 
   @UC-05.6
   Scenario: A language the app does not have yet
-    Given the phone language is Spanish and Spanish is not available
+    Given the phone language is Spanish
     When I open the app for the first time
     Then messages are shown in English
 
@@ -60,3 +61,17 @@ Feature: Read the message in English or Portuguese
     And today's message has no English translation
     When I open the app
     Then today's message is shown in Portuguese
+
+  @UC-05.10
+  Scenario: Book names are shown in the selected language (#115)
+    Given messages are shown in English
+    When I open the index, and a message
+    Then the books are named "The Way, the Truth and the Life", "Living Spring", "Our Daily Bread" and "Vineyard of Light"
+    And the message shows its book name in English above its chapter
+    And in Portuguese they are "Caminho Verdade e Vida", "Fonte Viva", "Pao Nosso" and "Vinha de Luz"
+
+  @UC-05.11
+  Scenario: A book without a translated name is shown in Portuguese
+    Given a new book is in content/pt.json but its name is not translated yet
+    When messages are shown in English
+    Then that book is shown with its Portuguese name, and never without a name

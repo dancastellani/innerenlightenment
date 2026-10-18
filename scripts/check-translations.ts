@@ -5,7 +5,8 @@
 import { readdirSync, readFileSync } from 'node:fs';
 
 type Message = { id: number; url: string; paragraphs: string[]; note: string | null; [field: string]: unknown };
-export type Content = { language: string; messages: Message[] };
+type Book = { slug: string; name: string };
+export type Content = { language: string; books: Book[]; messages: Message[] };
 
 // Fields that are copied from the original as they are, never translated.
 const KEPT_FIELDS = ['slug', 'url', 'book', 'chapter', 'spirit', 'medium', 'signature'];
@@ -42,6 +43,15 @@ function isStillPortuguese(text: string, original: string): boolean {
 export function checkFile(original: Content, translation: Content, lang: string): string[] {
   const findings: string[] = [];
   if (translation.language !== lang) findings.push(`language is "${translation.language}", expected "${lang}"`);
+
+  for (const o of original.books) {
+    const book = translation.books.find((b) => b.slug === o.slug);
+    if (!book) findings.push(`book "${o.slug}" is missing`);
+    else if (book.name === o.name) findings.push(`book name "${book.name}" is still in Portuguese`);
+  }
+  for (const book of translation.books) {
+    if (!original.books.some((o) => o.slug === book.slug)) findings.push(`book "${book.slug}" is not in pt.json`);
+  }
 
   const ids = translation.messages.map((m) => m.id);
   const originalIds = original.messages.map((m) => m.id);

@@ -28,9 +28,9 @@ describe('translation files', () => {
   }
 });
 
-// The enabled languages are the ones in website/languages.json. Portuguese is the source of the labels.
+// The enabled languages are the ones in content/languages.json. Portuguese is the source of the labels.
 describe('enabled languages have every label of pt', () => {
-  const enabled = Object.keys(JSON.parse(readFileSync('website/languages.json', 'utf8')));
+  const enabled = Object.keys(JSON.parse(readFileSync('content/languages.json', 'utf8')));
   const portuguese = readLanguage('content', 'pt').labels;
   for (const lang of enabled) {
     test(lang, () => assert.deepEqual(missingLabels(portuguese, readLanguage('content', lang).labels), []));

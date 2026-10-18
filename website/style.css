@@ -66,7 +66,10 @@ nav .another {
   color: var(--paper);
   text-decoration: none;
   font-weight: 600;
+  transition: background-color 0.2s, transform 0.2s;
 }
+nav .another:hover { background: color-mix(in srgb, var(--spring), var(--ink) 20%); }
+nav .another:active { transform: scale(0.98); }
 
 .meta { margin-bottom: 2.5rem; }
 .signature { font-style: italic; text-align: right; margin-top: 2rem; }
@@ -106,8 +109,10 @@ nav .another {
   background: var(--paper);
   border: 1px solid var(--rule);
   border-radius: 0.75rem;
-  box-shadow: 0 6px 24px rgb(0 0 0 / 0.12);
+  box-shadow: 0 6px 24px rgb(16 23 24 / 0.2);
+  animation: menu-in 0.15s ease-out;
 }
+@keyframes menu-in { from { opacity: 0; transform: translateY(-6px); } }
 .menu-items a, .menu-items .current { padding: 0.7rem 1.25rem; }
 .menu-items a { text-decoration: none; }
 .menu-items .current { color: var(--ink); }
@@ -131,3 +136,7 @@ footer { margin-top: 4rem; border-top: 1px solid var(--rule); padding-top: 1.5re
 .original-mark { border-color: var(--rule); color: var(--muted); }
 .original { display: none; color: var(--muted); font-style: italic; border-left: 3px solid var(--rule); padding-left: 1rem; }
 .show-original:checked ~ .original { display: block; }
+
+@media (prefers-reduced-motion: reduce) {
+  nav .another, .menu-items { transition: none; animation: none; }
+}

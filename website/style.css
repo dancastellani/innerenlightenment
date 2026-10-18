@@ -27,7 +27,8 @@ a:focus-visible { outline: 2px solid var(--spring); outline-offset: 3px; border-
 
 h1 { font-size: 2.4rem; font-weight: 600; line-height: 1.15; margin: 3rem 0 0.5rem; }
 h2 { font-size: 1.4rem; font-weight: 600; margin: 2.5rem 0 0.5rem; }
-p { margin: 0 0 1.1em; }
+h1, h2 { text-wrap: balance; letter-spacing: -0.01em; }
+p { margin: 0 0 1.1em; text-wrap: pretty; }
 /* Lists of messages: one per line, each an easy tap target. */
 ul { list-style: none; padding: 0; margin: 0; }
 li { border-bottom: 1px solid var(--rule); }

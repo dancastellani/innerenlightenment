@@ -1,0 +1,30 @@
+name: Website preview
+
+# Builds the website from the PR branch and uploads it, so a PR that changes
+# the website can be checked before merging. Needs no secrets.
+on:
+  pull_request:
+    paths:
+      - website/**
+      - scripts/build-site.ts
+      - content/**
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: ./run.sh site
+      - id: upload
+        uses: actions/upload-artifact@v5
+        with:
+          name: website-preview
+          path: site
+      - run: |
+          echo "Website built from this branch: [download the site](${{ steps.upload.outputs.artifact-url }}), unzip it and run \`npx serve\` inside to browse it." >> "$GITHUB_STEP_SUMMARY"

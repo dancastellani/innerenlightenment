@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { bookName, completeLabels, contentUrl, findMessage, originalLink, withOriginal } from './language.ts';
-import names from '../website/languages.json' with { type: 'json' };
+import names from '../content/languages.json' with { type: 'json' };
 import type { Message } from '../scripts/parse-message.ts';
 
 const message = (id: number, title: string) => ({ id, title }) as Message;

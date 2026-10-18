@@ -3,7 +3,7 @@
 // a random message. The home page opens a random English message.
 //
 // The look lives in website/: HTML templates in website/templates/, the stylesheet, and
-// website/languages.json with each language's name (a new language needs an entry there). The other text of
+// content/languages.json with each language's name (a new language needs an entry there). The other text of
 // the pages, such as "Another message" and the disclaimer, is the language's labels.json.
 //
 // Usage: node scripts/build-site.ts [content folder] [output folder]
@@ -57,7 +57,7 @@ class Website {
 
   constructor(contents: Content[], names: Names, studyGroups: StudyGroup[]) {
     for (const content of contents) {
-      if (!names[content.language]) throw new Error(`Add "${content.language}" to website/languages.json`);
+      if (!names[content.language]) throw new Error(`Add "${content.language}" to content/languages.json`);
     }
     this.contents = contents;
     this.names = names;
@@ -232,7 +232,7 @@ function write(file: string, html: string) {
 
 const [contentFolder = 'content', outFolder = 'site'] = process.argv.slice(2);
 const contents = readContents(contentFolder);
-const names = JSON.parse(readFileSync(join(WEBSITE_FOLDER, 'languages.json'), 'utf8'));
+const names = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'content', 'languages.json'), 'utf8'));
 const studyGroups = JSON.parse(readFileSync(join(WEBSITE_FOLDER, 'study-groups.json'), 'utf8'));
 new Website(contents, names, studyGroups).build(outFolder);
 const pages = contents.reduce((sum, c) => sum + c.messages.length, 0);

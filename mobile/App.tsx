@@ -7,7 +7,7 @@ import portugueseContent from '../content/pt/messages.json';
 import englishContent from '../content/en/messages.json';
 import portugueseLabels from '../content/pt/labels.json';
 import englishLabels from '../content/en/labels.json';
-import languageNames from '../website/languages.json';
+import languageNames from '../content/languages.json';
 import studyGroups from '../website/study-groups.json';
 import { expo } from './app.json';
 import type { Message } from '../scripts/parse-message';

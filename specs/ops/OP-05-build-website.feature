@@ -213,10 +213,10 @@ Feature: Build and publish the website
     Then it fails with "No content files"
 
   @OP-05.13
-  Scenario: A language without a name in website/languages.json
+  Scenario: A language without a name in content/languages.json
     Given the content also has the language "xx"
     When the website is built
-    Then it fails with "Add \"xx\" to website/languages.json"
+    Then it fails with "Add \"xx\" to content/languages.json"
 
   # Bugs #67, #71: content/pt/messages.json keeps fonteviva.org's Windows-1252 codes; pages show them as browsers do.
   @OP-05.20
@@ -227,7 +227,7 @@ Feature: Build and publish the website
 
   @OP-05.15
   Scenario: Every language has its name, its disclaimer, and every translated language its AI translation part
-    Then every language in website/languages.json has a name
+    Then every language in content/languages.json has a name
     And every language in content/ has a "disclaimer"
     And every language but "pt" in content/ has a "translationDisclaimer"
 

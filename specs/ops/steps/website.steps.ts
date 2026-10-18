@@ -133,8 +133,8 @@ Then('every language but {string} in content\\/ has a {string}', function (origi
   }
 });
 
-Then('every language in website\\/languages.json has a name', function () {
-  const names = JSON.parse(readFileSync('website/languages.json', 'utf8'));
+Then('every language in content\\/languages.json has a name', function () {
+  const names = JSON.parse(readFileSync('content/languages.json', 'utf8'));
   for (const language of languagesInContent()) assert.ok(names[language]?.name, `${language} has no name`);
 });
 

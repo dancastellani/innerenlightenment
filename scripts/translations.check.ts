@@ -3,9 +3,10 @@
 // A message that fails in en and es shows 2 failures in its group.
 // Usage: node --test scripts/translations.check.ts   (./run.sh test also writes its report to test-reports/translations.xml)
 
+import { readFileSync } from 'node:fs';
 import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { checkBibleReferences, checkFile, checkLabels, checkMessage, readLanguage, translationsIn } from './check-translations.ts';
+import { checkBibleReferences, checkFile, checkLabels, checkMessage, missingLabels, readLanguage, translationsIn } from './check-translations.ts';
 
 const original = readLanguage('content', 'pt').content;
 const english = readLanguage('content', 'en').labels;
@@ -24,5 +25,14 @@ for (const o of original.messages) {
 describe('translation files', () => {
   for (const { lang, content, labels } of translations) {
     test(lang, () => assert.deepEqual([...checkFile(original, content, lang), ...(lang === 'en' ? [] : checkLabels(english, labels))], []));
+  }
+});
+
+// The enabled languages are the ones in content/languages.json. Portuguese is the source of the labels.
+describe('enabled languages have every label of pt', () => {
+  const enabled = Object.keys(JSON.parse(readFileSync('content/languages.json', 'utf8')));
+  const portuguese = readLanguage('content', 'pt').labels;
+  for (const lang of enabled) {
+    test(lang, () => assert.deepEqual(missingLabels(portuguese, readLanguage('content', lang).labels), []));
   }
 });

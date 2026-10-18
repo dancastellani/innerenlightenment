@@ -132,6 +132,11 @@ export function checkLabels(english: Labels, labels: Labels): string[] {
   return findings;
 }
 
+// The labels of the source language that the labels of an enabled language lack.
+export function missingLabels(source: Labels, labels: Labels): string[] {
+  return Object.keys(source).filter((name) => !labels[name]?.trim());
+}
+
 export function checkTranslation(original: Content, translation: Content, lang: string): string[] {
   const findings = checkFile(original, translation, lang);
   for (const o of original.messages) {

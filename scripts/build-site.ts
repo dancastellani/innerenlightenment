@@ -136,12 +136,14 @@ class Website {
       .map((c) => `<a href="../../${c.language}/${message.slug}/">${this.names[c.language].name}</a>`)
       .join('');
     const original = this.original(content, message);
-    const body = this.render('message', {
-      anotherMessage: labels.anotherMessage,
-      index: labels.index,
+    const menu = this.render('menu', {
       menu: labels.menu,
+      index: labels.index,
       languageName: this.names[content.language].name,
       otherLanguages,
+    });
+    const body = this.render('message', {
+      anotherMessage: labels.anotherMessage,
       meta,
       title: escapeHtml(message.title),
       originalTitle: original.originalTitle,
@@ -154,7 +156,7 @@ class Website {
       credit: this.credit(content),
       disclaimer: `<p class="disclaimer">${[labels.disclaimer, labels.translationDisclaimer].filter((text) => text).join(' ')}</p>`,
     });
-    return this.page(content.language, message.title, '../../', body, original);
+    return this.page(content.language, message.title, '../../', body, original, menu);
   }
 
   // UC-18: on a translation, an "Original" switch that shows the Portuguese text after each paragraph;
@@ -188,9 +190,9 @@ class Website {
   }
 
   // `root` is the path from the page to the site's root folder, for the stylesheet.
-  page(language: string, title: string, root: string, body: string, original = { checkbox: '', label: '' }): string {
+  page(language: string, title: string, root: string, body: string, original = { checkbox: '', label: '' }, menu = ''): string {
     const values = { language, title: escapeHtml(title), root, body: body.trimEnd() };
-    return this.render('layout', { ...values, originalCheckbox: original.checkbox, originalLabel: original.label });
+    return this.render('layout', { ...values, originalCheckbox: original.checkbox, originalLabel: original.label, menu });
   }
 
   // `prefix` is the path from the page to the language folder. Without JavaScript it shows `fallback`.

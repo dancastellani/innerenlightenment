@@ -394,10 +394,14 @@ export default function App() {
   );
 
   return (
-    <Screen action={originalSwitch}>
-      <View style={styles.topBar}>
-        <MenuButton label={t.menu} onPress={() => setMenuOpen(true)} />
-      </View>
+    <Screen
+      action={
+        <>
+          {originalSwitch}
+          <MenuButton label={t.menu} onPress={() => setMenuOpen(true)} />
+        </>
+      }
+    >
       {/* The menu opens under the button at the top right; tapping outside closes it. */}
       <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={() => setMenuOpen(false)}>
         <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)}>
@@ -446,7 +450,7 @@ const styles = StyleSheet.create({
   app: { flex: 1, backgroundColor: colors.paper },
   appBar: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 48, paddingBottom: 12, paddingHorizontal: 16, borderBottomWidth: 1, borderColor: colors.rule },
   appIcon: { width: 28, height: 28, borderRadius: 6 },
-  appName: { flex: 1, fontSize: 17, fontWeight: '600', color: colors.ink },
+  appName: { flex: 1, fontSize: 16, fontWeight: '600', color: colors.ink },
   page: { padding: 24, paddingBottom: 48 },
   title: { fontFamily: 'Literata_600SemiBold', fontSize: 34, lineHeight: 38, letterSpacing: -0.5, color: colors.ink, marginBottom: 6 },
   source: { fontSize: 14, color: colors.muted, marginBottom: 28 },
@@ -458,11 +462,10 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.7, transform: [{ scale: 0.98 }] },
   actionText: { fontSize: 17, fontWeight: '600', color: colors.spring },
   mainActionText: { color: colors.paper },
-  topBar: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-start' },
-  menuButton: { width: 48, height: 48, marginTop: -8, marginRight: -8, alignItems: 'center', justifyContent: 'center', gap: 5 },
+  menuButton: { width: 40, height: 48, marginVertical: -10, marginRight: -8, alignItems: 'center', justifyContent: 'center', gap: 5 },
   bar: { width: 22, height: 2, borderRadius: 1, backgroundColor: colors.ink },
   backdrop: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.15)' },
-  menu: { position: 'absolute', top: 168, right: 16, minWidth: 200, paddingVertical: 8, borderRadius: 12, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.rule, elevation: 6, shadowColor: colors.ink },
+  menu: { position: 'absolute', top: 92, right: 16, minWidth: 200, paddingVertical: 8, borderRadius: 12, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.rule, elevation: 6, shadowColor: colors.ink },
   menuItem: { paddingVertical: 14, paddingHorizontal: 20 },
   menuItemText: { fontSize: 17, color: colors.ink },
   settings: { gap: 12, marginTop: 24 },

@@ -1,14 +1,13 @@
 import { File, Paths } from 'expo-file-system';
 import type { Message } from '../scripts/parse-message';
-
-type Content = { messages: Message[]; labels?: Record<string, string> };
 import { contentUrl } from './language';
 
-// UC-12: a language that is not in the app, read from the phone or downloaded from the repo once and saved.
-// A file downloaded before languages had labels has none; the app then shows English text.
-export async function loadLanguage(language: string): Promise<Content> {
-  const file = new File(Paths.document, `${language}.json`);
-  if (!file.exists) await File.downloadFileAsync(contentUrl(language), file);
+type Content = { messages: Message[]; labels: Record<string, string> };
+
+// Reads a language file from the phone, downloading it from the repo first when it isn't saved yet.
+async function readFile<T>(language: string, name: 'messages' | 'labels'): Promise<T> {
+  const file = new File(Paths.document, `${language}.${name}.json`);
+  if (!file.exists) await File.downloadFileAsync(contentUrl(language, name), file);
   try {
     return JSON.parse(await file.text());
   } catch (error) {
@@ -18,7 +17,15 @@ export async function loadLanguage(language: string): Promise<Content> {
   }
 }
 
+// UC-12: a language that is not in the app. Its messages are needed; its labels are not, so when they
+// can't be had the app shows English text (UC-12.9) and tries again the next time.
+export async function loadLanguage(language: string): Promise<Content> {
+  const { messages } = await readFile<{ messages: Message[] }>(language, 'messages');
+  const labels = await readFile<Record<string, string>>(language, 'labels').catch(() => ({}));
+  return { messages, labels };
+}
+
 // UC-12.1: whether choosing the language still needs a download.
 export function isDownloaded(language: string): boolean {
-  return new File(Paths.document, `${language}.json`).exists;
+  return new File(Paths.document, `${language}.messages.json`).exists;
 }

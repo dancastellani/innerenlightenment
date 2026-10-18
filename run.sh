@@ -30,7 +30,7 @@ case "$1" in
       --format pretty --format junit:test-reports/specs.xml --format-options '{"junit":{"suiteName":"Specs"}}' || status=1
     exit $status
     ;;
-  export)    node scripts/export-fonteviva.ts content/pt.json ;;
+  export)    node scripts/export-fonteviva.ts content/pt/messages.json ;;
   translate) node scripts/translate.ts "${2:-en}" ;;
   site)      node scripts/build-site.ts content site ;;
   app)       cd mobile && npm install && npx expo start ;;
@@ -50,8 +50,8 @@ case "$1" in
     echo
     echo "  setup             install the packages for the tests and the app (run this first)"
     echo "  test              run the tests and the specs in specs/ops"
-    echo "  export            download all messages from fonteviva.org into content/pt.json"
-    echo "  translate [lang]  translate content/pt.json into content/<lang>.json (default en, needs GEMINI_API_KEY)"
+    echo "  export            download all messages from fonteviva.org into content/pt/messages.json"
+    echo "  translate [lang]  translate content/pt/messages.json and the UI labels into content/<lang>/ (default en, needs GEMINI_API_KEY)"
     echo "  site              build the website from content/ into site/"
     echo "  app               start the app; scan the QR code with Expo Go on your phone"
     echo "  preview           publish the checked-out branch to Expo; open the printed link for its QR code"

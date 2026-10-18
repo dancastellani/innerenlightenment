@@ -60,6 +60,12 @@ Feature: Download another language
 
   @UC-12.9
   Scenario: A downloaded language brings its own menu, buttons and notices
-    Given Spanish is downloaded
+    Given Spanish is downloaded, its messages and its labels
     When I choose it and open the menu and settings
-    Then they are in Spanish, and a text its file lacks is in English (UC-05.9)
+    Then they are in Spanish, and a text its labels lack is in English (UC-05.9)
+
+  @UC-12.10
+  Scenario: The messages download but the labels do not
+    Given the Spanish messages are downloaded but its labels could not be
+    When I choose Spanish
+    Then the messages are in Spanish, the menu, buttons and notices are in English, and the labels are tried again next time

@@ -2,7 +2,7 @@
 Feature: Build and publish the website
   As the owner, I want the website built and published automatically on every merge,
   so anyone can read the messages in a browser without installing the app (issue #35).
-  scripts/build-site.ts turns content/<lang>.json into static pages, using the templates,
+  scripts/build-site.ts turns content/<lang>/messages.json and labels.json into static pages, using the templates,
   stylesheet and language labels in website/. Each message has its own page at <lang>/<slug>/,
   the link the app can share.
 
@@ -218,7 +218,7 @@ Feature: Build and publish the website
     When the website is built
     Then it fails with "Add \"xx\" to website/languages.json"
 
-  # Bugs #67, #71: content/pt.json keeps fonteviva.org's Windows-1252 codes; pages show them as browsers do.
+  # Bugs #67, #71: content/pt/messages.json keeps fonteviva.org's Windows-1252 codes; pages show them as browsers do.
   @OP-05.20
   Scenario: Windows-1252 codes in the Portuguese text show as their characters
     Given the Portuguese message "o-tempo" ends its first paragraph with the Windows-1252 code 133
@@ -231,8 +231,8 @@ Feature: Build and publish the website
     And every language in content/ has a "disclaimer"
     And every language but "pt" in content/ has a "translationDisclaimer"
 
-  # The pages' text (menu, buttons, disclaimer, credit) is the language's labels in its content file,
-  # downloaded with the messages; pt.json is an exact copy of the site, so its labels are in pt.labels.json.
+  # The pages' text (menu, buttons, disclaimer, credit) is the language's labels.json,
+  # next to its messages.json (also for Portuguese, because pt/messages.json is an exact copy of the site and is never edited).
   @OP-05.18
   Scenario: The pages show the labels of their own language
     When the website is built
@@ -244,4 +244,4 @@ Feature: Build and publish the website
   Scenario: A language whose content has no labels
     Given the content also has the language "xx" without labels
     When the website is built
-    Then it fails with "xx.json has no \"labels\""
+    Then it fails with "xx has no labels.json"

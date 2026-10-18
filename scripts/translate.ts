@@ -1,10 +1,11 @@
-// Translates content/pt.json into another language with the Gemini API.
-// Usage: GEMINI_API_KEY=... node scripts/translate.ts [lang]   (default: en, writes content/<lang>.json)
-// Also translates the app and website text (the "labels" of content/en.json, such as "Settings" and the disclaimer).
-// Messages and labels already in the output file are skipped, so an interrupted run can simply be started again.
+// Translates content/pt/messages.json into another language with the Gemini API.
+// Usage: GEMINI_API_KEY=... node scripts/translate.ts [lang]   (default: en, writes content/<lang>/messages.json)
+// Also translates the app and website text (content/en/labels.json, such as "Settings" and the disclaimer)
+// into content/<lang>/labels.json.
+// Messages and labels already in the output files are skipped, so an interrupted run can simply be started again.
 
 import { existsSync } from 'node:fs';
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 
 const MODEL = 'gemini-3.5-flash-lite';
 const BATCH_SIZE = 10;
@@ -14,18 +15,20 @@ const SECONDS_BETWEEN_REQUESTS = 6.5;
 type Message = { id: number; title: string; paragraphs: string[]; note: string | null; [field: string]: unknown };
 type Book = { slug: string; name: string; [field: string]: unknown };
 type Labels = Record<string, string>;
-type Content = { source: string; language: string; books: Book[]; labels?: Labels; messages: Message[] };
+type Content = { source: string; language: string; books: Book[]; messages: Message[] };
 type Translation = { id: number; title: string; paragraphs: string[]; note: string | null };
 
 const lang = process.argv[2] ?? 'en';
-const output = `content/${lang}.json`;
+const folder = `content/${lang}`;
+const output = `${folder}/messages.json`;
+const labelsOutput = `${folder}/labels.json`;
 const key = process.env.GEMINI_API_KEY;
 if (!key) throw new Error('Set the GEMINI_API_KEY environment variable');
 
-const source: Content = JSON.parse(await readFile('content/pt.json', 'utf8'));
+const source: Content = JSON.parse(await readFile('content/pt/messages.json', 'utf8'));
 const existing: Content | undefined = existsSync(output) ? JSON.parse(await readFile(output, 'utf8')) : undefined;
 const done: Message[] = existing?.messages ?? [];
-const labels: Labels = existing?.labels ?? {};
+const labels: Labels = existsSync(labelsOutput) ? JSON.parse(await readFile(labelsOutput, 'utf8')) : {};
 
 const sleep = (seconds: number) => new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 let lastRequest = 0;
@@ -70,10 +73,10 @@ async function translate(batch: Translation[]): Promise<Translation[]> {
   return (await ask<Translation[]>(prompt)) ?? [];
 }
 
-// The English labels not yet translated. Portuguese has its own labels in content/pt.labels.json.
+// The English labels not yet translated. Portuguese has its own labels, written by hand.
 async function translateLabels() {
-  const english: Content = JSON.parse(await readFile('content/en.json', 'utf8'));
-  const todo = Object.fromEntries(Object.entries(english.labels ?? {}).filter(([name]) => !labels[name]));
+  const english: Labels = JSON.parse(await readFile('content/en/labels.json', 'utf8'));
+  const todo = Object.fromEntries(Object.entries(english).filter(([name]) => !labels[name]));
   if (lang === 'en' || Object.keys(todo).length === 0) return;
   const prompt =
     `Translate the values of this JSON object from English into the language with code "${lang}". ` +
@@ -86,10 +89,13 @@ async function translateLabels() {
     if (translated[name]) labels[name] = translated[name];
     else console.error(`warning: failed label "${name}", translation missing`);
   }
+  // Keep the order of en/labels.json, whatever order the translations arrived in.
+  const ordered = Object.fromEntries(Object.keys(english).filter((name) => labels[name]).map((name) => [name, labels[name]]));
+  await writeFile(labelsOutput, JSON.stringify(ordered, null, 1) + '\n');
   console.error(`labels: ${Object.keys(todo).length} translated`);
 }
 
-// The books in the order of pt.json, keeping the names already translated in the output file
+// The books in the order of pt/messages.json, keeping the names already translated in the output file
 // and translating the names of new books.
 async function translateBooks(): Promise<Book[]> {
   const translatedName = (book: Book) => existing?.books.find((b) => b.slug === book.slug && b.name !== book.name)?.name;
@@ -114,12 +120,13 @@ async function translateBooks(): Promise<Book[]> {
 const books = await translateBooks();
 
 async function save() {
-  // Keep the order of pt.json, whatever order the translations arrived in.
+  // Keep the order of pt/messages.json, whatever order the translations arrived in.
   const messages = source.messages.flatMap((m) => done.filter((d) => d.id === m.id));
-  const json = JSON.stringify({ ...source, language: lang, books, labels, messages }, null, 1);
+  const json = JSON.stringify({ ...source, language: lang, books, messages }, null, 1);
   await writeFile(output, json + '\n');
 }
 
+await mkdir(folder, { recursive: true });
 await translateLabels();
 await save();
 

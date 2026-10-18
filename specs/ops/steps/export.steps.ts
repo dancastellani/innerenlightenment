@@ -59,7 +59,7 @@ When('the export runs', async function (this: World) {
   await new Promise<void>((resolve) => this.server.listen(0, resolve));
   const port = (this.server.address() as { port: number }).port;
 
-  this.output = join(await mkdtemp(join(tmpdir(), 'export-')), 'pt.json');
+  this.output = join(await mkdtemp(join(tmpdir(), 'export-')), 'messages.json');
   this.result = await runCommand('node', ['scripts/export-fonteviva.ts', this.output], {
     FONTEVIVA_API: `http://localhost:${port}/wp-json/wp/v2`,
   });

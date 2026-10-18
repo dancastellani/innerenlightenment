@@ -10,7 +10,7 @@ Some files mentioned here arrive with the open PRs: the export script, tests and
 fonteviva.org (WordPress)
    │  export script (TypeScript, run by Node 24, in GitHub Actions)
    ▼
-content/pt.json  ──translate once with an LLM──►  content/en.json, content/<lang>.json
+content/pt/messages.json  ──translate once with an LLM──►  content/en/messages.json, content/<lang>/messages.json
    │
    ▼
 Expo app on the phone (planned): bundles en + pt, downloads other languages,
@@ -84,10 +84,10 @@ fonteviva.org is a WordPress site, and WordPress has a public **REST API**: URLs
 
 The export has two files in `scripts/`:
 
-- `export-fonteviva.ts` fetches every page of categories and posts, then writes `content/pt.json`.
+- `export-fonteviva.ts` fetches every page of categories and posts, then writes `content/pt/messages.json`.
 - `parse-message.ts` turns one post's HTML into clean fields. The site's HTML uses consistent classes (`.capitulo` chapter, `.espirito` spirit, `.autor` medium, `.assinatura` signature), so a few regular expressions are enough, with no HTML library.
 
-One message in `content/pt.json` looks like:
+One message in `content/pt/messages.json` looks like:
 
 ```json
 {
@@ -108,7 +108,7 @@ One message in `content/pt.json` looks like:
 Run it locally:
 
 ```sh
-node scripts/export-fonteviva.ts            # writes content/pt.json
+node scripts/export-fonteviva.ts            # writes content/pt/messages.json
 node scripts/export-fonteviva.ts out.json   # or another path
 ```
 
@@ -119,8 +119,8 @@ Progress goes to the terminal (`posts: page 3/8`). The content is static, so the
 GitHub Actions runs jobs on GitHub's machines, described by YAML files in `.github/workflows/`.
 
 - **Test** (`test.yml`) runs `node --test` on every pull request and every push to `main`. The PR page shows a green check or a red cross.
-- **Export messages** (`export-content.yml`) is started by hand from the **Actions** tab ("Run workflow"). It runs the export and, if `content/pt.json` changed, opens a PR with the new file. It exists because the export can't reach fonteviva.org from every environment, but it always works from GitHub.
-- **Translate messages** (`translate-content.yml`) is also started by hand, with a language code. It runs `scripts/translate.ts` with the `GEMINI_API_KEY` secret and opens a PR with `content/<lang>.json`.
+- **Export messages** (`export-content.yml`) is started by hand from the **Actions** tab ("Run workflow"). It runs the export and, if `content/pt/messages.json` changed, opens a PR with the new file. It exists because the export can't reach fonteviva.org from every environment, but it always works from GitHub.
+- **Translate messages** (`translate-content.yml`) is also started by hand, with a language code. It runs `scripts/translate.ts` with the `GEMINI_API_KEY` secret and opens a PR with `content/<lang>/messages.json`.
 
 A workflow is a list of steps:
 
@@ -245,7 +245,7 @@ Settings (time, on/off, language) and the message planned for each upcoming day 
 
 ## Languages (planned)
 
-- Messages are translated **once**, offline, by a script that uses an LLM (Claude or Gemini), and a person spot-checks a sample. Each language is one file: `content/en.json`, `content/pt.json`, and so on, with the same shape.
+- Messages are translated **once**, offline, by a script that uses an LLM (Claude or Gemini), and a person spot-checks a sample. Each language is a folder with two files: `messages.json` and `labels.json` (the app and website text), as in `content/en/` and `content/pt/`, with the same shape.
 - **English (the default) and Portuguese are bundled** inside the app, so they work offline from the first launch.
 - Other languages are **downloaded on demand** from this GitHub repository and saved on the phone, so they work offline afterwards.
 - There is no API key in the app and no runtime translation.

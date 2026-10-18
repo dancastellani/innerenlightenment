@@ -1,10 +1,10 @@
-// Builds the static website from content/<lang>.json: one page per message at <lang>/<slug>/
+// Builds the static website from content/<lang>/messages.json and labels.json: one page per message at <lang>/<slug>/
 // (the link the app shares), a list of messages per language, and <lang>/random/, which opens
 // a random message. The home page opens a random English message.
 //
 // The look lives in website/: HTML templates in website/templates/, the stylesheet, and
 // website/languages.json with each language's name (a new language needs an entry there). The other text of
-// the pages, such as "Another message" and the disclaimer, is the language's labels in its content file.
+// the pages, such as "Another message" and the disclaimer, is the language's labels.json.
 //
 // Usage: node scripts/build-site.ts [content folder] [output folder]
 
@@ -20,8 +20,6 @@ type Content = { language: string; books: { slug: string; name: string }[]; labe
 // `original` is the button that shows the Portuguese original (UC-18), and in Portuguese the mark that it is the original.
 type Labels = {
   title: string;
-  studyGroups: string;
-  studyGroupsIntro: string;
   credit: string;
   index: string;
   menu: string;
@@ -214,15 +212,15 @@ function signature(message: Message): string {
   return lines.length ? `<p class="signature">${lines.join('<br>\n')}</p>` : '';
 }
 
-// Each <lang>.json has its labels, except pt.json, an exact copy of the site: its labels are in pt.labels.json.
+// Each language is a folder with its messages.json and its labels.json.
 function readContents(folder: string): Content[] {
-  const files = readdirSync(folder).filter((f) => f.endsWith('.json') && !f.endsWith('.labels.json')).sort();
-  if (files.length === 0) throw new Error(`No content files (<lang>.json) in ${folder}`);
-  return files.map((f) => {
-    const content = JSON.parse(readFileSync(join(folder, f), 'utf8'));
-    const labelsFile = join(folder, f.replace('.json', '.labels.json'));
-    if (existsSync(labelsFile)) content.labels = JSON.parse(readFileSync(labelsFile, 'utf8'));
-    if (!content.labels) throw new Error(`${f} has no "labels"`);
+  const languages = readdirSync(folder, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
+  if (languages.length === 0) throw new Error(`No content files (<lang>/messages.json) in ${folder}`);
+  return languages.map((language) => {
+    const content = JSON.parse(readFileSync(join(folder, language, 'messages.json'), 'utf8'));
+    const labelsFile = join(folder, language, 'labels.json');
+    if (!existsSync(labelsFile)) throw new Error(`${language} has no labels.json`);
+    content.labels = JSON.parse(readFileSync(labelsFile, 'utf8'));
     return content;
   });
 }

@@ -3,9 +3,10 @@ import { AppState, Image, Linking, Modal, Pressable, ScrollView, Share, StyleShe
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import portugueseContent from '../content/pt.json';
-import englishContent from '../content/en.json';
-import portugueseLabels from '../content/pt.labels.json';
+import portugueseContent from '../content/pt/messages.json';
+import englishContent from '../content/en/messages.json';
+import portugueseLabels from '../content/pt/labels.json';
+import englishLabels from '../content/en/labels.json';
 import languageNames from '../website/languages.json';
 import studyGroups from '../website/study-groups.json';
 import { expo } from './app.json';
@@ -26,8 +27,8 @@ const translations: Record<string, Message[]> = { pt: portuguese, en: englishCon
 const books = portugueseContent.books;
 // UC-05: the app's text in each language, with English filling any text a language lacks.
 // UC-12: a downloaded language adds its own labels.
-const labelPackages: Record<string, Record<string, string>> = { en: englishContent.labels, pt: portugueseLabels };
-const labelsIn = (language: string) => completeLabels(englishContent.labels, labelPackages[language] ?? {});
+const labelPackages: Record<string, Record<string, string>> = { en: englishLabels, pt: portugueseLabels };
+const labelsIn = (language: string) => completeLabels(englishLabels, labelPackages[language] ?? {});
 const bookTranslations: Record<string, Book[]> = { pt: books, en: englishContent.books };
 
 function bookNameIn(language: string, slug: string): string {
@@ -45,7 +46,7 @@ async function prepareLanguage(language: string): Promise<boolean> {
   try {
     const content = await loadLanguage(language);
     translations[language] = content.messages;
-    labelPackages[language] = content.labels ?? {};
+    labelPackages[language] = content.labels;
     return true;
   } catch {
     return false;

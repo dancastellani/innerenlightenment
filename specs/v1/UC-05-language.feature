@@ -84,6 +84,6 @@ Feature: Read the message in English or Portuguese
 
   @UC-05.11
   Scenario: A book without a translated name is shown in Portuguese
-    Given a new book is in content/pt.json but its name is not translated yet
+    Given a new book is in content/pt/messages.json but its name is not translated yet
     When messages are shown in English
     Then that book is shown with its Portuguese name, and never without a name

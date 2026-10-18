@@ -1,13 +1,13 @@
-// Checks every translation in content/ against the Portuguese original, content/pt.json,
+// Checks every translation in content/ against the Portuguese original, content/pt/messages.json,
 // and prints a Markdown report listing every problem found.
 // Usage: node scripts/check-translations.ts   (exits with 1 when any translation has a problem)
 
-import { readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 
 type Message = { id: number; url: string; paragraphs: string[]; note: string | null; [field: string]: unknown };
 type Book = { slug: string; name: string };
 export type Labels = Record<string, string>;
-export type Content = { language: string; books: Book[]; labels?: Labels; messages: Message[] };
+export type Content = { language: string; books: Book[]; messages: Message[] };
 
 // Fields that are copied from the original as they are, never translated.
 const KEPT_FIELDS = ['slug', 'url', 'book', 'chapter', 'spirit', 'medium', 'signature'];
@@ -119,9 +119,8 @@ export function checkMessage(o: Message, m: Message): string[] {
 }
 
 // The labels (app and website text) of a translation against the English ones: the same keys, none empty or
-// left in English. The Portuguese labels are in pt.labels.json and are not checked.
-export function checkLabels(english: Labels, labels: Labels | undefined): string[] {
-  if (!labels) return ['has no labels'];
+// left in English. The Portuguese labels are written by hand and are not checked.
+export function checkLabels(english: Labels, labels: Labels): string[] {
   const findings: string[] = [];
   for (const [name, text] of Object.entries(english)) {
     if (!labels[name]?.trim()) findings.push(`label "${name}" is missing`);
@@ -142,18 +141,30 @@ export function checkTranslation(original: Content, translation: Content, lang: 
   return findings;
 }
 
-// Checks every translation in the folder and returns the findings of each file.
+// A language folder: its messages.json and its labels.json (missing when the language has no labels yet).
+export function readLanguage(folder: string, lang: string): { content: Content; labels: Labels } {
+  const labelsFile = `${folder}/${lang}/labels.json`;
+  return {
+    content: JSON.parse(readFileSync(`${folder}/${lang}/messages.json`, 'utf8')),
+    labels: existsSync(labelsFile) ? JSON.parse(readFileSync(labelsFile, 'utf8')) : {},
+  };
+}
+
+// The translations in the folder, that is every language but Portuguese, the original.
+export function translationsIn(folder: string): string[] {
+  return readdirSync(folder, { withFileTypes: true }).filter((entry) => entry.isDirectory() && entry.name !== 'pt').map((entry) => entry.name);
+}
+
+// Checks every translation in the folder and returns the findings of each language.
 export function checkContentFolder(folder: string): Record<string, { messages: number; findings: string[] }> {
-  const original: Content = JSON.parse(readFileSync(`${folder}/pt.json`, 'utf8'));
-  const english: Content = JSON.parse(readFileSync(`${folder}/en.json`, 'utf8'));
+  const original = readLanguage(folder, 'pt').content;
+  const english = readLanguage(folder, 'en').labels;
   const results: Record<string, { messages: number; findings: string[] }> = {};
-  const files = readdirSync(folder).filter((f) => f.endsWith('.json') && !f.endsWith('.labels.json') && f !== 'pt.json');
-  for (const file of files) {
-    const lang = file.replace('.json', '');
-    const translation: Content = JSON.parse(readFileSync(`${folder}/${file}`, 'utf8'));
-    const findings = checkTranslation(original, translation, lang);
-    if (lang !== 'en') findings.push(...checkLabels(english.labels ?? {}, translation.labels));
-    results[file] = { messages: translation.messages.length, findings };
+  for (const lang of translationsIn(folder)) {
+    const { content, labels } = readLanguage(folder, lang);
+    const findings = checkTranslation(original, content, lang);
+    if (lang !== 'en') findings.push(...checkLabels(english, labels));
+    results[lang] = { messages: content.messages.length, findings };
   }
   return results;
 }
@@ -161,9 +172,9 @@ export function checkContentFolder(folder: string): Record<string, { messages: n
 if (import.meta.main) {
   let problems = 0;
   console.log('# Translation check\n');
-  for (const [file, { messages, findings }] of Object.entries(checkContentFolder('content'))) {
+  for (const [lang, { messages, findings }] of Object.entries(checkContentFolder('content'))) {
     problems += findings.length;
-    console.log(`## ${file}: ${findings.length} problems in ${messages} messages\n`);
+    console.log(`## ${lang}: ${findings.length} problems in ${messages} messages\n`);
     for (const finding of findings) console.log(`- ${finding}`);
     if (findings.length > 0) console.log();
   }

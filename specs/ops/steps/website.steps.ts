@@ -3,7 +3,7 @@
 import { Given, When, Then } from '@cucumber/cucumber';
 import assert from 'node:assert/strict';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import { cp, mkdtemp, writeFile } from 'node:fs/promises';
+import { cp, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { runCommand, type Result } from './run-command.ts';
@@ -21,7 +21,7 @@ function readPage(world: World, path: string): string {
 
 Given('the saved sample content with {int} messages in Portuguese and {int} in English', function (this: World, pt: number, en: number) {
   this.contentFolder = 'specs/ops/sample-data/site-content';
-  const count = (language: string) => JSON.parse(readFileSync(join(this.contentFolder, `${language}.json`), 'utf8')).messages.length;
+  const count = (language: string) => JSON.parse(readFileSync(join(this.contentFolder, language, 'messages.json'), 'utf8')).messages.length;
   assert.equal(count('pt'), pt);
   assert.equal(count('en'), en);
 });
@@ -30,20 +30,23 @@ Given('the content folder is empty', async function (this: World) {
   this.contentFolder = await mkdtemp(join(tmpdir(), 'content-'));
 });
 
-Given('the content also has the language {string}', async function (this: World, language: string) {
+// Copies the English folder as a new language, with or without its labels.
+async function addLanguage(world: World, language: string, withLabels: boolean) {
   const folder = await mkdtemp(join(tmpdir(), 'content-'));
-  await cp(this.contentFolder, folder, { recursive: true });
-  const content = JSON.parse(readFileSync(join(folder, 'en.json'), 'utf8'));
-  await writeFile(join(folder, `${language}.json`), JSON.stringify({ ...content, language }));
-  this.contentFolder = folder;
+  await cp(world.contentFolder, folder, { recursive: true });
+  await cp(join(folder, 'en'), join(folder, language), { recursive: true });
+  const messagesFile = join(folder, language, 'messages.json');
+  await writeFile(messagesFile, JSON.stringify({ ...JSON.parse(readFileSync(messagesFile, 'utf8')), language }));
+  if (!withLabels) await rm(join(folder, language, 'labels.json'));
+  world.contentFolder = folder;
+}
+
+Given('the content also has the language {string}', async function (this: World, language: string) {
+  await addLanguage(this, language, true);
 });
 
 Given('the content also has the language {string} without labels', async function (this: World, language: string) {
-  const folder = await mkdtemp(join(tmpdir(), 'content-'));
-  await cp(this.contentFolder, folder, { recursive: true });
-  const { labels, ...content } = JSON.parse(readFileSync(join(folder, 'en.json'), 'utf8'));
-  await writeFile(join(folder, `${language}.json`), JSON.stringify({ ...content, language }));
-  this.contentFolder = folder;
+  await addLanguage(this, language, false);
 });
 
 Given(
@@ -51,9 +54,9 @@ Given(
   async function (this: World, slug: string, code: number) {
     const folder = await mkdtemp(join(tmpdir(), 'content-'));
     await cp(this.contentFolder, folder, { recursive: true });
-    const content = JSON.parse(readFileSync(join(folder, 'pt.json'), 'utf8'));
+    const content = JSON.parse(readFileSync(join(folder, 'pt', 'messages.json'), 'utf8'));
     content.messages.find((m: { slug: string }) => m.slug === slug).paragraphs[0] += String.fromCharCode(code);
-    await writeFile(join(folder, 'pt.json'), JSON.stringify(content));
+    await writeFile(join(folder, 'pt', 'messages.json'), JSON.stringify(content));
     this.contentFolder = folder;
   },
 );
@@ -112,14 +115,12 @@ Then(/^without JavaScript the page "([^"]*)" links to (.+)$/, function (this: Wo
   for (const link of quoted(links)) assert.ok(noscript.includes(`href="${link}"`), link);
 });
 
-// The labels of a language: in its content file, except pt.json, whose labels are in pt.labels.json.
 function labelsOf(language: string): Record<string, string> {
-  const content = JSON.parse(readFileSync(`content/${language}.json`, 'utf8'));
-  return content.labels ?? JSON.parse(readFileSync(`content/${language}.labels.json`, 'utf8'));
+  return JSON.parse(readFileSync(`content/${language}/labels.json`, 'utf8'));
 }
 
 function languagesInContent(): string[] {
-  return readdirSync('content').filter((f) => f.endsWith('.json') && !f.endsWith('.labels.json')).map((f) => f.replace('.json', ''));
+  return readdirSync('content', { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name);
 }
 
 Then('every language in content\\/ has a {string}', function (label: string) {

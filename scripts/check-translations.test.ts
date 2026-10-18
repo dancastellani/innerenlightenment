@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { checkContentFolder, checkLabels, checkTranslation, type Content } from './check-translations.ts';
+import { checkContentFolder, checkLabels, checkTranslation, missingLabels, type Content } from './check-translations.ts';
 
 function message(id: number, paragraphs: string[], note: string | null = null) {
   const url = `https://fonteviva.org/livro/${id}/`;
@@ -186,6 +186,14 @@ test('complete labels have no findings', () => {
 test('labels that are missing (also when the whole file is), empty or not in English are reported', () => {
   assert.deepEqual(checkLabels(english, {}), ['label "settings" is missing', 'label "disclaimer" is missing']);
   assert.deepEqual(checkLabels(english, { settings: ' ', disclaimer: 'x', other: 'y' }), ['label "settings" is missing', 'label "other" is not in en.json']);
+});
+
+test('labels of the source that an enabled language lacks are listed, also when empty or the file is missing', () => {
+  const portuguese = { settings: 'Ajustes', menu: 'Menu' };
+  assert.deepEqual(missingLabels(portuguese, { settings: 'Settings', menu: 'Menu' }), []);
+  assert.deepEqual(missingLabels(portuguese, { settings: 'Settings' }), ['menu']);
+  assert.deepEqual(missingLabels(portuguese, { settings: ' ', menu: 'Menu' }), ['settings']);
+  assert.deepEqual(missingLabels(portuguese, {}), ['settings', 'menu']);
 });
 
 test('a label left in English is reported from 5 words on', () => {

@@ -1,8 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
-import { bookName, contentUrl, findMessage, originalLink, withOriginal } from './language.ts';
-import labels from '../website/languages.json' with { type: 'json' };
+import { bookName, completeLabels, contentUrl, findMessage, originalLink, withOriginal } from './language.ts';
+import names from '../website/languages.json' with { type: 'json' };
 import type { Message } from '../scripts/parse-message.ts';
 
 const message = (id: number, title: string) => ({ id, title }) as Message;
@@ -57,7 +57,7 @@ test('UC-12.2: a language is downloaded from the content folder on main', () => 
 });
 
 test('UC-12.1: every language offered in settings has a file to download', () => {
-  for (const language of Object.keys(labels)) {
+  for (const language of Object.keys(names)) {
     assert.ok(existsSync(new URL(`../content/${language}.json`, import.meta.url)), language);
   }
 });
@@ -74,4 +74,10 @@ test('UC-05.10: a book without a translation is named in Portuguese, an unknown 
   assert.equal(bookName('pao-nosso', englishBooks, portugueseBooks), 'Pao Nosso');
   assert.equal(bookName('novo', englishBooks, portugueseBooks), '');
   assert.equal(bookName('fonte-viva', [], []), '');
+});
+
+test('UC-05.9: a label the language lacks falls back to English, and nothing missing keeps English', () => {
+  const english = { settings: 'Settings', back: 'Back' };
+  assert.deepEqual(completeLabels(english, { settings: 'Ajustes' }), { settings: 'Ajustes', back: 'Back' });
+  assert.deepEqual(completeLabels(english, {}), english);
 });

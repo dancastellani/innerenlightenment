@@ -1,6 +1,7 @@
 // Translates content/pt.json into another language with the Gemini API.
 // Usage: GEMINI_API_KEY=... node scripts/translate.ts [lang]   (default: en, writes content/<lang>.json)
-// Messages already in the output file are skipped, so an interrupted run can simply be started again.
+// Also translates the app and website text (the "labels" of content/en.json, such as "Settings" and the disclaimer).
+// Messages and labels already in the output file are skipped, so an interrupted run can simply be started again.
 
 import { existsSync } from 'node:fs';
 import { readFile, writeFile } from 'node:fs/promises';
@@ -12,7 +13,8 @@ const SECONDS_BETWEEN_REQUESTS = 6.5;
 
 type Message = { id: number; title: string; paragraphs: string[]; note: string | null; [field: string]: unknown };
 type Book = { slug: string; name: string; [field: string]: unknown };
-type Content = { source: string; language: string; books: Book[]; messages: Message[] };
+type Labels = Record<string, string>;
+type Content = { source: string; language: string; books: Book[]; labels?: Labels; messages: Message[] };
 type Translation = { id: number; title: string; paragraphs: string[]; note: string | null };
 
 const lang = process.argv[2] ?? 'en';
@@ -23,12 +25,13 @@ if (!key) throw new Error('Set the GEMINI_API_KEY environment variable');
 const source: Content = JSON.parse(await readFile('content/pt.json', 'utf8'));
 const existing: Content | undefined = existsSync(output) ? JSON.parse(await readFile(output, 'utf8')) : undefined;
 const done: Message[] = existing?.messages ?? [];
+const labels: Labels = existing?.labels ?? {};
 
 const sleep = (seconds: number) => new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 let lastRequest = 0;
 
-// Sends the prompt to Gemini and returns its answer as JSON, or undefined when the answer is broken JSON.
-async function ask(prompt: string): Promise<any> {
+// Sends the prompt to Gemini and returns its JSON answer, or undefined when the answer is not valid JSON.
+async function ask<T>(prompt: string): Promise<T | undefined> {
   await sleep(Math.max(0, SECONDS_BETWEEN_REQUESTS - (Date.now() - lastRequest) / 1000));
   lastRequest = Date.now();
   const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
@@ -64,7 +67,26 @@ async function translate(batch: Translation[]): Promise<Translation[]> {
     'Return the same JSON array with the same ids and the same number of paragraphs per message, ' +
     'translating only "title", "paragraphs" and "note" (leave null as null).\n\n' +
     JSON.stringify(batch);
-  return (await ask(prompt)) ?? [];
+  return (await ask<Translation[]>(prompt)) ?? [];
+}
+
+// The English labels not yet translated. Portuguese has its own labels in content/pt.labels.json.
+async function translateLabels() {
+  const english: Content = JSON.parse(await readFile('content/en.json', 'utf8'));
+  const todo = Object.fromEntries(Object.entries(english.labels ?? {}).filter(([name]) => !labels[name]));
+  if (lang === 'en' || Object.keys(todo).length === 0) return;
+  const prompt =
+    `Translate the values of this JSON object from English into the language with code "${lang}". ` +
+    'They are button names, menu items and short notices of an app with Spiritist (Christian-based) spiritual messages. ' +
+    'Return the same JSON object with the same keys; keep "fonteviva.org" as it is.\n\n' +
+    JSON.stringify(todo);
+  const translated = await ask<Labels>(prompt);
+  if (!translated) return;
+  for (const name of Object.keys(todo)) {
+    if (translated[name]) labels[name] = translated[name];
+    else console.error(`warning: failed label "${name}", translation missing`);
+  }
+  console.error(`labels: ${Object.keys(todo).length} translated`);
 }
 
 // The books in the order of pt.json, keeping the names already translated in the output file
@@ -79,7 +101,7 @@ async function translateBooks(): Promise<Book[]> {
       'using the published title when the book has one. Return the same JSON array with the same slugs, ' +
       'translating only "name".\n\n' +
       JSON.stringify(todo);
-    names = (await ask(prompt)) ?? [];
+    names = (await ask<{ slug: string; name: string }[]>(prompt)) ?? [];
   }
   return source.books.map((book) => {
     const name = translatedName(book) ?? names.find((n) => n.slug === book.slug)?.name;
@@ -94,9 +116,12 @@ const books = await translateBooks();
 async function save() {
   // Keep the order of pt.json, whatever order the translations arrived in.
   const messages = source.messages.flatMap((m) => done.filter((d) => d.id === m.id));
-  const json = JSON.stringify({ ...source, language: lang, books, messages }, null, 1);
+  const json = JSON.stringify({ ...source, language: lang, books, labels, messages }, null, 1);
   await writeFile(output, json + '\n');
 }
+
+await translateLabels();
+await save();
 
 const todo = source.messages.filter((m) => !done.some((d) => d.id === m.id));
 const skipped = done.length;

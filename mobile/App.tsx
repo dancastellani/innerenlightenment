@@ -5,23 +5,29 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import portugueseContent from '../content/pt.json';
 import englishContent from '../content/en.json';
-import labels from '../website/languages.json';
+import portugueseLabels from '../content/pt.labels.json';
+import languageNames from '../website/languages.json';
 import studyGroups from '../website/study-groups.json';
 import { expo } from './app.json';
 import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
-import { bookName, findMessage, originalLink, withOriginal, type Book } from './language';
+import { bookName, completeLabels, findMessage, originalLink, withOriginal, type Book } from './language';
 import { isDownloaded, loadLanguage } from './download';
 import { readable } from './text';
 
-// UC-12: every language in the list has a name and the study groups texts, whether or not it is downloaded yet.
-const languages: Record<string, { name: string; studyGroups: string; studyGroupsIntro: string }> = labels;
+
+// UC-12: every language in the list has a name, whether or not it is downloaded yet.
+const names: Record<string, { name: string }> = languageNames;
 
 // UC-05: Portuguese is the original; translations may leave a message out, so the plan uses the Portuguese ids.
 const portuguese = (portugueseContent.messages as Message[]).map(readable);
 // UC-12: other languages are added once they are downloaded.
 const translations: Record<string, Message[]> = { pt: portuguese, en: englishContent.messages as Message[] };
 const books = portugueseContent.books;
+// UC-05: the app's text in each language, with English filling any text a language lacks.
+// UC-12: a downloaded language adds its own labels.
+const labelPackages: Record<string, Record<string, string>> = { en: englishContent.labels, pt: portugueseLabels };
+const labelsIn = (language: string) => completeLabels(englishContent.labels, labelPackages[language] ?? {});
 const bookTranslations: Record<string, Book[]> = { pt: books, en: englishContent.books };
 
 function bookNameIn(language: string, slug: string): string {
@@ -37,7 +43,9 @@ function messageIn(language: string, id: number | undefined): Message | undefine
 async function prepareLanguage(language: string): Promise<boolean> {
   if (translations[language]) return true;
   try {
-    translations[language] = await loadLanguage(language);
+    const content = await loadLanguage(language);
+    translations[language] = content.messages;
+    labelPackages[language] = content.labels ?? {};
     return true;
   } catch {
     return false;
@@ -86,7 +94,7 @@ async function scheduleDays(settings: Settings): Promise<{ plan: Plan; allowed: 
 
   // Expo Go can't create channels (#90); Android then uses expo-notifications' fallback channel.
   await Notifications.setNotificationChannelAsync('daily', {
-    name: 'Daily message',
+    name: labelsIn(settings.language).dailyMessage,
     importance: Notifications.AndroidImportance.HIGH,
   }).catch(() => {});
   await Notifications.cancelAllScheduledNotificationsAsync();
@@ -143,19 +151,16 @@ function Screen({ action, children }: { action?: ReactNode; children: ReactNode 
 }
 
 // The options in the menu at the top right, each opening its own screen.
-// Study groups (UC-19) is named in the reader's language, as on the website.
-function menu(language: string) {
-  return [
-    { title: 'Index', screen: 'index' },
-    { title: languages[language].studyGroups, screen: 'study-groups' },
-    { title: 'Settings', screen: 'settings' },
-  ] as const;
-}
+const MENU = [
+  { label: 'index', screen: 'index' },
+  { label: 'studyGroups', screen: 'study-groups' },
+  { label: 'settings', screen: 'settings' },
+] as const;
 
 // The menu button: three bars, like the website's.
-function MenuButton({ onPress }: { onPress: () => void }) {
+function MenuButton({ label, onPress }: { label: string; onPress: () => void }) {
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel="Menu" onPress={onPress} style={styles.menuButton}>
+    <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} style={styles.menuButton}>
       <View style={styles.bar} />
       <View style={styles.bar} />
       <View style={styles.bar} />
@@ -209,6 +214,7 @@ export default function App() {
 
   // UC-05.3: the current message follows the chosen language.
   const message = messageIn(settings.language, messageId);
+  const t = labelsIn(settings.language);
   const isTranslation = !!message && !portuguese.includes(message);
 
   // UC-05.3, UC-08, UC-09: save the change and reschedule; each day keeps its message.
@@ -268,7 +274,7 @@ export default function App() {
     const bookMessages = portuguese.filter((m) => m.book === indexBook).map((m) => messageIn(settings.language, m.id)!);
     return (
       <Screen>
-        <Text style={styles.title}>Index</Text>
+        <Text style={styles.title}>{t.index}</Text>
         <View style={styles.actions}>
           {books.map((book) => (
             <Action key={book.slug} title={bookNameIn(settings.language, book.slug)} onPress={() => setIndexBook(book.slug)} main={book.slug === indexBook} />
@@ -288,7 +294,7 @@ export default function App() {
           </Text>
         ))}
         <View style={styles.backButton}>
-          <Action title="Back" onPress={() => (indexBook ? setIndexBook(undefined) : setScreen('message'))} />
+          <Action title={t.back} onPress={() => (indexBook ? setIndexBook(undefined) : setScreen('message'))} />
         </View>
       </Screen>
     );
@@ -298,8 +304,8 @@ export default function App() {
   if (screen === 'study-groups') {
     return (
       <Screen>
-        <Text style={styles.title}>{languages[settings.language].studyGroups}</Text>
-        <Text style={styles.paragraph}>{languages[settings.language].studyGroupsIntro}</Text>
+        <Text style={styles.title}>{t.studyGroups}</Text>
+        <Text style={styles.paragraph}>{t.studyGroupsIntro}</Text>
         <View style={styles.actions}>
           {studyGroups.map((group) => (
             <Action key={group.url} title={group.name} onPress={() => Linking.openURL(group.url)} />
@@ -313,10 +319,10 @@ export default function App() {
   if (screen === 'settings') {
     return (
       <Screen>
-        <Text style={styles.title}>Settings</Text>
+        <Text style={styles.title}>{t.settings}</Text>
         <View style={styles.settings}>
           <View style={styles.row}>
-            <Text style={styles.label}>Daily notification</Text>
+            <Text style={styles.label}>{t.dailyNotification}</Text>
             <Switch
               value={settings.enabled}
               onValueChange={(enabled) => changeSettings({ ...settings, enabled })}
@@ -325,27 +331,27 @@ export default function App() {
           </View>
           {settings.enabled && (
             <Action
-              title={`Time: ${String(settings.hour).padStart(2, '0')}:${String(settings.minute).padStart(2, '0')}`}
+              title={`${t.time}: ${String(settings.hour).padStart(2, '0')}:${String(settings.minute).padStart(2, '0')}`}
               onPress={pickTime}
             />
           )}
           {settings.enabled && !allowed && (
             <View>
-              <Text style={styles.warning}>Notifications are blocked for this app in the phone settings.</Text>
-              <Action title="Open phone settings" onPress={() => Linking.openSettings()} />
+              <Text style={styles.warning}>{t.notificationsBlocked}</Text>
+              <Action title={t.openPhoneSettings} onPress={() => Linking.openSettings()} />
             </View>
           )}
-          <Action title="Test notification in 10 seconds" onPress={sendTest} />
-          <Text style={styles.label}>Language</Text>
-          {Object.entries(labels).map(([language, { name }]) => (
+          <Action title={t.testNotification} onPress={sendTest} />
+          <Text style={styles.label}>{t.language}</Text>
+          {Object.entries(names).map(([language, { name }]) => (
             <Action
               key={language}
               title={
                 language === downloading
-                  ? `Downloading ${name}…`
+                  ? `${t.downloading} ${name}…`
                   : translations[language] || isDownloaded(language)
                     ? name
-                    : `${name} (download)`
+                    : `${name} (${t.download})`
               }
               onPress={() => chooseLanguage(language)}
               main={language === settings.language}
@@ -353,10 +359,10 @@ export default function App() {
           ))}
           {failedDownload && (
             <Text style={styles.warning}>
-              {languages[failedDownload].name} could not be downloaded. Try again when the phone is online.
+              {names[failedDownload].name} {t.downloadFailed}
             </Text>
           )}
-          <Action title="Back" onPress={() => setScreen('message')} main />
+          <Action title={t.back} onPress={() => setScreen('message')} main />
         </View>
       </Screen>
     );
@@ -377,22 +383,22 @@ export default function App() {
       onPress={() => setShowOriginal(!showOriginal)}
       style={[styles.pill, showOriginal && styles.pillOn]}
     >
-      <Text style={[styles.pillText, showOriginal && styles.pillTextOn]}>{labels.en.original}</Text>
+      <Text style={[styles.pillText, showOriginal && styles.pillTextOn]}>{t.original}</Text>
     </Pressable>
   ) : (
-    <Text style={[styles.pill, styles.originalMark]}>{labels.pt.original}</Text>
+    <Text style={[styles.pill, styles.originalMark]}>{portugueseLabels.original}</Text>
   );
 
   return (
     <Screen action={originalSwitch}>
       <View style={styles.topBar}>
-        <MenuButton onPress={() => setMenuOpen(true)} />
+        <MenuButton label={t.menu} onPress={() => setMenuOpen(true)} />
       </View>
       {/* The menu opens under the button at the top right; tapping outside closes it. */}
       <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={() => setMenuOpen(false)}>
         <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)}>
           <View style={styles.menu}>
-            {menu(settings.language).map((item) => (
+            {MENU.map((item) => (
               <Pressable
                 key={item.screen}
                 accessibilityRole="button"
@@ -402,7 +408,7 @@ export default function App() {
                 }}
                 style={({ pressed }) => [styles.menuItem, pressed && styles.pressed]}
               >
-                <Text style={styles.menuItemText}>{item.title}</Text>
+                <Text style={styles.menuItemText}>{t[item.label]}</Text>
               </Pressable>
             ))}
           </View>
@@ -420,13 +426,13 @@ export default function App() {
       ))}
       {message.signature && <Text style={styles.signature}>{message.signature}</Text>}
       <View style={styles.actions}>
-        <Action title="Another message" onPress={showAnother} main />
-        <Action title="Share" onPress={share} />
-        <Action title="Open on fonteviva.org" onPress={() => Linking.openURL(originalLink(message.url, settings.language))} />
+        <Action title={t.anotherMessage} onPress={showAnother} main />
+        <Action title={t.share} onPress={share} />
+        <Action title={t.readOriginal} onPress={() => Linking.openURL(originalLink(message.url, settings.language))} />
       </View>
       <Text style={styles.disclaimer}>
-        {labels.en.disclaimer}
-        {isTranslation && ` ${labels.en.translationDisclaimer}`}
+        {t.disclaimer}
+        {isTranslation && ` ${t.translationDisclaimer}`}
       </Text>
     </Screen>
   );

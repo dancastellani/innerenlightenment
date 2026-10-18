@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { checkTranslation, type Content } from './check-translations.ts';
+import { checkContentFolder, checkLabels, checkTranslation, type Content } from './check-translations.ts';
 
 function message(id: number, paragraphs: string[], note: string | null = null) {
   const url = `https://fonteviva.org/livro/${id}/`;
@@ -176,3 +176,27 @@ test('a changed, added or dropped number in a Bible reference is reported', () =
   assert.match(checkEpigraph('“Curto.” — (I Pedro, 3.17)', '“Short.” — (Peter, 3.17)')[0], /changed from/);
 });
 
+
+const english = { settings: 'Settings', disclaimer: 'The messages come from fonteviva.org and are not our responsibility.' };
+
+test('complete labels have no findings', () => {
+  assert.deepEqual(checkLabels(english, { settings: 'Ajustes', disclaimer: 'Los mensajes vienen de fonteviva.org y no son nuestra responsabilidad.' }), []);
+});
+
+test('labels that are missing, empty or not in English are reported', () => {
+  assert.deepEqual(checkLabels(english, undefined), ['has no labels']);
+  assert.deepEqual(checkLabels(english, {}), ['label "settings" is missing', 'label "disclaimer" is missing']);
+  assert.deepEqual(checkLabels(english, { settings: ' ', disclaimer: 'x', other: 'y' }), ['label "settings" is missing', 'label "other" is not in en.json']);
+});
+
+test('a label left in English is reported from 5 words on', () => {
+  const fourWords = 'Open the phone settings';
+  const fiveWords = 'Open all the phone settings';
+  assert.deepEqual(checkLabels({ a: fourWords, b: fiveWords }, { a: fourWords, b: fiveWords }), [`label "b" is still in English: "${fiveWords}"`]);
+});
+
+test('every translation in content/ passes the check', () => {
+  for (const [file, { findings }] of Object.entries(checkContentFolder('content'))) {
+    assert.deepEqual(findings, [], `${file}: run node scripts/check-translations.ts`);
+  }
+});

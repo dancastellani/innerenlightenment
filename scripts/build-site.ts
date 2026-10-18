@@ -3,22 +3,26 @@
 // a random message. The home page opens a random English message.
 //
 // The look lives in website/: HTML templates in website/templates/, the stylesheet, and
-// website/languages.json with each language's name and labels (a new language needs an entry there).
+// website/languages.json with each language's name (a new language needs an entry there). The other text of
+// the pages, such as "Another message" and the disclaimer, is the language's labels in its content file.
 //
 // Usage: node scripts/build-site.ts [content folder] [output folder]
 
-import { copyFileSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Message } from './parse-message.ts';
 import { originalLink, withOriginal } from '../mobile/language.ts';
 import { showWindows1252 } from '../mobile/text.ts';
 
-type Content = { language: string; books: { slug: string; name: string }[]; messages: Message[] };
+type Content = { language: string; books: { slug: string; name: string }[]; labels: Labels; messages: Message[] };
 // One disclaimer per message page: `disclaimer` (the source, no liability), followed on translated messages
 // by `translationDisclaimer` (made by AI), which every language but Portuguese (the original) has.
 // `original` is the button that shows the Portuguese original (UC-18), and in Portuguese the mark that it is the original.
 type Labels = {
-  name: string;
+  title: string;
+  studyGroups: string;
+  studyGroupsIntro: string;
+  credit: string;
   index: string;
   menu: string;
   anotherMessage: string;
@@ -29,6 +33,7 @@ type Labels = {
   disclaimer: string;
   translationDisclaimer?: string;
 };
+type Names = Record<string, { name: string }>;
 // UC-19: Spiritist organizations with study meetings, the same list the app shows.
 type StudyGroup = { name: string; url: string };
 
@@ -49,15 +54,15 @@ function fill(template: string, values: Record<string, string>): string {
 
 class Website {
   contents: Content[];
-  labels: Record<string, Labels>;
+  names: Names;
   studyGroups: StudyGroup[];
 
-  constructor(contents: Content[], labels: Record<string, Labels>, studyGroups: StudyGroup[]) {
+  constructor(contents: Content[], names: Names, studyGroups: StudyGroup[]) {
     for (const content of contents) {
-      if (!labels[content.language]) throw new Error(`Add "${content.language}" to website/languages.json`);
+      if (!names[content.language]) throw new Error(`Add "${content.language}" to website/languages.json`);
     }
     this.contents = contents;
-    this.labels = labels;
+    this.names = names;
     this.studyGroups = studyGroups;
   }
 
@@ -82,10 +87,10 @@ class Website {
   homePage(): string {
     const content = this.contents.find((c) => c.language === 'en') ?? this.contents[0];
     const languages = this.contents
-      .map((c) => `<li><a href="${c.language}/">${this.labels[c.language].name}</a></li>`)
+      .map((c) => `<li><a href="${c.language}/">${this.names[c.language].name}</a></li>`)
       .join('\n');
-    const fallback = this.render('home', { languages, credit: this.render('credit', {}) });
-    return this.page(content.language, 'Fonte Viva messages', '', this.randomScript(content, `${content.language}/`, fallback));
+    const fallback = this.render('home', { title: content.labels.title, languages, credit: this.credit(content) });
+    return this.page(content.language, content.labels.title, '', this.randomScript(content, `${content.language}/`, fallback));
   }
 
   // The books first, as links to their part of the page, then each book's messages.
@@ -100,20 +105,20 @@ class Website {
         .join('\n');
       return `<h2 id="${book.slug}">${escapeHtml(book.name)}</h2>\n<ul>\n${links}\n</ul>`;
     });
-    const name = this.labels[content.language].name;
-    const body = this.render('language', { languageName: name, bookLinks, books: books.join('\n') });
+    const name = this.names[content.language].name;
+    const body = this.render('language', { title: content.labels.title, languageName: name, bookLinks, books: books.join('\n') });
     return this.page(content.language, name, '../', body);
   }
 
   // The "Another message" link: opens a random message of the same language.
   randomPage(content: Content): string {
-    const fallback = `<a href="../">${this.labels[content.language].name}</a>`;
-    return this.page(content.language, 'Fonte Viva messages', '../', this.randomScript(content, '../', fallback));
+    const fallback = `<a href="../">${this.names[content.language].name}</a>`;
+    return this.page(content.language, content.labels.title, '../', this.randomScript(content, '../', fallback));
   }
 
   // UC-19: links to Spiritist organizations that hold study meetings.
   studyGroupsPage(content: Content): string {
-    const labels = this.labels[content.language];
+    const labels = content.labels;
     const groups = this.studyGroups.map((g) => `<li><a href="${g.url}">${escapeHtml(g.name)}</a></li>`).join('\n');
     const body = this.render('study-groups', {
       index: labels.index,
@@ -125,19 +130,19 @@ class Website {
   }
 
   messagePage(content: Content, message: Message): string {
-    const labels = this.labels[content.language];
+    const labels = content.labels;
     const book = content.books.find((b) => b.slug === message.book);
     const meta = [book?.name, message.chapter].filter((text) => text).map((text) => escapeHtml(text!)).join(' · ');
     const otherLanguages = this.contents
       .filter((c) => c !== content && c.messages.some((m) => m.id === message.id))
-      .map((c) => `<a href="../../${c.language}/${message.slug}/">${this.labels[c.language].name}</a>`)
+      .map((c) => `<a href="../../${c.language}/${message.slug}/">${this.names[c.language].name}</a>`)
       .join('');
     const original = this.original(content, message);
     const body = this.render('message', {
       anotherMessage: labels.anotherMessage,
       index: labels.index,
       menu: labels.menu,
-      languageName: labels.name,
+      languageName: this.names[content.language].name,
       otherLanguages,
       meta,
       title: escapeHtml(message.title),
@@ -148,7 +153,7 @@ class Website {
       url: escapeHtml(originalLink(message.url, content.language)),
       readOriginal: labels.readOriginal,
       studyGroups: labels.studyGroups,
-      credit: this.render('credit', {}),
+      credit: this.credit(content),
       disclaimer: `<p class="disclaimer">${[labels.disclaimer, labels.translationDisclaimer].filter((text) => text).join(' ')}</p>`,
     });
     return this.page(content.language, message.title, '../../', body, original);
@@ -158,7 +163,7 @@ class Website {
   // it works without JavaScript (a checkbox, see style.css). The Portuguese page is marked as the original.
   // The switch sits in the page's top bar, so `checkbox` and `label` go to the layout, apart from the text.
   original(content: Content, message: Message): { checkbox: string; label: string; originalTitle: string; paragraphs: string } {
-    const label = this.labels[content.language].original;
+    const label = content.labels.original;
     const original = this.contents.find((c) => c.language === 'pt')?.messages.find((m) => m.id === message.id);
     if (content.language === 'pt' || !original) {
       return {
@@ -176,6 +181,12 @@ class Website {
         .map((p) => (p.isOriginal ? `<p class="original" lang="pt">${escapeHtml(p.text)}</p>` : `<p>${escapeHtml(p.text)}</p>`))
         .join('\n'),
     };
+  }
+
+  // The credit to fonteviva.org, with its address as a link.
+  credit(content: Content): string {
+    const link = '<a href="https://fonteviva.org/">fonteviva.org</a>';
+    return this.render('credit', { credit: escapeHtml(content.labels.credit).replace('fonteviva.org', link) });
   }
 
   // `root` is the path from the page to the site's root folder, for the stylesheet.
@@ -203,10 +214,17 @@ function signature(message: Message): string {
   return lines.length ? `<p class="signature">${lines.join('<br>\n')}</p>` : '';
 }
 
+// Each <lang>.json has its labels, except pt.json, an exact copy of the site: its labels are in pt.labels.json.
 function readContents(folder: string): Content[] {
-  const files = readdirSync(folder).filter((f) => f.endsWith('.json')).sort();
+  const files = readdirSync(folder).filter((f) => f.endsWith('.json') && !f.endsWith('.labels.json')).sort();
   if (files.length === 0) throw new Error(`No content files (<lang>.json) in ${folder}`);
-  return files.map((f) => JSON.parse(readFileSync(join(folder, f), 'utf8')));
+  return files.map((f) => {
+    const content = JSON.parse(readFileSync(join(folder, f), 'utf8'));
+    const labelsFile = join(folder, f.replace('.json', '.labels.json'));
+    if (existsSync(labelsFile)) content.labels = JSON.parse(readFileSync(labelsFile, 'utf8'));
+    if (!content.labels) throw new Error(`${f} has no "labels"`);
+    return content;
+  });
 }
 
 function write(file: string, html: string) {
@@ -216,8 +234,8 @@ function write(file: string, html: string) {
 
 const [contentFolder = 'content', outFolder = 'site'] = process.argv.slice(2);
 const contents = readContents(contentFolder);
-const labels = JSON.parse(readFileSync(join(WEBSITE_FOLDER, 'languages.json'), 'utf8'));
+const names = JSON.parse(readFileSync(join(WEBSITE_FOLDER, 'languages.json'), 'utf8'));
 const studyGroups = JSON.parse(readFileSync(join(WEBSITE_FOLDER, 'study-groups.json'), 'utf8'));
-new Website(contents, labels, studyGroups).build(outFolder);
+new Website(contents, names, studyGroups).build(outFolder);
 const pages = contents.reduce((sum, c) => sum + c.messages.length, 0);
 console.log(`Wrote ${pages} message pages in ${contents.length} languages to ${outFolder}`);

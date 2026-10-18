@@ -213,7 +213,7 @@ Feature: Build and publish the website
     Then it fails with "No content files"
 
   @OP-05.13
-  Scenario: A language without names and labels in website/languages.json
+  Scenario: A language without a name in website/languages.json
     Given the content also has the language "xx"
     When the website is built
     Then it fails with "Add \"xx\" to website/languages.json"
@@ -226,6 +226,22 @@ Feature: Build and publish the website
     Then the page "pt/o-tempo/" contains "Primeiro parágrafo.…"
 
   @OP-05.15
-  Scenario: Every language has its disclaimer, and every translated language its AI translation part
-    Then every language in website/languages.json has a "disclaimer"
-    And every language but "pt" in website/languages.json has a "translationDisclaimer"
+  Scenario: Every language has its name, its disclaimer, and every translated language its AI translation part
+    Then every language in website/languages.json has a name
+    And every language in content/ has a "disclaimer"
+    And every language but "pt" in content/ has a "translationDisclaimer"
+
+  # The pages' text (menu, buttons, disclaimer, credit) is the language's labels in its content file,
+  # downloaded with the messages; pt.json is an exact copy of the site, so its labels are in pt.labels.json.
+  @OP-05.18
+  Scenario: The pages show the labels of their own language
+    When the website is built
+    Then the page "pt/o-tempo/" contains "Outra mensagem"
+    And the page "en/o-tempo/" contains "Another message"
+    And the page "en/o-tempo/" does not contain "Outra mensagem"
+
+  @OP-05.19
+  Scenario: A language whose content has no labels
+    Given the content also has the language "xx" without labels
+    When the website is built
+    Then it fails with "xx.json has no \"labels\""

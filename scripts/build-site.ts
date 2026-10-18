@@ -118,13 +118,17 @@ class Website {
   studyGroupsPage(content: Content): string {
     const labels = content.labels;
     const groups = this.studyGroups.map((g) => `<li><a href="${g.url}">${escapeHtml(g.name)}</a></li>`).join('\n');
+    const otherLanguages = this.contents
+      .filter((c) => c !== content)
+      .map((c) => `<a href="../../${c.language}/study-groups/">${this.names[c.language].name}</a>`)
+      .join('');
+    const menu = this.render('menu', { menu: labels.menu, index: labels.index, languageName: this.names[content.language].name, otherLanguages });
     const body = this.render('study-groups', {
-      index: labels.index,
       studyGroups: labels.studyGroups,
       studyGroupsIntro: labels.studyGroupsIntro,
       groups,
     });
-    return this.page(content.language, labels.studyGroups, '../../', body);
+    return this.page(content.language, labels.studyGroups, '../../', body, undefined, menu);
   }
 
   messagePage(content: Content, message: Message): string {

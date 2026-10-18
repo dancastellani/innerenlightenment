@@ -187,6 +187,12 @@ Feature: Build and publish the website
     Then the page "en/o-tempo/" has the link "Study groups" to "../study-groups/"
     And the page "pt/o-tempo/" has the link "Grupos de estudo" to "../study-groups/"
 
+  @OP-05.40
+  Scenario: The study groups page has the same menu as the messages, with the languages of that page
+    When the website is built
+    Then the page "en/study-groups/" has the link "Index" to "../"
+    And the page "en/study-groups/" has the link "Português" to "../../pt/study-groups/"
+
   # Edge cases
 
   @OP-05.6

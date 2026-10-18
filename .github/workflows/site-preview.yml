@@ -5,6 +5,7 @@ name: Website preview
 on:
   pull_request:
     paths:
+      - .github/workflows/site-preview.yml
       - website/**
       - scripts/build-site.ts
       - content/**

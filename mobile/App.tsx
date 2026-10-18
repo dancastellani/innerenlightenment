@@ -3,6 +3,7 @@ import { AppState, Image, Linking, Modal, Pressable, ScrollView, Share, StyleShe
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
+import { useFonts, Literata_400Regular, Literata_400Regular_Italic, Literata_600SemiBold } from '@expo-google-fonts/literata';
 import portugueseContent from '../content/pt/messages.json';
 import englishContent from '../content/en/messages.json';
 import portugueseLabels from '../content/pt/labels.json';
@@ -180,6 +181,8 @@ export default function App() {
   const [downloading, setDownloading] = useState<string>(); // UC-12: the language being downloaded
   const [failedDownload, setFailedDownload] = useState<string>(); // UC-12.4: the language that couldn't be
   const tapped = Notifications.useLastNotificationResponse();
+  // The same reading font as the website; nothing is shown until it is loaded, so the text doesn't jump.
+  const [fontsLoaded] = useFonts({ Literata_400Regular, Literata_400Regular_Italic, Literata_600SemiBold });
 
   // On open, and when the app comes back to the front on a new day (UC-03.4):
   // top up the schedule and show today's message.
@@ -268,7 +271,7 @@ export default function App() {
     });
   }
 
-  if (!message) return null;
+  if (!message || !fontsLoaded) return null;
 
   // UC-20: the books at the top; picking one lists its messages.
   if (screen === 'index') {
@@ -445,21 +448,21 @@ const styles = StyleSheet.create({
   appIcon: { width: 28, height: 28, borderRadius: 6 },
   appName: { flex: 1, fontSize: 17, fontWeight: '600', color: colors.ink },
   page: { padding: 24, paddingBottom: 48 },
-  title: { fontFamily: 'serif', fontSize: 34, lineHeight: 40, fontWeight: '600', color: colors.ink, marginBottom: 6 },
+  title: { fontFamily: 'Literata_600SemiBold', fontSize: 34, lineHeight: 38, letterSpacing: -0.5, color: colors.ink, marginBottom: 6 },
   source: { fontSize: 14, color: colors.muted, marginBottom: 28 },
-  paragraph: { fontFamily: 'serif', fontSize: 19, lineHeight: 31, color: colors.ink, marginBottom: 16 },
-  signature: { fontFamily: 'serif', fontSize: 19, fontStyle: 'italic', color: colors.ink, textAlign: 'right', marginTop: 12 },
+  paragraph: { fontFamily: 'Literata_400Regular', fontSize: 19, lineHeight: 31, color: colors.ink, marginBottom: 16 },
+  signature: { fontFamily: 'Literata_400Regular_Italic', fontSize: 19, color: colors.ink, textAlign: 'right', marginTop: 12 },
   actions: { gap: 12, marginTop: 40 },
   action: { minHeight: 52, borderRadius: 26, borderWidth: 1.5, borderColor: colors.spring, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20 },
   mainAction: { backgroundColor: colors.spring },
-  pressed: { opacity: 0.7 },
+  pressed: { opacity: 0.7, transform: [{ scale: 0.98 }] },
   actionText: { fontSize: 17, fontWeight: '600', color: colors.spring },
   mainActionText: { color: colors.paper },
   topBar: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-start' },
   menuButton: { width: 48, height: 48, marginTop: -8, marginRight: -8, alignItems: 'center', justifyContent: 'center', gap: 5 },
   bar: { width: 22, height: 2, borderRadius: 1, backgroundColor: colors.ink },
   backdrop: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.15)' },
-  menu: { position: 'absolute', top: 168, right: 16, minWidth: 200, paddingVertical: 8, borderRadius: 12, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.rule, elevation: 6 },
+  menu: { position: 'absolute', top: 168, right: 16, minWidth: 200, paddingVertical: 8, borderRadius: 12, backgroundColor: colors.paper, borderWidth: 1, borderColor: colors.rule, elevation: 6, shadowColor: colors.ink },
   menuItem: { paddingVertical: 14, paddingHorizontal: 20 },
   menuItemText: { fontSize: 17, color: colors.ink },
   settings: { gap: 12, marginTop: 24 },
@@ -471,9 +474,9 @@ const styles = StyleSheet.create({
   pillText: { fontSize: 14, fontWeight: '600', color: colors.spring },
   pillTextOn: { color: colors.paper },
   originalMark: { borderColor: colors.rule, fontSize: 14, color: colors.muted },
-  original: { fontStyle: 'italic', color: colors.muted, borderLeftWidth: 3, borderColor: colors.rule, paddingLeft: 12 },
+  original: { fontFamily: 'Literata_400Regular_Italic', color: colors.muted, borderLeftWidth: 3, borderColor: colors.rule, paddingLeft: 12 },
   disclaimer: { fontSize: 13, color: colors.muted, marginTop: 24 },
   backButton: { marginTop: 32 },
-  bookTitle: { fontFamily: 'serif', fontSize: 24, fontWeight: '600', color: colors.ink, marginTop: 36, marginBottom: 8 },
-  indexItem: { fontFamily: 'serif', fontSize: 18, color: colors.spring, paddingVertical: 14, borderBottomWidth: 1, borderColor: colors.rule },
+  bookTitle: { fontFamily: 'Literata_600SemiBold', fontSize: 24, letterSpacing: -0.3, color: colors.ink, marginTop: 36, marginBottom: 8 },
+  indexItem: { fontFamily: 'Literata_400Regular', fontSize: 18, color: colors.spring, paddingVertical: 14, borderBottomWidth: 1, borderColor: colors.rule },
 });

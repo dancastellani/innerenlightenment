@@ -57,3 +57,9 @@ Feature: Download another language
     And the saved Spanish file was removed from the phone
     When I open the app offline
     Then messages are shown in English
+
+  @UC-12.9
+  Scenario: A downloaded language brings its own menu, buttons and notices
+    Given Spanish is downloaded
+    When I choose it and open the menu and settings
+    Then they are in Spanish, and a text its file lacks is in English (UC-05.9)

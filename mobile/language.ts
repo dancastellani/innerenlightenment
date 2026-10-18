@@ -33,6 +33,11 @@ export function withOriginal(translated: string[], original: string[]): { text: 
   return result;
 }
 
+// UC-05.8, UC-05.9: the app's text in the chosen language, with the English text for any label the language lacks.
+export function completeLabels<T extends Record<string, string>>(english: T, labels: Record<string, string>): T {
+  return { ...english, ...labels };
+}
+
 // UC-12: where the app downloads a language that is not built in.
 export function contentUrl(language: string): string {
   return `https://raw.githubusercontent.com/dancastellani/innerenlightenment/main/content/${language}.json`;

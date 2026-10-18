@@ -65,3 +65,21 @@ Feature: Translate the messages into another language
     When its translation ends with "(Matthew, 14.39)"
     Then the translation check reports that the Bible reference changed
     But "(Matthew, 14:19)" and "(II Timóteo, 2.7)" written as "(2 Timothy, 2.7)" pass
+
+  @OP-02.8
+  Scenario: The labels are translated with the messages
+    Given content/en.json has the labels "Settings" and "Share"
+    When the translation into "es" runs
+    Then content/es.json has the same labels, translated, next to the messages
+
+  @OP-02.9
+  Scenario: Labels already translated are not translated again
+    Given content/es.json already has all the labels
+    When the translation into "es" runs
+    Then no request is made for the labels
+
+  @OP-02.10
+  Scenario: A translation with a missing label or a label left in English is reported
+    Given content/en.json has the label "settings"
+    When content/es.json has no "settings" label, or the English text of a label of 5 words or more
+    Then the translation check reports the label

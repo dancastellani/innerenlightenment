@@ -7,9 +7,13 @@ Feature: Count and read engagement events
     Then the day's count for "shared" and "en" goes up by one
 
   @OP-07.2
-  Scenario: Refuse an unknown event or extra fields
+  Scenario: Refuse an unknown event
     When an event named "anything_else" is posted
-    Or an event with an id or free text field is posted
+    Then it is refused and nothing is stored
+
+  @OP-07.6
+  Scenario: Refuse an event with extra fields
+    When an event with an id or a free text field is posted
     Then it is refused and nothing is stored
 
   @OP-07.3

@@ -56,8 +56,9 @@ Feature: Translate the messages into another language
   Scenario: The translator answers with broken JSON
     Given the translator answers once with JSON that does not parse, such as unescaped quotes
     When the translation into "zh" runs
-    Then that batch is counted as failed with a warning, and the run goes on
-    And running the translation again translates the failed messages
+    Then the warning shows the invalid answer
+    And each message of that batch is sent again on its own, so one bad answer does not fail the others (#174)
+    And a message that still fails is counted as failed, and running the translation again translates it
 
   @OP-02.7
   Scenario: A Bible reference with different numbers is reported

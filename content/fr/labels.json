@@ -22,5 +22,10 @@
  "studyGroupsIntro": "Ces organisations spirites tiennent des réunions d'étude en présentiel et en ligne.",
  "downloading": "Téléchargement de",
  "download": "télécharger",
- "downloadFailed": "n'a pas pu être téléchargé. Réessayez quand le téléphone sera en ligne."
+ "downloadFailed": "n'a pas pu être téléchargé. Réessayez quand le téléphone sera en ligne.",
+ "favourites": "Favoris",
+ "favourite": "Ajouter aux favoris",
+ "removeFavourite": "Retirer des favoris",
+ "noFavourites": "Pas encore de favoris. Ajoutez un message à vos favoris pour le retrouver ici.",
+ "favouriteNotSaved": "Impossible d'enregistrer. Réessayez plus tard."
 }

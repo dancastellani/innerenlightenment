@@ -54,6 +54,28 @@ When('{string} is tapped', async function (this: World, text: string) {
 });
 
 // The menu button at the top right is an icon, found by its label.
+// The favourite star is an icon, found by its label.
+When('the star {string} is tapped', async function (this: World, label: string) {
+  await this.page.getByLabel(label, { exact: true }).click();
+});
+
+Then('the star says {string}', async function (this: World, label: string) {
+  await this.page.getByLabel(label, { exact: true }).waitFor();
+});
+
+When('the browser refuses to save data', async function (this: World) {
+  await this.page.evaluate(() => {
+    Storage.prototype.setItem = () => {
+      throw new Error('storage is full');
+    };
+  });
+});
+
+When('the favourites saved in the browser are {string}', async function (this: World, ids: string) {
+  await this.page.evaluate((saved) => localStorage.setItem('favourites', saved), ids);
+  await this.page.reload();
+});
+
 When('the menu is tapped', async function (this: World) {
   await this.page.getByLabel('Menu').click();
 });

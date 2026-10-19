@@ -19,5 +19,10 @@
  "testNotification": "Test notification in 10 seconds",
  "dailyMessage": "Daily message",
  "studyGroups": "Study groups",
- "studyGroupsIntro": "These Spiritist organizations hold in-person and online study meetings."
+ "studyGroupsIntro": "These Spiritist organizations hold in-person and online study meetings.",
+ "favourites": "Favourites",
+ "favourite": "Add to favourites",
+ "removeFavourite": "Remove from favourites",
+ "noFavourites": "No favourites yet. Add a message to your favourites to find it here.",
+ "favouriteNotSaved": "Could not save. Try again later."
 }

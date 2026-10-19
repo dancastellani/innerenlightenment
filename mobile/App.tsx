@@ -15,6 +15,7 @@ import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
 import { bookName, completeLabels, findMessage, originalLink, shareLink, withOriginal, type Book } from './language';
 import { isDownloaded, loadLanguage } from './download';
+import { toggleFavourite } from './favourites';
 import { readable } from './text';
 
 
@@ -150,6 +151,7 @@ function Screen({ action, children }: { action?: ReactNode; children: ReactNode 
 // The options in the menu at the top right, each opening its own screen.
 const MENU = [
   { label: 'index', screen: 'index' },
+  { label: 'favourites', screen: 'favourites' },
   { label: 'studyGroups', screen: 'study-groups' },
   { label: 'settings', screen: 'settings' },
 ] as const;
@@ -169,9 +171,11 @@ export default function App() {
   const [messageId, setMessageId] = useState<number>();
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [allowed, setAllowed] = useState(true);
-  const [screen, setScreen] = useState<'message' | 'settings' | 'index' | 'study-groups'>('message');
+  const [screen, setScreen] = useState<'message' | 'settings' | 'index' | 'favourites' | 'study-groups'>('message');
   const [indexBook, setIndexBook] = useState<string>(); // UC-20: the book picked on the index
   const [showOriginal, setShowOriginal] = useState(false); // UC-18: the Portuguese text after each paragraph
+  const [favourites, setFavourites] = useState<number[]>([]); // UC-13: saved on the phone
+  const [saveFailed, setSaveFailed] = useState(false); // UC-13.9: the favourites couldn't be saved
   const [menuOpen, setMenuOpen] = useState(false);
   const [downloading, setDownloading] = useState<string>(); // UC-12: the language being downloaded
   const [failedDownload, setFailedDownload] = useState<string>(); // UC-12.4: the language that couldn't be
@@ -188,6 +192,7 @@ export default function App() {
       if (today === shownDay) return;
       const isNewDay = shownDay !== '';
       shownDay = today;
+      AsyncStorage.getItem('favourites').then((saved) => setFavourites(saved ? JSON.parse(saved) : []));
       loadSettings().then(async (saved) => {
         // UC-12.8: English when the saved language can't be read or downloaded again.
         if (!(await prepareLanguage(saved.language))) saved.language = 'en';
@@ -242,6 +247,19 @@ export default function App() {
         if (event.type === 'set' && date) changeSettings({ ...settings, hour: date.getHours(), minute: date.getMinutes() });
       },
     });
+  }
+
+  // UC-13: add the message to the favourites, or take it out, and save the list.
+  // UC-13.9: when it can't be saved, the list stays as it was and the reader is told.
+  async function changeFavourite(id: number) {
+    const next = toggleFavourite(favourites, id);
+    try {
+      await AsyncStorage.setItem('favourites', JSON.stringify(next));
+      setFavourites(next);
+      setSaveFailed(false);
+    } catch {
+      setSaveFailed(true);
+    }
   }
 
   // UC-04: show a different, random message.
@@ -320,6 +338,32 @@ export default function App() {
         ))}
         <View style={styles.backButton}>
           <Action title={t.back} onPress={() => (indexBook ? setIndexBook(undefined) : setScreen('message'))} />
+        </View>
+      </Screen>
+    );
+  }
+
+  // UC-13: the favourite messages, in the order they were added; tapping a title opens it.
+  if (screen === 'favourites') {
+    return (
+      <Screen action={menuButton}>
+        {menuModal}
+        <Text style={styles.title}>{t.favourites}</Text>
+        {favourites.length === 0 && <Text style={styles.paragraph}>{t.noFavourites}</Text>}
+        {favourites.map((id) => (
+          <Text
+            key={id}
+            style={styles.indexItem}
+            onPress={() => {
+              setMessageId(id);
+              setScreen('message');
+            }}
+          >
+            {(translations[settings.language]?.find((m) => m.id === id) ?? translations.en.find((m) => m.id === id) ?? messageIn('pt', id))?.title}
+          </Text>
+        ))}
+        <View style={styles.backButton}>
+          <Action title={t.back} onPress={() => setScreen('message')} />
         </View>
       </Screen>
     );
@@ -426,7 +470,18 @@ export default function App() {
       }
     >
       {menuModal}
-      <Text style={styles.title}>{message.title}</Text>
+      <View style={styles.titleRow}>
+        <Text style={[styles.title, styles.titleText]}>{message.title}</Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={favourites.includes(message.id) ? t.removeFavourite : t.favourite}
+          onPress={() => changeFavourite(message.id)}
+          style={styles.star}
+        >
+          <Text style={styles.starText}>{favourites.includes(message.id) ? '★' : '☆'}</Text>
+        </Pressable>
+      </View>
+      {saveFailed && <Text style={styles.warning}>{t.favouriteNotSaved}</Text>}
       {comparing && <Text style={[styles.paragraph, styles.original]}>{original.title}</Text>}
       <Text style={styles.source}>
         {bookNameIn(settings.language, message.book ?? '')} · {message.chapter}
@@ -457,6 +512,10 @@ const styles = StyleSheet.create({
   appName: { flex: 1, fontSize: 16, fontWeight: '600', color: colors.ink },
   page: { padding: 24, paddingBottom: 48 },
   title: { fontFamily: 'Literata_600SemiBold', fontSize: 34, lineHeight: 42, letterSpacing: -0.5, color: colors.ink, marginBottom: 6 },
+  titleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  titleText: { flex: 1 },
+  star: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  starText: { fontSize: 30, color: colors.spring },
   source: { fontSize: 14, marginTop: 16, color: colors.muted, marginBottom: 28 },
   paragraph: { fontFamily: 'Literata_400Regular', fontSize: 19, lineHeight: 31, color: colors.ink, marginBottom: 16 },
   signature: { fontFamily: 'Literata_400Regular_Italic', fontSize: 19, color: colors.ink, textAlign: 'right', marginTop: 12 },

@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
   appName: { flex: 1, fontSize: 16, fontWeight: '600', color: colors.ink },
   page: { padding: 24, paddingBottom: 48 },
   title: { fontFamily: 'Literata_600SemiBold', fontSize: 34, lineHeight: 42, letterSpacing: -0.5, color: colors.ink, marginBottom: 6 },
-  source: { fontSize: 14, marginTop: 12, color: colors.muted, marginBottom: 28 },
+  source: { fontSize: 14, marginTop: 16, color: colors.muted, marginBottom: 28 },
   paragraph: { fontFamily: 'Literata_400Regular', fontSize: 19, lineHeight: 31, color: colors.ink, marginBottom: 16 },
   signature: { fontFamily: 'Literata_400Regular_Italic', fontSize: 19, color: colors.ink, textAlign: 'right', marginTop: 12 },
   actions: { gap: 12, marginTop: 40 },

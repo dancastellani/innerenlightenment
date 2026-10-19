@@ -1,6 +1,7 @@
 # innerenlightenment
 
 [![Test](https://github.com/dancastellani/innerenlightenment/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/dancastellani/innerenlightenment/actions/workflows/test.yml?query=branch%3Amain)
+[![Tests](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fdancastellani%2Finnerenlightenment%2Fbadges%2Ftests.json)](https://github.com/dancastellani/innerenlightenment/actions/workflows/test.yml?query=branch%3Amain)
 
 A mobile app that brings a daily uplifting message to the people who need it, starting with the messages published on [fonteviva.org](https://fonteviva.org/).
 

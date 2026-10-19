@@ -29,7 +29,7 @@ Feature: Read the message in English or Portuguese
   @UC-05.8
   Scenario: Translations say they were made by AI, without guarantee, in the one disclaimer
     Given messages are shown in English
-    Then the message has one disclaimer, in English: the messages come from fonteviva.org and the project is not liable for them
+    Then the message has one disclaimer, in English: the messages come from publicly available data and the project is not liable for them
     And the disclaimer adds that the message was translated from the Portuguese original by AI and is provided without guarantee
     And a message shown in Portuguese has the disclaimer without the translation part
 

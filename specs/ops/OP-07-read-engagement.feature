@@ -1,4 +1,4 @@
-@OP-07 @ops
+@OP-07 @ops @v2 @pending
 Feature: Count and read engagement events
 
   @OP-07.1

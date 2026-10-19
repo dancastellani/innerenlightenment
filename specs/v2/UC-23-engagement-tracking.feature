@@ -1,4 +1,4 @@
-@UC-23 @v2
+@UC-23 @v2 @pending
 Feature: Anonymous engagement tracking
 
   @UC-23.1

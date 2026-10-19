@@ -57,8 +57,8 @@ async function ask<T>(prompt: string): Promise<T | undefined> {
     return JSON.parse(text);
   } catch (error) {
     // Gemini sometimes returns broken JSON, for example with unescaped quotes. Count it as failed
-    // and go on; the next run translates it again.
-    console.error(`warning: the answer is not valid JSON: ${error}`);
+    // and go on; the next run translates it again. The answer is printed to see what was wrong.
+    console.error(`warning: the answer is not valid JSON: ${error}\n${text}`);
     return undefined;
   }
 }
@@ -136,12 +136,17 @@ let translated = 0;
 let failed = 0;
 console.error(`${skipped} skipped (already translated), ${todo.length} to translate`);
 
+const isValid = (t: Translation | undefined, original: Message) => t?.paragraphs.length === original.paragraphs.length;
+
 for (let i = 0; i < todo.length; i += BATCH_SIZE) {
   const batch = todo.slice(i, i + BATCH_SIZE);
-  const translations = await translate(batch.map(({ id, title, paragraphs, note }) => ({ id, title, paragraphs, note })));
+  const toTranslation = ({ id, title, paragraphs, note }: Message) => ({ id, title, paragraphs, note });
+  const translations = await translate(batch.map(toTranslation));
   for (const original of batch) {
-    const t = translations.find((t) => t.id === original.id);
-    if (!t || t.paragraphs.length !== original.paragraphs.length) {
+    let t = translations.find((t) => t.id === original.id);
+    // One bad answer must not sink the batch: ask again for this message alone.
+    if (!isValid(t, original)) t = (await translate([toTranslation(original)])).find((t) => t.id === original.id);
+    if (!t || !isValid(t, original)) {
       console.error(`warning: failed ${original.url}, translation missing or paragraph count differs`);
       failed++;
       continue;

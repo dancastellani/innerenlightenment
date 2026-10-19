@@ -440,6 +440,7 @@ export default function App() {
   }
 
   // UC-18: a translation can show the Portuguese original after each paragraph.
+  const [creditBefore, creditAfter] = t.credit.split('fonteviva.org'); // the credit links its one mention of the site
   const original = messageIn('pt', message.id)!;
   const comparing = isTranslation && showOriginal;
   const paragraphs = comparing
@@ -487,7 +488,7 @@ export default function App() {
         {bookNameIn(settings.language, message.book ?? '')} · {message.chapter}
       </Text>
       {paragraphs.map((paragraph, i) => (
-        <Text key={i} style={paragraph.isOriginal ? [styles.paragraph, styles.original] : styles.paragraph}>
+        <Text key={i} style={paragraph.isOriginal ? [styles.paragraph, styles.original] : i === 0 ? [styles.paragraph, styles.epigraph] : styles.paragraph}>
           {paragraph.text}
         </Text>
       ))}
@@ -498,6 +499,12 @@ export default function App() {
         <Action title={t.readOriginal} onPress={() => Linking.openURL(originalLink(message.url, settings.language))} />
       </View>
       <Text style={styles.disclaimer}>
+        {creditBefore}
+        <Text style={styles.link} onPress={() => Linking.openURL('https://fonteviva.org/')}>
+          fonteviva.org
+        </Text>
+        {creditAfter}
+        {'\n\n'}
         {t.disclaimer}
         {isTranslation && ` ${t.translationDisclaimer}`}
       </Text>
@@ -541,7 +548,9 @@ const styles = StyleSheet.create({
   pillText: { fontSize: 14, fontWeight: '600', color: colors.spring },
   pillTextOn: { color: colors.paper },
   originalMark: { borderColor: colors.rule, fontSize: 14, color: colors.muted },
+  epigraph: { fontFamily: 'Literata_400Regular_Italic' },
   original: { fontFamily: 'Literata_400Regular_Italic', color: colors.muted, borderLeftWidth: 3, borderColor: colors.rule, paddingLeft: 12 },
+  link: { textDecorationLine: 'underline', color: colors.spring },
   disclaimer: { fontSize: 13, color: colors.muted, marginTop: 24 },
   backButton: { marginTop: 32 },
   bookTitle: { fontFamily: 'Literata_600SemiBold', fontSize: 24, letterSpacing: -0.3, color: colors.ink, marginTop: 36, marginBottom: 8 },

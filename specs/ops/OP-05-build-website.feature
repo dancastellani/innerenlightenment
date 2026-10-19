@@ -301,3 +301,8 @@ Feature: Build and publish the website
     Given the content also has the language "es" without labels
     When the website is built
     Then it fails with "es has no labels.json"
+
+  @OP-05.45
+  Scenario: The epigraph is in italic and the credit links fonteviva.org once
+    When the website is built
+    Then the page "en/o-tempo/" contains "epigraph" and "https://fonteviva.org/"

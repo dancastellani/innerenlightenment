@@ -212,7 +212,7 @@ class Website {
         checkbox: '',
         label: content.language === 'pt' ? `<span class="original-mark">${label}</span>` : '',
         originalTitle: '',
-        paragraphs: message.paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join('\n'),
+        paragraphs: message.paragraphs.map((p, i) => paragraph(p, i === 0)).join('\n'),
       };
     }
     return {
@@ -220,7 +220,7 @@ class Website {
       label: `<label for="show-original">${label}</label>`,
       originalTitle: `<p class="original" lang="pt">${escapeHtml(original.title)}</p>`,
       paragraphs: withOriginal(message.paragraphs, original.paragraphs)
-        .map((p) => (p.isOriginal ? `<p class="original" lang="pt">${escapeHtml(p.text)}</p>` : `<p>${escapeHtml(p.text)}</p>`))
+        .map((p, i) => (p.isOriginal ? `<p class="original" lang="pt">${escapeHtml(p.text)}</p>` : paragraph(p.text, i === 0)))
         .join('\n'),
     };
   }
@@ -246,6 +246,11 @@ class Website {
   render(template: string, values: Record<string, string>): string {
     return fill(readFileSync(join(WEBSITE_FOLDER, 'templates', `${template}.html`), 'utf8'), values);
   }
+}
+
+// The first paragraph of a message is its epigraph (the quote), shown in italic.
+function paragraph(text: string, isEpigraph: boolean): string {
+  return `<p${isEpigraph ? ' class="epigraph"' : ''}>${escapeHtml(text)}</p>`;
 }
 
 // The spirit's signature with the medium under it, e.g. "Emmanuel" and "via Francisco Candido Xavier".

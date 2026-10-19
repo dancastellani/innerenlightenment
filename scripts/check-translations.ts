@@ -2,7 +2,7 @@
 // and prints a Markdown report listing every problem found.
 // Usage: node scripts/check-translations.ts   (exits with 1 when any translation has a problem)
 
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 
 type Message = { id: number; url: string; paragraphs: string[]; note: string | null; [field: string]: unknown };
 type Book = { slug: string; name: string };
@@ -155,29 +155,36 @@ export function readLanguage(folder: string, lang: string): { content: Content; 
   };
 }
 
-// The translations in the folder, that is every language but Portuguese, the original.
-export function translationsIn(folder: string): string[] {
-  return readdirSync(folder, { withFileTypes: true }).filter((entry) => entry.isDirectory() && entry.name !== 'pt').map((entry) => entry.name);
+// The enabled languages are the ones in the folder's languages.json.
+export function enabledLanguages(folder: string): Record<string, { name: string }> {
+  return JSON.parse(readFileSync(`${folder}/languages.json`, 'utf8'));
 }
 
-// Checks every translation in the folder and returns the findings of each language.
-export function checkContentFolder(folder: string): Record<string, { messages: number; findings: string[] }> {
+// The translations in the folder, that is every enabled language but Portuguese, the original.
+// A language folder that is not in languages.json yet (still being prepared) is not checked.
+export function translationsIn(folder: string): string[] {
+  return Object.keys(enabledLanguages(folder)).filter((lang) => lang !== 'pt');
+}
+
+// Checks one translation against Portuguese (and its labels against English) and returns the findings.
+export function checkLanguage(folder: string, lang: string): { messages: number; findings: string[] } {
   const original = readLanguage(folder, 'pt').content;
   const english = readLanguage(folder, 'en').labels;
-  const results: Record<string, { messages: number; findings: string[] }> = {};
-  for (const lang of translationsIn(folder)) {
-    const { content, labels } = readLanguage(folder, lang);
-    const findings = checkTranslation(original, content, lang);
-    if (lang !== 'en') findings.push(...checkLabels(english, labels));
-    results[lang] = { messages: content.messages.length, findings };
-  }
-  return results;
+  const { content, labels } = readLanguage(folder, lang);
+  const findings = checkTranslation(original, content, lang);
+  if (lang !== 'en') findings.push(...checkLabels(english, labels));
+  return { messages: content.messages.length, findings };
+}
+
+// Checks every enabled translation in the folder and returns the findings of each language.
+export function checkContentFolder(folder: string): Record<string, { messages: number; findings: string[] }> {
+  return Object.fromEntries(translationsIn(folder).map((lang) => [lang, checkLanguage(folder, lang)]));
 }
 
 if (import.meta.main) {
   let problems = 0;
   console.log('# Translation check\n');
-  for (const [lang, { messages, findings }] of Object.entries(checkContentFolder('content'))) {
+  for (const [lang, { messages, findings }] of Object.entries(checkContentFolder(process.argv[2] ?? 'content'))) {
     problems += findings.length;
     console.log(`## ${lang}: ${findings.length} problems in ${messages} messages\n`);
     for (const finding of findings) console.log(`- ${finding}`);

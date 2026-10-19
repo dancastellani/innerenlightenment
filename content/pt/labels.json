@@ -25,5 +25,6 @@
  "favourites": "Favoritas",
  "favourite": "Adicionar às favoritas",
  "removeFavourite": "Remover das favoritas",
- "noFavourites": "Nenhuma favorita ainda. Adicione uma mensagem às favoritas para encontrá-la aqui."
+ "noFavourites": "Nenhuma favorita ainda. Adicione uma mensagem às favoritas para encontrá-la aqui.",
+ "favouriteNotSaved": "Não foi possível salvar. Tente novamente mais tarde."
 }

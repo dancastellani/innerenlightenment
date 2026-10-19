@@ -1,11 +1,11 @@
 <nav><a class="another" href="../random/">{{anotherMessage}}</a></nav>
-<h1>{{title}}</h1>
+<div class="title-row"><h1>{{title}}</h1><button type="button" class="favourite" data-id="{{id}}" data-add="{{favourite}}" data-remove="{{removeFavourite}}" aria-label="{{favourite}}" title="{{favourite}}">☆</button></div>
+<p class="favourite-error" role="alert" hidden>{{favouriteNotSaved}}</p>
 {{originalTitle}}
 <p class="meta">{{meta}}</p>
 {{paragraphs}}
 {{signature}}
 {{note}}
-<p><button type="button" class="favourite" data-id="{{id}}" data-add="{{favourite}}" data-remove="{{removeFavourite}}">{{favourite}}</button></p>
 <script>
 // UC-13: the favourites are the ids saved in this browser.
 const button = document.querySelector('.favourite');
@@ -13,12 +13,21 @@ const id = Number(button.dataset.id);
 function favourites() {
   try { return JSON.parse(localStorage.getItem('favourites')) || []; } catch { return []; }
 }
+const error = document.querySelector('.favourite-error');
 function show() {
-  button.textContent = favourites().includes(id) ? button.dataset.remove : button.dataset.add;
+  const isFavourite = favourites().includes(id);
+  const label = isFavourite ? button.dataset.remove : button.dataset.add;
+  button.textContent = isFavourite ? '★' : '☆';
+  button.title = button.ariaLabel = label;
 }
 button.onclick = () => {
   const ids = favourites();
-  try { localStorage.setItem('favourites', JSON.stringify(ids.includes(id) ? ids.filter((i) => i !== id) : [...ids, id])); } catch {}
+  try {
+    localStorage.setItem('favourites', JSON.stringify(ids.includes(id) ? ids.filter((i) => i !== id) : [...ids, id]));
+    error.hidden = true;
+  } catch {
+    error.hidden = false;
+  }
   show();
 };
 show();

@@ -175,6 +175,7 @@ export default function App() {
   const [indexBook, setIndexBook] = useState<string>(); // UC-20: the book picked on the index
   const [showOriginal, setShowOriginal] = useState(false); // UC-18: the Portuguese text after each paragraph
   const [favourites, setFavourites] = useState<number[]>([]); // UC-13: saved on the phone
+  const [saveFailed, setSaveFailed] = useState(false); // UC-13.9: the favourites couldn't be saved
   const [menuOpen, setMenuOpen] = useState(false);
   const [downloading, setDownloading] = useState<string>(); // UC-12: the language being downloaded
   const [failedDownload, setFailedDownload] = useState<string>(); // UC-12.4: the language that couldn't be
@@ -249,10 +250,16 @@ export default function App() {
   }
 
   // UC-13: add the message to the favourites, or take it out, and save the list.
-  function changeFavourite(id: number) {
+  // UC-13.9: when it can't be saved, the list stays as it was and the reader is told.
+  async function changeFavourite(id: number) {
     const next = toggleFavourite(favourites, id);
-    setFavourites(next);
-    AsyncStorage.setItem('favourites', JSON.stringify(next));
+    try {
+      await AsyncStorage.setItem('favourites', JSON.stringify(next));
+      setFavourites(next);
+      setSaveFailed(false);
+    } catch {
+      setSaveFailed(true);
+    }
   }
 
   // UC-04: show a different, random message.
@@ -352,7 +359,7 @@ export default function App() {
               setScreen('message');
             }}
           >
-            {messageIn(settings.language, id)?.title}
+            {(translations[settings.language]?.find((m) => m.id === id) ?? translations.en.find((m) => m.id === id) ?? messageIn('pt', id))?.title}
           </Text>
         ))}
         <View style={styles.backButton}>
@@ -463,7 +470,18 @@ export default function App() {
       }
     >
       {menuModal}
-      <Text style={styles.title}>{message.title}</Text>
+      <View style={styles.titleRow}>
+        <Text style={[styles.title, styles.titleText]}>{message.title}</Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={favourites.includes(message.id) ? t.removeFavourite : t.favourite}
+          onPress={() => changeFavourite(message.id)}
+          style={styles.star}
+        >
+          <Text style={styles.starText}>{favourites.includes(message.id) ? '★' : '☆'}</Text>
+        </Pressable>
+      </View>
+      {saveFailed && <Text style={styles.warning}>{t.favouriteNotSaved}</Text>}
       {comparing && <Text style={[styles.paragraph, styles.original]}>{original.title}</Text>}
       <Text style={styles.source}>
         {bookNameIn(settings.language, message.book ?? '')} · {message.chapter}
@@ -476,7 +494,6 @@ export default function App() {
       {message.signature && <Text style={styles.signature}>{message.signature}</Text>}
       <View style={styles.actions}>
         <Action title={t.anotherMessage} onPress={showAnother} main />
-        <Action title={favourites.includes(message.id) ? t.removeFavourite : t.favourite} onPress={() => changeFavourite(message.id)} />
         <Action title={t.share} onPress={share} />
         <Action title={t.readOriginal} onPress={() => Linking.openURL(originalLink(message.url, settings.language))} />
       </View>
@@ -495,6 +512,10 @@ const styles = StyleSheet.create({
   appName: { flex: 1, fontSize: 16, fontWeight: '600', color: colors.ink },
   page: { padding: 24, paddingBottom: 48 },
   title: { fontFamily: 'Literata_600SemiBold', fontSize: 34, lineHeight: 42, letterSpacing: -0.5, color: colors.ink, marginBottom: 6 },
+  titleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  titleText: { flex: 1 },
+  star: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  starText: { fontSize: 30, color: colors.spring },
   source: { fontSize: 14, marginTop: 16, color: colors.muted, marginBottom: 28 },
   paragraph: { fontFamily: 'Literata_400Regular', fontSize: 19, lineHeight: 31, color: colors.ink, marginBottom: 16 },
   signature: { fontFamily: 'Literata_400Regular_Italic', fontSize: 19, color: colors.ink, textAlign: 'right', marginTop: 12 },

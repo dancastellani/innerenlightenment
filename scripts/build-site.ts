@@ -32,6 +32,7 @@ type Labels = {
   favourite: string;
   removeFavourite: string;
   noFavourites: string;
+  favouriteNotSaved: string;
   disclaimer: string;
   translationDisclaimer?: string;
 };
@@ -139,7 +140,13 @@ class Website {
   // UC-13: the favourites are kept in the browser (see favourites.html); this page lists them by title.
   favouritesPage(content: Content): string {
     const labels = content.labels;
-    const titles = Object.fromEntries(content.messages.map((m) => [m.id, [m.slug, showWindows1252(m.title)]]));
+    // UC-13.8: a message the language lacks is listed in English, linking to its English page.
+    const english = this.contents.find((c) => c.language === 'en');
+    const missing = english && content !== english ? english.messages.filter((m) => !content.messages.some((own) => own.id === m.id)) : [];
+    const titles = Object.fromEntries([
+      ...content.messages.map((m) => [m.id, [m.slug, showWindows1252(m.title)]]),
+      ...missing.map((m) => [m.id, [`../en/${m.slug}`, showWindows1252(m.title)]]),
+    ]);
     const otherLanguages = this.contents
       .filter((c) => c !== content)
       .map((c) => `<a href="../../${c.language}/favourites/">${this.names[c.language].name}</a>`)
@@ -178,6 +185,7 @@ class Website {
       id: String(message.id),
       favourite: escapeHtml(labels.favourite),
       removeFavourite: escapeHtml(labels.removeFavourite),
+      favouriteNotSaved: escapeHtml(labels.favouriteNotSaved),
       meta,
       title: escapeHtml(message.title),
       originalTitle: original.originalTitle,

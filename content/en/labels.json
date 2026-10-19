@@ -26,5 +26,6 @@
  "favourites": "Favourites",
  "favourite": "Add to favourites",
  "removeFavourite": "Remove from favourites",
- "noFavourites": "No favourites yet. Add a message to your favourites to find it here."
+ "noFavourites": "No favourites yet. Add a message to your favourites to find it here.",
+ "favouriteNotSaved": "Could not save. Try again later."
 }

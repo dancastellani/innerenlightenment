@@ -195,19 +195,19 @@ Feature: Build and publish the website
 
   # UC-13 on the website: keep favourites, saved in the browser.
   @OP-05.41
-  Scenario: In a browser, a message marked as favourite is found on the Favourites page, and taken out again
+  Scenario: In a browser, a message marked as favourite with the star is found on the Favourites page, and taken out again
     When the website is built
     And the page "en/o-tempo/" is opened in a browser
-    Then the browser shows "Add to favourites"
-    When "Add to favourites" is tapped
-    Then the browser shows "Remove from favourites"
+    Then the star says "Add to favourites"
+    When the star "Add to favourites" is tapped
+    Then the star says "Remove from favourites"
     When the menu is tapped
     And the link "Favourites" is clicked
     Then the browser shows "Time"
     And the browser does not show "No favourites yet"
     When the link "Time" is clicked
-    And "Remove from favourites" is tapped
-    Then the browser shows "Add to favourites"
+    And the star "Remove from favourites" is tapped
+    Then the star says "Add to favourites"
     When the menu is tapped
     And the link "Favourites" is clicked
     Then the browser shows "No favourites yet. Add a message to your favourites to find it here."
@@ -222,6 +222,26 @@ Feature: Build and publish the website
     And the page "fr/favourites/" contains "Favoris" and "Pas encore de favoris"
 
   # Edge cases
+
+  @OP-05.43
+  Scenario: In a browser, a favourite that cannot be saved shows a message and keeps the star as it was
+    When the website is built
+    And the page "en/o-tempo/" is opened in a browser
+    And the browser refuses to save data
+    And the star "Add to favourites" is tapped
+    Then the browser shows "Could not save. Try again later."
+    And the star says "Add to favourites"
+
+  @OP-05.44
+  Scenario: In a browser, a favourite missing in the language is listed in English, with a link to the English page
+    Given the saved sample content with 2 messages in Portuguese and 1 in English
+    And English has a message that Spanish does not have
+    When the website is built
+    And the page "es/favourites/" is opened in a browser
+    And the favourites saved in the browser are "[2]"
+    Then the browser shows "Extra"
+    When the link "Extra" is clicked
+    Then the browser is on the page "en/extra/"
 
   @OP-05.6
   Scenario: A message not translated yet has no page or link in that language

@@ -41,6 +41,17 @@ async function addLanguage(world: World, language: string, withLabels: boolean) 
   world.contentFolder = folder;
 }
 
+// UC-13.8: an English message that Spanish lacks, with the title "Extra".
+Given('English has a message that Spanish does not have', async function (this: World) {
+  const folder = await mkdtemp(join(tmpdir(), 'content-'));
+  await cp(this.contentFolder, folder, { recursive: true });
+  const messagesFile = join(folder, 'en', 'messages.json');
+  const content = JSON.parse(readFileSync(messagesFile, 'utf8'));
+  content.messages.push({ ...content.messages[0], id: 2, slug: 'extra', title: 'Extra' });
+  await writeFile(messagesFile, JSON.stringify(content));
+  this.contentFolder = folder;
+});
+
 Given('the content also has the language {string}', async function (this: World, language: string) {
   await addLanguage(this, language, true);
 });

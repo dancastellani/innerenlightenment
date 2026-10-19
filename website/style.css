@@ -144,14 +144,17 @@ footer { margin-top: 4rem; border-top: 1px solid var(--rule); padding-top: 1.5re
   nav .another, .menu-items { transition: none; animation: none; }
 }
 
-/* UC-13: the favourite button, outlined like the app's. */
+/* UC-13: the favourite star next to the message title, and the message when it can't be saved. */
+.title-row { display: flex; align-items: flex-start; gap: 0.5rem; }
+.title-row h1 { flex: 1; }
 .favourite {
-  padding: 0.6rem 1.1rem;
-  border: 1.5px solid var(--spring);
-  border-radius: 999px;
+  margin-top: 3rem;
+  padding: 0 0.4rem;
+  border: 0;
   background: none;
   color: var(--spring);
-  font: inherit;
-  font-weight: 600;
+  font-size: 2rem;
+  line-height: 1.2;
   cursor: pointer;
 }
+.favourite-error { color: #a3261b; }

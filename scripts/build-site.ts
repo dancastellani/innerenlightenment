@@ -3,7 +3,7 @@
 // a random message. The home page opens a random English message.
 //
 // The look lives in website/: HTML templates in website/templates/, the stylesheet, and
-// content/languages.json with each language's name (a new language needs an entry there). The other text of
+// <content folder>/languages.json with each language's name (a new language needs an entry there). The other text of
 // the pages, such as "Another message" and the disclaimer, is the language's labels.json.
 //
 // Usage: node scripts/build-site.ts [content folder] [output folder]
@@ -219,8 +219,9 @@ function signature(message: Message): string {
 }
 
 // Each language is a folder with its messages.json and its labels.json.
-function readContents(folder: string): Content[] {
-  const languages = readdirSync(folder, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
+// Only the languages in languages.json are built; a folder not enabled yet is skipped.
+function readContents(folder: string, names: Names): Content[] {
+  const languages = readdirSync(folder, { withFileTypes: true }).filter((entry) => entry.isDirectory() && names[entry.name]).map((entry) => entry.name).sort();
   if (languages.length === 0) throw new Error(`No content files (<lang>/messages.json) in ${folder}`);
   return languages.map((language) => {
     const content = JSON.parse(readFileSync(join(folder, language, 'messages.json'), 'utf8'));
@@ -237,8 +238,8 @@ function write(file: string, html: string) {
 }
 
 const [contentFolder = 'content', outFolder = 'site'] = process.argv.slice(2);
-const contents = readContents(contentFolder);
-const names = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'content', 'languages.json'), 'utf8'));
+const names = JSON.parse(readFileSync(join(contentFolder, 'languages.json'), 'utf8'));
+const contents = readContents(contentFolder, names);
 const studyGroups = JSON.parse(readFileSync(join(WEBSITE_FOLDER, 'study-groups.json'), 'utf8'));
 new Website(contents, names, studyGroups).build(outFolder);
 const pages = contents.reduce((sum, c) => sum + c.messages.length, 0);

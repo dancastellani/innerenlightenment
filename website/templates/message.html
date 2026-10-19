@@ -1,11 +1,14 @@
 <nav><a class="another" href="../random/">{{anotherMessage}}</a></nav>
+<article>
 <h1>{{title}}</h1>
 {{originalTitle}}
 <p class="meta">{{meta}}</p>
 {{paragraphs}}
 {{signature}}
 {{note}}
+</article>
 <footer>
+<p><a href="{{aiChatLink}}" onclick="navigator.clipboard.writeText(document.querySelector('article').innerText)">{{aiChat}}</a></p>
 <p><a href="{{url}}">{{readOriginal}}</a></p>
 <p><a href="../study-groups/">{{studyGroups}}</a></p>
 {{credit}}

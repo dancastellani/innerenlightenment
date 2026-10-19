@@ -11,7 +11,7 @@
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Message } from './parse-message.ts';
-import { originalLink, withOriginal } from '../mobile/language.ts';
+import { aiChatLink, originalLink, withOriginal } from '../mobile/language.ts';
 import { showWindows1252 } from '../mobile/text.ts';
 
 type Content = { language: string; books: { slug: string; name: string }[]; labels: Labels; messages: Message[] };
@@ -25,6 +25,7 @@ type Labels = {
   menu: string;
   anotherMessage: string;
   readOriginal: string;
+  aiChat: string;
   original: string;
   studyGroups: string;
   studyGroupsIntro: string;
@@ -156,6 +157,8 @@ class Website {
       note: message.note ? `<p class="note">${escapeHtml(message.note)}</p>` : '',
       url: escapeHtml(originalLink(message.url, content.language)),
       readOriginal: labels.readOriginal,
+      aiChat: labels.aiChat,
+      aiChatLink,
       studyGroups: labels.studyGroups,
       credit: this.credit(content),
       disclaimer: `<p class="disclaimer">${[labels.disclaimer, labels.translationDisclaimer].filter((text) => text).join(' ')}</p>`,

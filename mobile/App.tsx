@@ -2,7 +2,9 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { AppState, Image, Linking, Modal, Pressable, ScrollView, Share, StyleSheet, Switch, Text, View } from 'react-native';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Clipboard from 'expo-clipboard';
 import * as Notifications from 'expo-notifications';
+import * as WebBrowser from 'expo-web-browser';
 import { useFonts, Literata_400Regular, Literata_400Regular_Italic, Literata_600SemiBold } from '@expo-google-fonts/literata';
 import portugueseContent from '../content/pt/messages.json';
 import englishContent from '../content/en/messages.json';
@@ -13,7 +15,7 @@ import studyGroups from '../website/study-groups.json';
 import { expo } from './app.json';
 import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
-import { bookName, completeLabels, findMessage, originalLink, shareLink, withOriginal, type Book } from './language';
+import { aiChatLink, bookName, completeLabels, findMessage, originalLink, shareLink, withOriginal, type Book } from './language';
 import { isDownloaded, loadLanguage } from './download';
 import { readable } from './text';
 
@@ -257,6 +259,13 @@ export default function App() {
     Share.share({ message: text });
   }
 
+  // UC-21: copy the message, then open the AI chat in an in-app browser tab, where the user pastes it.
+  async function openAiChat() {
+    if (!message) return;
+    await Clipboard.setStringAsync([message.title, ...message.paragraphs, message.signature].filter(Boolean).join('\n\n'));
+    WebBrowser.openBrowserAsync(aiChatLink);
+  }
+
   // For testing: the same notification in 10 seconds instead of waiting for 08:00.
   async function sendTest() {
     if (!message) return;
@@ -440,6 +449,7 @@ export default function App() {
       <View style={styles.actions}>
         <Action title={t.anotherMessage} onPress={showAnother} main />
         <Action title={t.share} onPress={share} />
+        <Action title={t.aiChat} onPress={openAiChat} />
         <Action title={t.readOriginal} onPress={() => Linking.openURL(originalLink(message.url, settings.language))} />
       </View>
       <Text style={styles.disclaimer}>

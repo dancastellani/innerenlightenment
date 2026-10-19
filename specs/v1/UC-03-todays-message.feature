@@ -44,4 +44,4 @@ Feature: See today's message when I open the app
   Scenario: The epigraph is in italic
     When a message is shown
     Then its first paragraph, the Bible quote at the top, is in italic
-    And the footer names fonteviva.org once, as a link to the site, in the credit
+    And the footer names fonteviva.org once, in the disclaimer, as a link to the same message there

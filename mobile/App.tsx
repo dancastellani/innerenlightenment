@@ -440,7 +440,7 @@ export default function App() {
   }
 
   // UC-18: a translation can show the Portuguese original after each paragraph.
-  const [creditBefore, creditAfter] = t.credit.split('fonteviva.org'); // the credit links its one mention of the site
+  const [disclaimerBefore, disclaimerAfter] = t.disclaimer.split('fonteviva.org'); // the disclaimer links its one mention of the site
   const original = messageIn('pt', message.id)!;
   const comparing = isTranslation && showOriginal;
   const paragraphs = comparing
@@ -499,13 +499,11 @@ export default function App() {
         <Action title={t.readOriginal} onPress={() => Linking.openURL(originalLink(message.url, settings.language))} />
       </View>
       <Text style={styles.disclaimer}>
-        {creditBefore}
-        <Text style={styles.link} onPress={() => Linking.openURL('https://fonteviva.org/')}>
+        {disclaimerBefore}
+        <Text style={styles.link} onPress={() => Linking.openURL(originalLink(message.url, settings.language))}>
           fonteviva.org
         </Text>
-        {creditAfter}
-        {'\n\n'}
-        {t.disclaimer}
+        {disclaimerAfter}
         {isTranslation && ` ${t.translationDisclaimer}`}
       </Text>
     </Screen>

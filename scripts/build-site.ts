@@ -195,8 +195,7 @@ class Website {
       url: escapeHtml(originalLink(message.url, content.language)),
       readOriginal: labels.readOriginal,
       studyGroups: labels.studyGroups,
-      credit: this.credit(content),
-      disclaimer: `<p class="disclaimer">${[labels.disclaimer, labels.translationDisclaimer].filter((text) => text).join(' ')}</p>`,
+      disclaimer: this.disclaimer(content, message),
     });
     return this.page(content.language, message.title, '../../', body, original, menu);
   }
@@ -223,6 +222,14 @@ class Website {
         .map((p, i) => (p.isOriginal ? `<p class="original" lang="pt">${escapeHtml(p.text)}</p>` : paragraph(p.text, i === 0)))
         .join('\n'),
     };
+  }
+
+  // The one disclaimer of a message page; its one mention of fonteviva.org links to the same message there.
+  disclaimer(content: Content, message: Message): string {
+    const { disclaimer, translationDisclaimer } = content.labels;
+    const link = `<a href="${escapeHtml(originalLink(message.url, content.language))}">fonteviva.org</a>`;
+    const text = [escapeHtml(disclaimer).replace('fonteviva.org', link), translationDisclaimer && escapeHtml(translationDisclaimer)];
+    return `<p class="disclaimer">${text.filter((part) => part).join(' ')}</p>`;
   }
 
   // The credit to fonteviva.org, with its address as a link.

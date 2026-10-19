@@ -1,14 +1,14 @@
 @OP-06 @v2 @pending
-Feature: Receive translation reports and turn them into fixes
+Feature: Receive feedback and turn translation reports into fixes
 
   @OP-06.1
   Scenario: A valid report opens an issue
-    Given the backend receives a report with language, message id and comment
-    Then an issue labelled "translation-error" is opened with those details
+    Given the backend receives feedback of type "translation" with language, message id and comment
+    Then an issue labelled "feedback" and "feedback:translation" is opened with those details
 
   @OP-06.2
   Scenario: Missing or oversized fields
-    Given a report with no comment, a comment over 1000 characters, or an unknown language
+    Given feedback with no comment, a comment over 1000 characters, an unknown type, or a translation report with an unknown language
     Then the backend refuses it and opens no issue
 
   @OP-06.3
@@ -22,8 +22,8 @@ Feature: Receive translation reports and turn them into fixes
     Then none of them contains the GitHub token
 
   @OP-06.5
-  Scenario: A valid report is fixed
-    Given a "translation-error" issue is right about a translation
+  Scenario: A valid translation report is fixed
+    Given a "feedback:translation" issue is right about a translation
     When the message is corrected in content/<lang>/messages.json
     Then the data-only PR says "Fixes" the issue
 
@@ -37,3 +37,8 @@ Feature: Receive translation reports and turn them into fixes
     Given a message was corrected by hand
     When the translate script runs again
     Then the corrected message is kept
+
+  @OP-06.8
+  Scenario: A new type is added
+    Given the backend's list of types gets a new type
+    Then feedback of that type opens an issue labelled "feedback:<type>" with no other backend change

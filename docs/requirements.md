@@ -52,7 +52,7 @@ Supporting work for v1 (issues, not use cases): content export to JSON (PR #1), 
 | UC-15 | **choose which books I hear from** | Turn individual books (Caminho, Verdade e Vida; Fonte Viva; Pão Nosso; Vinha de Luz) on or off. |
 | UC-18 | **compare with the original** | An "Original" button shows the Portuguese text next to the translation, as study groups do to clarify a reading; also on the message's website page. |
 | UC-19 | **find a study group** | A "Study groups" screen links to Spiritist organizations that hold in-person and online meetings; also on the website. |
-| UC-21 | **report a translation error** | A "Report an error" button on translated messages sends my comment (and suggested text) to the project; also on the website. Plan: [translation-feedback.md](translation-feedback.md). |
+| UC-21 | **send feedback** | A "Send feedback" option, with a type (for now only "translation error": which paragraph, what is wrong, suggested text) sends my comment to the project; also on the website. Plan: [feedback.md](feedback.md). |
 
 ### v3: Talk about it
 

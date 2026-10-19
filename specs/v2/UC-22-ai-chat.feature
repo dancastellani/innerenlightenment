@@ -8,11 +8,11 @@ Feature: AI Chat about the message
     Given I am viewing a message
     When I tap "AI Chat"
     Then the title, text and signature of the message are copied to the clipboard
-    And "https://gemini.google.com/gem/da65ec0154b8" opens in an in-app browser tab
+    And "https://gemini.google.com/gem/14Q1eUapad5Qf6nVN3wq8ecpF32rdifOq?usp=sharing" opens in an in-app browser tab
 
   @UC-22.2
   Scenario: The website copies the message and opens the AI chat
     Given I am viewing a message page
     When I click "AI Chat"
     Then the title, text and signature of the message are copied to the clipboard
-    And "https://gemini.google.com/gem/da65ec0154b8" opens
+    And "https://gemini.google.com/gem/14Q1eUapad5Qf6nVN3wq8ecpF32rdifOq?usp=sharing" opens

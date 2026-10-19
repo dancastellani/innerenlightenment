@@ -28,7 +28,7 @@ export function shareLink(slug: string, language: string): string {
 }
 
 // UC-22: the Gemini gem the "AI Chat" link opens. Its link takes no prefilled text, so the message is copied first.
-export const aiChatLink = 'https://gemini.google.com/gem/da65ec0154b8';
+export const aiChatLink = 'https://gemini.google.com/gem/14Q1eUapad5Qf6nVN3wq8ecpF32rdifOq?usp=sharing';
 
 // UC-18.1: each translated paragraph followed by the same paragraph of the Portuguese original,
 // as study groups compare them. Paragraphs left over on either side come at the end.

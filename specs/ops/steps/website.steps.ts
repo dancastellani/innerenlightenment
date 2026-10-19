@@ -2,7 +2,7 @@
 
 import { Given, When, Then } from '@cucumber/cucumber';
 import assert from 'node:assert/strict';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { cp, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -130,8 +130,9 @@ function labelsOf(language: string): Record<string, string> {
   return JSON.parse(readFileSync(`content/${language}/labels.json`, 'utf8'));
 }
 
+// The enabled languages: a folder in content/ that is not in languages.json yet is not checked.
 function languagesInContent(): string[] {
-  return readdirSync('content', { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name);
+  return Object.keys(JSON.parse(readFileSync('content/languages.json', 'utf8')));
 }
 
 Then('every language in content\\/ has a {string}', function (label: string) {

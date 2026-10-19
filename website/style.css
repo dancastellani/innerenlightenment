@@ -138,7 +138,7 @@ footer { margin-top: 4rem; border-top: 1px solid var(--rule); padding-top: 1.5re
 .show-original:focus-visible ~ .app-bar label { outline: 2px solid var(--spring); outline-offset: 3px; }
 .original-mark { border-color: var(--rule); color: var(--muted); }
 .original { display: none; color: var(--muted); font-style: italic; border-left: 3px solid var(--rule); padding-left: 1rem; }
-.show-original:checked ~ .original { display: block; }
+.show-original:checked ~ article .original { display: block; }
 
 @media (prefers-reduced-motion: reduce) {
   nav .another, .menu-items { transition: none; animation: none; }

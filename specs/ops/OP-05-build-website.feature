@@ -59,16 +59,16 @@ Feature: Build and publish the website
     And the page "pt/random/" opens a random message of "../" from "o-tempo" and "fe-e-obras"
 
   @OP-05.11
-  Scenario: Every message page credits fonteviva.org and has one disclaimer in its language
+  Scenario: Every message page has one disclaimer in its language, thanking fonteviva.org
     When the website is built
-    Then the page "en/o-tempo/" contains "Marcelo Paiva" and "not responsible or liable"
-    And the page "pt/o-tempo/" contains "Marcelo Paiva" and "não se responsabiliza"
+    Then the page "en/o-tempo/" contains "thanks for making them available" and "not responsible or liable"
+    And the page "pt/o-tempo/" contains "obrigado por disponibilizá-las" and "não se responsabiliza"
     And the page "en/o-tempo/" has "Disclaimer:" only once
 
   @OP-05.14
   Scenario: A translated message's disclaimer says it was translated by AI, without guarantee
     When the website is built
-    Then the page "en/o-tempo/" contains "for their content. This message was translated from the Portuguese original by AI" and "without guarantee"
+    Then the page "en/o-tempo/" contains "for their content. This message was translated from the Portuguese (original) with AI" and "best effort without guarantees"
     And the page "pt/o-tempo/" does not contain "translated from the Portuguese original"
 
   @OP-05.5
@@ -301,3 +301,8 @@ Feature: Build and publish the website
     Given the content also has the language "es" without labels
     When the website is built
     Then it fails with "es has no labels.json"
+
+  @OP-05.45
+  Scenario: The epigraph is in italic and the disclaimer links fonteviva.org to the same message
+    When the website is built
+    Then the page "en/o-tempo/" contains "epigraph" and ">fonteviva.org</a>"

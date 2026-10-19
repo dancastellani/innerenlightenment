@@ -195,8 +195,7 @@ class Website {
       url: escapeHtml(originalLink(message.url, content.language)),
       readOriginal: labels.readOriginal,
       studyGroups: labels.studyGroups,
-      credit: this.credit(content),
-      disclaimer: `<p class="disclaimer">${[labels.disclaimer, labels.translationDisclaimer].filter((text) => text).join(' ')}</p>`,
+      disclaimer: this.disclaimer(content, message),
     });
     return this.page(content.language, message.title, '../../', body, original, menu);
   }
@@ -212,7 +211,7 @@ class Website {
         checkbox: '',
         label: content.language === 'pt' ? `<span class="original-mark">${label}</span>` : '',
         originalTitle: '',
-        paragraphs: message.paragraphs.map((p) => `<p>${escapeHtml(p)}</p>`).join('\n'),
+        paragraphs: message.paragraphs.map((p, i) => paragraph(p, i === 0)).join('\n'),
       };
     }
     return {
@@ -220,9 +219,17 @@ class Website {
       label: `<label for="show-original">${label}</label>`,
       originalTitle: `<p class="original" lang="pt">${escapeHtml(original.title)}</p>`,
       paragraphs: withOriginal(message.paragraphs, original.paragraphs)
-        .map((p) => (p.isOriginal ? `<p class="original" lang="pt">${escapeHtml(p.text)}</p>` : `<p>${escapeHtml(p.text)}</p>`))
+        .map((p, i) => (p.isOriginal ? `<p class="original" lang="pt">${escapeHtml(p.text)}</p>` : paragraph(p.text, i === 0)))
         .join('\n'),
     };
+  }
+
+  // The one disclaimer of a message page; its one mention of fonteviva.org links to the same message there.
+  disclaimer(content: Content, message: Message): string {
+    const { disclaimer, translationDisclaimer } = content.labels;
+    const link = `<a href="${escapeHtml(originalLink(message.url, content.language))}">fonteviva.org</a>`;
+    const text = [escapeHtml(disclaimer).replace('fonteviva.org', link), translationDisclaimer && escapeHtml(translationDisclaimer)];
+    return `<p class="disclaimer">${text.filter((part) => part).join(' ')}</p>`;
   }
 
   // The credit to fonteviva.org, with its address as a link.
@@ -246,6 +253,11 @@ class Website {
   render(template: string, values: Record<string, string>): string {
     return fill(readFileSync(join(WEBSITE_FOLDER, 'templates', `${template}.html`), 'utf8'), values);
   }
+}
+
+// The first paragraph of a message is its epigraph (the quote), shown in italic.
+function paragraph(text: string, isEpigraph: boolean): string {
+  return `<p${isEpigraph ? ' class="epigraph"' : ''}>${escapeHtml(text)}</p>`;
 }
 
 // The spirit's signature with the medium under it, e.g. "Emmanuel" and "via Francisco Candido Xavier".

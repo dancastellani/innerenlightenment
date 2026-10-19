@@ -39,3 +39,9 @@ Feature: See today's message when I open the app
     Given a message has no signature
     When it is shown
     Then no empty signature line is shown
+
+  @UC-03.6
+  Scenario: The epigraph is in italic
+    When a message is shown
+    Then its first paragraph, the Bible quote at the top, is in italic
+    And the footer names fonteviva.org once, in the disclaimer, as a link to the same message there

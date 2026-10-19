@@ -27,7 +27,7 @@ export function shareLink(slug: string, language: string): string {
   return `https://dancastellani.github.io/innerenlightenment/${language}/${slug}/`;
 }
 
-// UC-21: the Gemini gem the "AI Chat" link opens. Its link takes no prefilled text, so the message is copied first.
+// UC-22: the Gemini gem the "AI Chat" link opens. Its link takes no prefilled text, so the message is copied first.
 export const aiChatLink = 'https://gemini.google.com/gem/da65ec0154b8';
 
 // UC-18.1: each translated paragraph followed by the same paragraph of the Portuguese original,

@@ -259,7 +259,7 @@ export default function App() {
     Share.share({ message: text });
   }
 
-  // UC-21: copy the message, then open the AI chat in an in-app browser tab, where the user pastes it.
+  // UC-22: copy the message, then open the AI chat in an in-app browser tab, where the user pastes it.
   async function openAiChat() {
     if (!message) return;
     await Clipboard.setStringAsync([message.title, ...message.paragraphs, message.signature].filter(Boolean).join('\n\n'));

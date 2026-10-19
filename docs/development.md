@@ -101,6 +101,18 @@ Every translation in `content/` is checked against `content/pt/messages.json` by
 
 To look at it locally: `./run.sh site`, then `npx serve site` and open the printed address (links end in `/`, so opening the files directly doesn't follow them).
 
+## Screenshots of the app
+
+A PR that changes the app shows its screens (see CLAUDE.md). Export the web build and take phone-sized (390×844) screenshots of it with headless Chromium; the web build has no notifications, so `mobile/notifications.web.js` stands in for them:
+
+```sh
+cd mobile && npx expo export -p web && cd ..
+node scripts/screenshot-app.ts docs/screenshots/uc-01-today.png                  # the first screen
+node scripts/screenshot-app.ts docs/screenshots/uc-08-settings.png Settings      # click the text "Settings" first
+```
+
+The script uses your Google Chrome; in Claude's cloud sessions set `CHROME_PATH=/opt/pw-browsers/chromium`. Clicks are the visible texts, in order, so a screenshot can be a few screens deep. The screenshot of a language needs its labels (`content/<lang>/labels.json`) in the bundle, so only English and Portuguese can be shown, the same as the app.
+
 ## Previewing an app PR in Expo Go
 
 Each PR that changes the app (`mobile/` or `content/`) gets a comment from Expo with a link to its preview: open it and scan the QR code with Expo Go. The comment comes once the update is published on Expo's servers.

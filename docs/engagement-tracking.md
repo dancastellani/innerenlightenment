@@ -4,7 +4,7 @@ Plan for [#163](https://github.com/dancastellani/innerenlightenment/issues/163).
 
 ## What we count
 
-A fixed list of events, each a count per day, event name, language, platform and country. Nothing else is stored.
+A fixed list of events, each a count per day, event name, language, platform, country and state. Nothing else is stored.
 
 | Event | Where | Answers |
 |---|---|---|
@@ -20,7 +20,7 @@ A fixed list of events, each a count per day, event name, language, platform and
 ### Dimensions on every event
 
 - **Platform:** `app` or `web`, so the app and website are always told apart. For the app: OS and OS major version (e.g. `android 15`) and app version. For the website: browser family and OS family (e.g. `chrome`, `windows`), read from the browser's `User-Agent` by the Worker, which keeps only these coarse names and drops the rest of the header.
-- **Country:** yes, country only (e.g. `BR`, `US`). Cloudflare gives it to the Worker for each request, so the app and the website send nothing extra and the IP address is still not stored. No region or city: with few users, a city plus OS plus language could single a person out.
+- **Country and state:** yes (e.g. `BR`/`SP`, `US`/`CA`). Cloudflare gives both to the Worker for each request, so the app and the website send nothing extra and the IP address is still not stored. No city: with few users, a city plus OS plus language could single a person out; a state is wide enough to be safe, and we only read state totals, never a filter that leaves a handful of people.
 
 ### Errors
 

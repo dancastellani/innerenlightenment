@@ -34,9 +34,9 @@ Feature: Count and read engagement events
     Then the extra events are refused
 
   @OP-07.7
-  Scenario: Country comes from the request, not from the app
-    When an event is posted from Brazil
-    Then the stored row has country "BR" and no IP address
+  Scenario: Country and state come from the request, not from the app
+    When an event is posted from São Paulo, Brazil
+    Then the stored row has country "BR" and state "SP" but no city and no IP address
 
   @OP-07.8
   Scenario: Only coarse browser and OS names are kept

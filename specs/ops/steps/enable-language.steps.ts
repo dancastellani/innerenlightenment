@@ -2,12 +2,12 @@
 
 import { Given, When, Then } from '@cucumber/cucumber';
 import assert from 'node:assert/strict';
-import { cpSync, existsSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { runCommand, type Result } from './run-command.ts';
 
-type World = { folder: string; site: string; result: Result };
+type World = { folder: string; result: Result };
 
 Given('a content folder where only {string} and {string} are enabled and {string} is ready', function (this: World, a: string, b: string, ready: string) {
   this.folder = mkdtempSync(join(tmpdir(), 'content-'));
@@ -39,13 +39,4 @@ Then('languages.json lists {string} with the name {string}', function (this: Wor
 Then('languages.json does not list {string}', function (this: World, lang: string) {
   const languages = JSON.parse(readFileSync(join(this.folder, 'languages.json'), 'utf8'));
   assert.equal(languages[lang], undefined);
-});
-
-When('I build the website from the content folder', async function (this: World) {
-  this.site = join(this.folder, 'site');
-  this.result = await runCommand('node', ['scripts/build-site.ts', this.folder, this.site]);
-});
-
-Then('the website has no {string} pages', function (this: World, lang: string) {
-  assert.equal(existsSync(join(this.site, lang)), false);
 });

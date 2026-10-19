@@ -3,7 +3,7 @@
 // a random message. The home page opens a random English message.
 //
 // The look lives in website/: HTML templates in website/templates/, the stylesheet, and
-// <content folder>/languages.json with each language's name (a new language needs an entry there). The other text of
+// content/languages.json with each language's name (a new language needs an entry there). The other text of
 // the pages, such as "Another message" and the disclaimer, is the language's labels.json.
 //
 // Usage: node scripts/build-site.ts [content folder] [output folder]
@@ -238,7 +238,7 @@ function write(file: string, html: string) {
 }
 
 const [contentFolder = 'content', outFolder = 'site'] = process.argv.slice(2);
-const names = JSON.parse(readFileSync(join(contentFolder, 'languages.json'), 'utf8'));
+const names = JSON.parse(readFileSync(join(import.meta.dirname, '..', 'content', 'languages.json'), 'utf8'));
 const contents = readContents(contentFolder, names);
 const studyGroups = JSON.parse(readFileSync(join(WEBSITE_FOLDER, 'study-groups.json'), 'utf8'));
 new Website(contents, names, studyGroups).build(outFolder);

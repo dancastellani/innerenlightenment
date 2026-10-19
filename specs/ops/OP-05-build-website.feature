@@ -219,10 +219,12 @@ Feature: Build and publish the website
     Then it fails with "No content files"
 
   @OP-05.13
-  Scenario: A language without a name in content/languages.json
+  Scenario: A language folder that is not in content/languages.json is left out
     Given the content also has the language "xx"
     When the website is built
-    Then it fails with "Add \"xx\" to content/languages.json"
+    Then it succeeds
+    And there are pages "pt/o-tempo/" and "en/o-tempo/"
+    And there is no page "xx/o-tempo/"
 
   # Bugs #67, #71: content/pt/messages.json keeps fonteviva.org's Windows-1252 codes; pages show them as browsers do.
   @OP-05.20
@@ -248,6 +250,6 @@ Feature: Build and publish the website
 
   @OP-05.19
   Scenario: A language whose content has no labels
-    Given the content also has the language "xx" without labels
+    Given the content also has the language "es" without labels
     When the website is built
-    Then it fails with "xx has no labels.json"
+    Then it fails with "es has no labels.json"

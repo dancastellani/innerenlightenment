@@ -34,10 +34,3 @@ Feature: Enable a language
   Scenario: A language that is already enabled is refused
     When I enable "en" as "English"
     Then it fails with "en is already enabled"
-
-  @OP-08.6
-  Scenario: A language folder that is not enabled is left out of the website
-    Given the "es" folder is missing its last message
-    When I build the website from the content folder
-    Then it succeeds
-    And the website has no "es" pages

@@ -22,6 +22,11 @@ export function originalLink(url: string, language: string): string {
   return `${translated}?_x_tr_sl=pt&_x_tr_tl=${language}&_x_tr_hl=${language}&_x_tr_pto=wapp`;
 }
 
+// UC-06.1: the message's page on our website, in the language being used.
+export function shareLink(slug: string, language: string): string {
+  return `https://dancastellani.github.io/innerenlightenment/${language}/${slug}/`;
+}
+
 // UC-18.1: each translated paragraph followed by the same paragraph of the Portuguese original,
 // as study groups compare them. Paragraphs left over on either side come at the end.
 export function withOriginal(translated: string[], original: string[]): { text: string; isOriginal: boolean }[] {

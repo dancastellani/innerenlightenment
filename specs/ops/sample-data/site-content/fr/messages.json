@@ -1,0 +1,29 @@
+{
+ "source": "https://fonteviva.org/",
+ "language": "fr",
+ "books": [
+  {
+   "slug": "fonte-viva",
+   "name": "Living Spring",
+   "count": 2
+  }
+ ],
+ "messages": [
+  {
+   "id": 1,
+   "slug": "o-tempo",
+   "url": "https://fonteviva.org/fonte-viva/o-tempo/",
+   "book": "fonte-viva",
+   "title": "Temps",
+   "chapter": "Capítulo 1",
+   "spirit": "Emmanuel",
+   "medium": "via: Francisco Candido Xavier",
+   "paragraphs": [
+    "Premier paragraphe.",
+    "Deuxième paragraphe."
+   ],
+   "signature": "Emmanuel",
+   "note": null
+  }
+ ]
+}

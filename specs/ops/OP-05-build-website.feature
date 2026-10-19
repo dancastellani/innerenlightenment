@@ -218,6 +218,8 @@ Feature: Build and publish the website
     Then the page "en/favourites/" contains "Favourites"
     And the page "pt/favourites/" contains "Favoritas" and "Nenhuma favorita ainda"
     And the page "pt/o-tempo/" contains "Adicionar às favoritas"
+    And the page "es/favourites/" contains "Favoritos" and "Aún no hay favoritos"
+    And the page "fr/favourites/" contains "Favoris" and "Pas encore de favoris"
 
   # Edge cases
 

@@ -47,3 +47,15 @@ Feature: Anonymous engagement tracking
     Given the endpoint answers with an error
     When I use the app or the website
     Then nothing is shown to me and nothing is retried
+
+  @UC-23.8
+  Scenario: The app and the website are told apart
+    When an event is sent from the app and one from the website
+    Then each carries its platform, "app" or "web", with OS and version or browser and OS family
+
+  @UC-23.9
+  Scenario: An error is counted without its details
+    Given tracking is on
+    When the language download fails
+    Then the event "error" with code "language_download_failed" is counted
+    And no error message or stack trace is sent

@@ -8,6 +8,7 @@ on:
 permissions:
   contents: read
   checks: write # to add the test report check run
+  contents: write # to publish the test count badge on the badges branch
 
 jobs:
   test:
@@ -50,3 +51,16 @@ jobs:
           path: translation-reports/*.xml
           reporter: java-junit
           use-actions-summary: false
+      # On main, publishes the counts for the README badge as a shields.io endpoint file on the "badges" branch.
+      - if: always() && github.ref == 'refs/heads/main'
+        run: |
+          total=$(cat test-reports/*.xml | grep -o '<testcase' | wc -l)
+          failed=$(cat test-reports/*.xml | grep -o '<failure' | wc -l)
+          color=brightgreen
+          if [ "$failed" -gt 0 ]; then color=red; fi
+          mkdir badges && cd badges
+          echo "{\"schemaVersion\":1,\"label\":\"tests\",\"message\":\"$((total - failed)) passed, $failed failed\",\"color\":\"$color\"}" > tests.json
+          git init -q -b badges
+          git add tests.json
+          git -c user.name=github-actions -c user.email=github-actions@github.com commit -qm "Update test count badge"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" badges

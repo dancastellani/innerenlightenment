@@ -71,7 +71,7 @@ nav .another {
 nav .another:hover { background: color-mix(in srgb, var(--spring), var(--ink) 20%); }
 nav .another:active { transform: scale(0.98); }
 
-.meta { margin-bottom: 2.5rem; }
+.meta { margin: 1rem 0 2.5rem; }
 .signature { font-style: italic; text-align: right; margin-top: 2rem; }
 .medium { font-style: normal; }
 .note, .translation { border-left: 3px solid var(--rule); padding-left: 1rem; }

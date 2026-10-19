@@ -27,3 +27,9 @@ Feature: Find a study group
     Given I am on "Study groups"
     When I tap "Back"
     Then the message I was reading is shown again
+
+  @UC-19.5
+  Scenario: The menu is at the top right of this screen too
+    Given I am on "Study groups"
+    When I tap the menu at the top right and then "Settings"
+    Then the "Settings" screen is shown

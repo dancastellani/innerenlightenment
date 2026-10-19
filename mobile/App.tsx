@@ -273,11 +273,37 @@ export default function App() {
 
   if (!message || !fontsLoaded) return null;
 
+  // The menu is on every screen: the button in the top bar, and the list that opens under it.
+  const menuButton = <MenuButton label={t.menu} onPress={() => setMenuOpen(true)} />;
+  // The menu opens under the button at the top right; tapping outside closes it.
+  const menuModal = (
+    <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={() => setMenuOpen(false)}>
+      <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)}>
+        <View style={styles.menu}>
+          {MENU.map((item) => (
+            <Pressable
+              key={item.screen}
+              accessibilityRole="button"
+              onPress={() => {
+                setMenuOpen(false);
+                setScreen(item.screen);
+              }}
+              style={({ pressed }) => [styles.menuItem, pressed && styles.pressed]}
+            >
+              <Text style={styles.menuItemText}>{t[item.label]}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </Pressable>
+    </Modal>
+  );
+
   // UC-20: the books at the top; picking one lists its messages.
   if (screen === 'index') {
     const bookMessages = portuguese.filter((m) => m.book === indexBook).map((m) => messageIn(settings.language, m.id)!);
     return (
-      <Screen>
+      <Screen action={menuButton}>
+        {menuModal}
         <Text style={styles.title}>{t.index}</Text>
         <View style={styles.actions}>
           {books.map((book) => (
@@ -307,14 +333,15 @@ export default function App() {
   // UC-19: links to Spiritist organizations that hold study meetings, the same as the website.
   if (screen === 'study-groups') {
     return (
-      <Screen>
+      <Screen action={menuButton}>
+        {menuModal}
         <Text style={styles.title}>{t.studyGroups}</Text>
         <Text style={styles.paragraph}>{t.studyGroupsIntro}</Text>
         <View style={styles.actions}>
           {studyGroups.map((group) => (
             <Action key={group.url} title={group.name} onPress={() => Linking.openURL(group.url)} />
           ))}
-          <Action title="Back" onPress={() => setScreen('message')} main />
+          <Action title={t.back} onPress={() => setScreen('message')} main />
         </View>
       </Screen>
     );
@@ -322,7 +349,8 @@ export default function App() {
 
   if (screen === 'settings') {
     return (
-      <Screen>
+      <Screen action={menuButton}>
+        {menuModal}
         <Text style={styles.title}>{t.settings}</Text>
         <View style={styles.settings}>
           <View style={styles.row}>
@@ -346,7 +374,7 @@ export default function App() {
             </View>
           )}
           <Action title={t.testNotification} onPress={sendTest} />
-          <Text style={styles.label}>{t.language}</Text>
+          <Text style={[styles.label, styles.section]}>{t.language}</Text>
           {Object.entries(names).map(([language, { name }]) => (
             <Action
               key={language}
@@ -398,30 +426,11 @@ export default function App() {
       action={
         <>
           {originalSwitch}
-          <MenuButton label={t.menu} onPress={() => setMenuOpen(true)} />
+          {menuButton}
         </>
       }
     >
-      {/* The menu opens under the button at the top right; tapping outside closes it. */}
-      <Modal visible={menuOpen} transparent animationType="fade" onRequestClose={() => setMenuOpen(false)}>
-        <Pressable style={styles.backdrop} onPress={() => setMenuOpen(false)}>
-          <View style={styles.menu}>
-            {MENU.map((item) => (
-              <Pressable
-                key={item.screen}
-                accessibilityRole="button"
-                onPress={() => {
-                  setMenuOpen(false);
-                  setScreen(item.screen);
-                }}
-                style={({ pressed }) => [styles.menuItem, pressed && styles.pressed]}
-              >
-                <Text style={styles.menuItemText}>{t[item.label]}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </Pressable>
-      </Modal>
+      {menuModal}
       <Text style={styles.title}>{message.title}</Text>
       {comparing && <Text style={[styles.paragraph, styles.original]}>{original.title}</Text>}
       <Text style={styles.source}>
@@ -471,6 +480,7 @@ const styles = StyleSheet.create({
   settings: { gap: 12, marginTop: 24 },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 52, borderBottomWidth: 1, borderColor: colors.rule },
   label: { fontSize: 18, color: colors.ink },
+  section: { marginTop: 20 },
   warning: { color: colors.warning, marginBottom: 8 },
   pill: { alignSelf: 'flex-start', borderWidth: 1.5, borderColor: colors.spring, borderRadius: 18, paddingVertical: 4, paddingHorizontal: 12 },
   pillOn: { backgroundColor: colors.spring },

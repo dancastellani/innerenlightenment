@@ -10,7 +10,8 @@
     "build-apk": "./run.sh build preview",
     "build-play-store": "./run.sh build production",
     "export-messages": "./run.sh export",
-    "translate-messages": "./run.sh translate"
+    "translate-messages": "./run.sh translate",
+    "enable-language": "./run.sh enable"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^13.3.0",

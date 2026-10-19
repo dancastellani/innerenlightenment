@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
-import { bookName, completeLabels, contentUrl, findMessage, originalLink, withOriginal } from './language.ts';
+import { bookName, completeLabels, contentUrl, findMessage, originalLink, shareLink, withOriginal } from './language.ts';
 import names from '../content/languages.json' with { type: 'json' };
 import type { Message } from '../scripts/parse-message.ts';
 
@@ -83,4 +83,9 @@ test('UC-05.9: a label the language lacks falls back to English, and nothing mis
   const english = { settings: 'Settings', back: 'Back' };
   assert.deepEqual(completeLabels(english, { settings: 'Ajustes' }), { settings: 'Ajustes', back: 'Back' });
   assert.deepEqual(completeLabels(english, {}), english);
+});
+
+test('UC-06.4: the share link is the message page in the language being used', () => {
+  assert.equal(shareLink('o-tempo', 'pt'), 'https://dancastellani.github.io/innerenlightenment/pt/o-tempo/');
+  assert.equal(shareLink('o-tempo', 'es'), 'https://dancastellani.github.io/innerenlightenment/es/o-tempo/');
 });

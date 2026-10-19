@@ -13,7 +13,7 @@ import studyGroups from '../website/study-groups.json';
 import { expo } from './app.json';
 import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
-import { bookName, completeLabels, findMessage, originalLink, withOriginal, type Book } from './language';
+import { bookName, completeLabels, findMessage, originalLink, shareLink, withOriginal, type Book } from './language';
 import { isDownloaded, loadLanguage } from './download';
 import { readable } from './text';
 
@@ -77,11 +77,6 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-
-// The link added to shared messages. Switch to our own site's page per message once it exists (#35).
-function shareLink(message: Message): string {
-  return message.url;
-}
 
 function notificationContent(message: Message) {
   return { title: message.title, body: message.paragraphs[0], data: { id: message.id } };
@@ -258,7 +253,7 @@ export default function App() {
   // UC-06: title, body, signature and link through the system share sheet.
   function share() {
     if (!message) return;
-    const text = [message.title, ...message.paragraphs, message.signature, shareLink(message)].filter(Boolean).join('\n\n');
+    const text = [message.title, ...message.paragraphs, message.signature, shareLink(message.slug, settings.language)].filter(Boolean).join('\n\n');
     Share.share({ message: text });
   }
 

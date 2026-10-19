@@ -7,10 +7,13 @@
 # the free plan's 15 builds per platform per month (docs/tech-stack.md#app-builds-eas-workflows).
 name: Builds
 
-on:
-  push:
-    branches: ['main']
-    paths: ['mobile/**', 'content/**']
+# Switched off for now, to save credits: it does not run on merges to main. Run it by hand with
+#   cd mobile && npx eas-cli@latest workflow:run .eas/workflows/builds.yml
+# To switch it on again, add back:
+#   on:
+#     push:
+#       branches: ['main']
+#       paths: ['mobile/**', 'content/**']
 
 jobs:
   fingerprint:

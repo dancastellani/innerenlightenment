@@ -1,8 +1,10 @@
-# On every merge to main that changes the app, builds the installable Android APK and iOS app
+# On every merge to main that changes the app, builds the installable Android APK
 # (the "preview" profile in eas.json) on Expo's servers, but only when the native side changed
 # (new native package or SDK). Otherwise it publishes the change as an update to the "preview"
 # channel, which installed preview builds download on their next start. This keeps within
-# the free plan's 15 builds per platform per month (docs/tech-stack.md#app-builds-eas-workflows).
+# the free plan's 15 builds per platform per month. iOS is off until there is an Apple Developer
+# account (#128): re-add the get-build, build and update jobs for ios then
+# (docs/tech-stack.md#app-builds-eas-workflows).
 name: Builds
 
 on:
@@ -25,15 +27,6 @@ jobs:
       profile: preview
       fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
 
-  get_ios_build:
-    name: Find an iOS build with this fingerprint
-    needs: [fingerprint]
-    type: get-build
-    params:
-      platform: ios
-      profile: preview
-      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
-
   build_android:
     name: Build the Android APK
     needs: [get_android_build]
@@ -41,15 +34,6 @@ jobs:
     type: build
     params:
       platform: android
-      profile: preview
-
-  build_ios:
-    name: Build the iOS app
-    needs: [get_ios_build]
-    if: ${{ !needs.get_ios_build.outputs.build_id }}
-    type: build
-    params:
-      platform: ios
       profile: preview
 
   # An update only goes to a platform whose build already has this fingerprint: an older build
@@ -63,13 +47,3 @@ jobs:
     params:
       channel: preview
       platform: android
-
-  update_ios:
-    name: Publish to installed iOS preview builds
-    needs: [get_ios_build]
-    if: ${{ needs.get_ios_build.outputs.build_id }}
-    type: update
-    environment: preview
-    params:
-      channel: preview
-      platform: ios

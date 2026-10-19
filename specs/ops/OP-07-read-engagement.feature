@@ -19,7 +19,7 @@ Feature: Count and read engagement events
   @OP-07.3
   Scenario: No personal data is stored
     When an event is posted
-    Then the stored row has only the day, the event name and the language
+    Then the stored row has only the day, the event name, the language and, for app opens, the age bucket
 
   @OP-07.4
   Scenario: Read the numbers

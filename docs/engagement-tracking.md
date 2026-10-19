@@ -8,7 +8,7 @@ A fixed list of events, each a count per day, event name and language. Nothing e
 
 | Event | Where | Answers |
 |---|---|---|
-| `app_opened` / `page_viewed` | app / website | How many people come, per day |
+| `app_opened` (with `age`) / `page_viewed` | app / website | How many people come, per day, and whether they come back |
 | `message_viewed` | both | Is the daily message read (from a notification or on opening) |
 | `another_message` | both | Do people want more than one |
 | `shared` | both | Do people pass messages on |
@@ -18,7 +18,11 @@ A fixed list of events, each a count per day, event name and language. Nothing e
 
 ## What we never collect
 
-No user id, device id, cookie, IP address, message text or free text. Without an id we cannot follow one person over time, so there is no "retention after 7 days"; we accept that. Daily opens and notifications switched off are the proxies.
+No user id, device id, cookie, IP address, message text or free text.
+
+### Retention without an id
+
+The app keeps the date of its first launch on the phone only. Each `app_opened` carries `age`, the days since that first launch, rounded to a bucket (`0`, `1`, `2-6`, `7-29`, `30+`). The Worker counts per day, event, language and `age`, so "how many opens came from people who installed 7 or more days ago" is a sum over rows, with no way to tell which opens came from the same person. It shows if people come back, not which person. The website has no install date, so it has no retention, only visits.
 
 ## Options compared
 

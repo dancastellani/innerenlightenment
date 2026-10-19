@@ -1,8 +1,6 @@
 # Tech stack
 
-What this project uses, why, and how each piece works, with a small example and how to run it. Items marked **(planned)** are decided but not built yet.
-
-Some files mentioned here arrive with the open PRs: the export script, tests and workflows ([#1](https://github.com/dancastellani/innerenlightenment/pull/1)), the requirements and specs ([#2](https://github.com/dancastellani/innerenlightenment/pull/2)), and the agent guidance ([#3](https://github.com/dancastellani/innerenlightenment/pull/3)).
+What this project uses, why, and how each piece works, with a small example and how to run it.
 
 ## The big picture
 
@@ -13,7 +11,7 @@ fonteviva.org (WordPress)
 content/pt/messages.json  ──translate once with an LLM──►  content/en/messages.json, content/<lang>/messages.json
    │
    ▼
-Expo app on the phone (planned): bundles en + pt, downloads other languages,
+Expo app on the phone: bundles en + pt, downloads other languages,
 schedules local notifications. No server of our own.
 ```
 
@@ -175,7 +173,7 @@ Then('notifications are scheduled for the next {int} days', function (days: numb
 
 `{int}` captures a number from the sentence, so one step definition serves every scenario that uses the same wording. `this` is shared between the steps of one scenario. Step definitions are written along with the code each scenario covers. The operational specs in `specs/ops/` (export, `run.sh`, CI checks) already run this way, as part of `./run.sh test` (after `./run.sh setup`) and on every PR. Results are reported by tag (`@OP-01.1`). Flows that need a real phone, like tapping a notification, may later use an on-device tool such as Maestro, still named by scenario ID.
 
-## The app: Expo and React Native (planned)
+## The app: Expo and React Native
 
 **React Native** builds iOS and Android apps from one TypeScript codebase. A screen is a function that returns what to show:
 
@@ -191,7 +189,7 @@ export default function TodayScreen() {
 }
 ```
 
-**Expo** is the toolkit around React Native: it creates the project, runs it on your phone, and provides ready modules (notifications, sharing, storage). During development you scan a QR code with the **Expo Go** app to run the app on your phone; store builds come later (TestFlight on iPhone, internal testing on Google Play).
+**Expo** is the toolkit around React Native: it creates the project, runs it on your phone, and provides ready modules (notifications, sharing, storage). During development you scan a QR code with the **Expo Go** app to run the app on your phone; store builds are described in [Google Play](play-store.md).
 
 ```sh
 npx expo start   # then scan the QR code with Expo Go
@@ -228,7 +226,7 @@ iOS needs an Apple Developer Program membership (US$99 a year) and an iPhone reg
 
 **Security.** The builds sign the app with the Android key and Apple certificate that Expo keeps for the project. Only code merged into `main` is built, but the PR previews run a PR's code on a machine signed in to the same project, so the rule from the previews above applies to the signing keys too: only people you trust get push access.
 
-### Local notifications (planned)
+### Local notifications
 
 `expo-notifications` asks the phone to show a notification at a set time, even with the app closed and no network. The text is fixed when the notification is scheduled, so the app picks the next 14 messages and schedules one per day at 8:00. Each time the app opens, it tops the queue back up to 14 days (iOS allows at most 64 pending notifications). Tapping one opens that message.
 
@@ -243,7 +241,7 @@ await Notifications.scheduleNotificationAsync({
 
 Settings (time, on/off, language) and the message planned for each upcoming day are saved on the phone.
 
-## Languages (planned)
+## Languages
 
 - Messages are translated **once**, offline, by a script that uses an LLM (Claude or Gemini), and a person spot-checks a sample. Each language is a folder with two files: `messages.json` and `labels.json` (the app and website text), as in `content/en/` and `content/pt/`, with the same shape.
 - **English (the default) and Portuguese are bundled** inside the app, so they work offline from the first launch.

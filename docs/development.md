@@ -152,7 +152,7 @@ Publishing on Google Play is a separate set of steps, most of them done by you: 
 
 ## Building for iOS
 
-The *Builds* workflow ([how it works](tech-stack.md#app-builds-eas-workflows)) builds the iOS app on every merge that changes its native side, but Expo can only sign it once these are done, once, from your laptop:
+The *Builds* workflow ([how it works](tech-stack.md#app-builds-eas-workflows)) doesn't build iOS yet. Once these are done, once, from your laptop, add the iOS jobs (get-build, build, update) back to `mobile/.eas/workflows/builds.yml` so Expo can sign it:
 
 1. Join the [Apple Developer Program](https://developer.apple.com/programs/enroll/) (US$99 a year; approval can take a day or two).
 2. Register your iPhone: `cd mobile && npx eas-cli@latest device:create`, then open the printed link on the iPhone and install the profile it offers.

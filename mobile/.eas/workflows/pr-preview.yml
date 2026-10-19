@@ -3,9 +3,11 @@
 # token is stored in GitHub (docs/tech-stack.md#pr-previews-in-expo-go-eas-update).
 name: PR preview
 
-on:
-  pull_request:
-    paths: ['mobile/**', 'content/**']
+# Switched off for now (Expo Go 57.0.9 cannot open EAS Update links, issue 145, and runs use credits).
+# To switch it on again, add back:
+#   on:
+#     pull_request:
+#       paths: ['mobile/**', 'content/**']
 
 jobs:
   publish:

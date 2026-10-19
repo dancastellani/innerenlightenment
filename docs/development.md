@@ -115,9 +115,7 @@ The script uses your Google Chrome; in Claude's cloud sessions set `CHROME_PATH=
 
 ## Previewing an app PR in Expo Go
 
-Each PR that changes the app (`mobile/` or `content/`) gets a comment from Expo with a link to its preview: open it and scan the QR code with Expo Go. The comment comes once the update is published on Expo's servers.
-
-To publish a branch yourself instead (for example one without a PR), from your laptop:
+The automatic PR previews are switched off for now (Expo Go 57.0.9 cannot open them, issue #145, and they use EAS credits); the *Builds* workflow on merges to `main` is off too (run it by hand with `cd mobile && npx eas-cli@latest workflow:run .eas/workflows/builds.yml`). To switch them back on, restore the commented-out `on:` block at the top of `mobile/.eas/workflows/pr-preview.yml` and `builds.yml`. Until then, publish a branch yourself, from your laptop:
 
 1. Once: `npx eas-cli@latest login` with your Expo account.
 2. Check out the branch: `git fetch origin && git switch <branch>`.

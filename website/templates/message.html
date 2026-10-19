@@ -5,6 +5,24 @@
 {{paragraphs}}
 {{signature}}
 {{note}}
+<p><button type="button" class="favourite" data-id="{{id}}" data-add="{{favourite}}" data-remove="{{removeFavourite}}">{{favourite}}</button></p>
+<script>
+// UC-13: the favourites are the ids saved in this browser.
+const button = document.querySelector('.favourite');
+const id = Number(button.dataset.id);
+function favourites() {
+  try { return JSON.parse(localStorage.getItem('favourites')) || []; } catch { return []; }
+}
+function show() {
+  button.textContent = favourites().includes(id) ? button.dataset.remove : button.dataset.add;
+}
+button.onclick = () => {
+  const ids = favourites();
+  try { localStorage.setItem('favourites', JSON.stringify(ids.includes(id) ? ids.filter((i) => i !== id) : [...ids, id])); } catch {}
+  show();
+};
+show();
+</script>
 <footer>
 <p><a href="{{url}}">{{readOriginal}}</a></p>
 <p><a href="../study-groups/">{{studyGroups}}</a></p>

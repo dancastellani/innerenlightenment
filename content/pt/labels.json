@@ -21,5 +21,9 @@
  "studyGroupsIntro": "Estas organizações espíritas fazem reuniões de estudo presenciais e online.",
  "downloading": "Baixando",
  "download": "baixar",
- "downloadFailed": "não pôde ser baixado. Tente novamente quando o telefone estiver online."
+ "downloadFailed": "não pôde ser baixado. Tente novamente quando o telefone estiver online.",
+ "favourites": "Favoritas",
+ "favourite": "Adicionar às favoritas",
+ "removeFavourite": "Remover das favoritas",
+ "noFavourites": "Nenhuma favorita ainda. Adicione uma mensagem às favoritas para encontrá-la aqui."
 }

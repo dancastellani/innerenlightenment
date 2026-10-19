@@ -15,6 +15,7 @@ import type { Message } from '../scripts/parse-message';
 import { dayKey, fillPlan, type Plan } from './plan';
 import { bookName, completeLabels, findMessage, originalLink, shareLink, withOriginal, type Book } from './language';
 import { isDownloaded, loadLanguage } from './download';
+import { toggleFavourite } from './favourites';
 import { readable } from './text';
 
 
@@ -150,6 +151,7 @@ function Screen({ action, children }: { action?: ReactNode; children: ReactNode 
 // The options in the menu at the top right, each opening its own screen.
 const MENU = [
   { label: 'index', screen: 'index' },
+  { label: 'favourites', screen: 'favourites' },
   { label: 'studyGroups', screen: 'study-groups' },
   { label: 'settings', screen: 'settings' },
 ] as const;
@@ -169,9 +171,10 @@ export default function App() {
   const [messageId, setMessageId] = useState<number>();
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS);
   const [allowed, setAllowed] = useState(true);
-  const [screen, setScreen] = useState<'message' | 'settings' | 'index' | 'study-groups'>('message');
+  const [screen, setScreen] = useState<'message' | 'settings' | 'index' | 'favourites' | 'study-groups'>('message');
   const [indexBook, setIndexBook] = useState<string>(); // UC-20: the book picked on the index
   const [showOriginal, setShowOriginal] = useState(false); // UC-18: the Portuguese text after each paragraph
+  const [favourites, setFavourites] = useState<number[]>([]); // UC-13: saved on the phone
   const [menuOpen, setMenuOpen] = useState(false);
   const [downloading, setDownloading] = useState<string>(); // UC-12: the language being downloaded
   const [failedDownload, setFailedDownload] = useState<string>(); // UC-12.4: the language that couldn't be
@@ -188,6 +191,7 @@ export default function App() {
       if (today === shownDay) return;
       const isNewDay = shownDay !== '';
       shownDay = today;
+      AsyncStorage.getItem('favourites').then((saved) => setFavourites(saved ? JSON.parse(saved) : []));
       loadSettings().then(async (saved) => {
         // UC-12.8: English when the saved language can't be read or downloaded again.
         if (!(await prepareLanguage(saved.language))) saved.language = 'en';
@@ -242,6 +246,13 @@ export default function App() {
         if (event.type === 'set' && date) changeSettings({ ...settings, hour: date.getHours(), minute: date.getMinutes() });
       },
     });
+  }
+
+  // UC-13: add the message to the favourites, or take it out, and save the list.
+  function changeFavourite(id: number) {
+    const next = toggleFavourite(favourites, id);
+    setFavourites(next);
+    AsyncStorage.setItem('favourites', JSON.stringify(next));
   }
 
   // UC-04: show a different, random message.
@@ -320,6 +331,32 @@ export default function App() {
         ))}
         <View style={styles.backButton}>
           <Action title={t.back} onPress={() => (indexBook ? setIndexBook(undefined) : setScreen('message'))} />
+        </View>
+      </Screen>
+    );
+  }
+
+  // UC-13: the favourite messages, in the order they were added; tapping a title opens it.
+  if (screen === 'favourites') {
+    return (
+      <Screen action={menuButton}>
+        {menuModal}
+        <Text style={styles.title}>{t.favourites}</Text>
+        {favourites.length === 0 && <Text style={styles.paragraph}>{t.noFavourites}</Text>}
+        {favourites.map((id) => (
+          <Text
+            key={id}
+            style={styles.indexItem}
+            onPress={() => {
+              setMessageId(id);
+              setScreen('message');
+            }}
+          >
+            {messageIn(settings.language, id)?.title}
+          </Text>
+        ))}
+        <View style={styles.backButton}>
+          <Action title={t.back} onPress={() => setScreen('message')} />
         </View>
       </Screen>
     );
@@ -439,6 +476,7 @@ export default function App() {
       {message.signature && <Text style={styles.signature}>{message.signature}</Text>}
       <View style={styles.actions}>
         <Action title={t.anotherMessage} onPress={showAnother} main />
+        <Action title={favourites.includes(message.id) ? t.removeFavourite : t.favourite} onPress={() => changeFavourite(message.id)} />
         <Action title={t.share} onPress={share} />
         <Action title={t.readOriginal} onPress={() => Linking.openURL(originalLink(message.url, settings.language))} />
       </View>

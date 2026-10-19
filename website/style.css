@@ -143,3 +143,15 @@ footer { margin-top: 4rem; border-top: 1px solid var(--rule); padding-top: 1.5re
 @media (prefers-reduced-motion: reduce) {
   nav .another, .menu-items { transition: none; animation: none; }
 }
+
+/* UC-13: the favourite button, outlined like the app's. */
+.favourite {
+  padding: 0.6rem 1.1rem;
+  border: 1.5px solid var(--spring);
+  border-radius: 999px;
+  background: none;
+  color: var(--spring);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}

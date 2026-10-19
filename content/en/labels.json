@@ -22,5 +22,9 @@
  "studyGroupsIntro": "These Spiritist organizations hold in-person and online study meetings.",
  "downloading": "Downloading",
  "download": "download",
- "downloadFailed": "could not be downloaded. Try again when the phone is online."
+ "downloadFailed": "could not be downloaded. Try again when the phone is online.",
+ "favourites": "Favourites",
+ "favourite": "Add to favourites",
+ "removeFavourite": "Remove from favourites",
+ "noFavourites": "No favourites yet. Add a message to your favourites to find it here."
 }

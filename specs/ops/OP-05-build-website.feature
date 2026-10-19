@@ -193,6 +193,32 @@ Feature: Build and publish the website
     Then the page "en/study-groups/" has the link "Index" to "../"
     And the page "en/study-groups/" has the link "Português" to "../../pt/study-groups/"
 
+  # UC-13 on the website: keep favourites, saved in the browser.
+  @OP-05.41
+  Scenario: In a browser, a message marked as favourite is found on the Favourites page, and taken out again
+    When the website is built
+    And the page "en/o-tempo/" is opened in a browser
+    Then the browser shows "Add to favourites"
+    When "Add to favourites" is tapped
+    Then the browser shows "Remove from favourites"
+    When the menu is tapped
+    And the link "Favourites" is clicked
+    Then the browser shows "Time"
+    And the browser does not show "No favourites yet"
+    When the link "Time" is clicked
+    And "Remove from favourites" is tapped
+    Then the browser shows "Add to favourites"
+    When the menu is tapped
+    And the link "Favourites" is clicked
+    Then the browser shows "No favourites yet. Add a message to your favourites to find it here."
+
+  @OP-05.42
+  Scenario: Every language has a Favourites page, in its own words
+    When the website is built
+    Then the page "en/favourites/" contains "Favourites"
+    And the page "pt/favourites/" contains "Favoritas" and "Nenhuma favorita ainda"
+    And the page "pt/o-tempo/" contains "Adicionar às favoritas"
+
   # Edge cases
 
   @OP-05.6

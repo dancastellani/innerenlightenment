@@ -1,0 +1,19 @@
+<h1>{{favourites}}</h1>
+<ul id="list"></ul>
+<p id="empty">{{noFavourites}}</p>
+<script>
+// UC-13: the favourites are the ids saved in this browser, in the order they were added.
+const messages = {{messages}};
+let ids = [];
+try { ids = JSON.parse(localStorage.getItem('favourites')) || []; } catch {}
+const shown = ids.filter((id) => messages[id]);
+for (const id of shown) {
+  const link = document.createElement('a');
+  link.href = '../' + messages[id][0] + '/';
+  link.textContent = messages[id][1];
+  const item = document.createElement('li');
+  item.append(link);
+  document.getElementById('list').append(item);
+}
+document.getElementById('empty').hidden = shown.length > 0;
+</script>

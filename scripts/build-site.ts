@@ -28,6 +28,10 @@ type Labels = {
   original: string;
   studyGroups: string;
   studyGroupsIntro: string;
+  favourites: string;
+  favourite: string;
+  removeFavourite: string;
+  noFavourites: string;
   disclaimer: string;
   translationDisclaimer?: string;
 };
@@ -75,6 +79,7 @@ class Website {
       write(join(folder, 'index.html'), this.languagePage(content));
       write(join(folder, 'random', 'index.html'), this.randomPage(content));
       write(join(folder, 'study-groups', 'index.html'), this.studyGroupsPage(content));
+      write(join(folder, 'favourites', 'index.html'), this.favouritesPage(content));
       for (const message of content.messages) {
         write(join(folder, message.slug, 'index.html'), this.messagePage(content, message));
       }
@@ -122,13 +127,40 @@ class Website {
       .filter((c) => c !== content)
       .map((c) => `<a href="../../${c.language}/study-groups/">${this.names[c.language].name}</a>`)
       .join('');
-    const menu = this.render('menu', { menu: labels.menu, index: labels.index, languageName: this.names[content.language].name, otherLanguages });
+    const menu = this.menu(content, otherLanguages);
     const body = this.render('study-groups', {
       studyGroups: labels.studyGroups,
       studyGroupsIntro: labels.studyGroupsIntro,
       groups,
     });
     return this.page(content.language, labels.studyGroups, '../../', body, undefined, menu);
+  }
+
+  // UC-13: the favourites are kept in the browser (see favourites.html); this page lists them by title.
+  favouritesPage(content: Content): string {
+    const labels = content.labels;
+    const titles = Object.fromEntries(content.messages.map((m) => [m.id, [m.slug, showWindows1252(m.title)]]));
+    const otherLanguages = this.contents
+      .filter((c) => c !== content)
+      .map((c) => `<a href="../../${c.language}/favourites/">${this.names[c.language].name}</a>`)
+      .join('');
+    const body = this.render('favourites', {
+      favourites: labels.favourites,
+      noFavourites: escapeHtml(labels.noFavourites),
+      messages: JSON.stringify(titles).replaceAll('<', '\\u003c'),
+    });
+    return this.page(content.language, labels.favourites, '../../', body, undefined, this.menu(content, otherLanguages));
+  }
+
+  // The menu at the top right: the index, the favourites, and the languages.
+  menu(content: Content, otherLanguages: string): string {
+    return this.render('menu', {
+      menu: content.labels.menu,
+      index: content.labels.index,
+      favourites: content.labels.favourites,
+      languageName: this.names[content.language].name,
+      otherLanguages,
+    });
   }
 
   messagePage(content: Content, message: Message): string {
@@ -140,14 +172,12 @@ class Website {
       .map((c) => `<a href="../../${c.language}/${message.slug}/">${this.names[c.language].name}</a>`)
       .join('');
     const original = this.original(content, message);
-    const menu = this.render('menu', {
-      menu: labels.menu,
-      index: labels.index,
-      languageName: this.names[content.language].name,
-      otherLanguages,
-    });
+    const menu = this.menu(content, otherLanguages);
     const body = this.render('message', {
       anotherMessage: labels.anotherMessage,
+      id: String(message.id),
+      favourite: escapeHtml(labels.favourite),
+      removeFavourite: escapeHtml(labels.removeFavourite),
       meta,
       title: escapeHtml(message.title),
       originalTitle: original.originalTitle,

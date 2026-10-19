@@ -4,13 +4,17 @@ Parent issue: #151. Readers send feedback from the app and the website. The feat
 
 ## Options compared
 
-| Option | Cost | Reporter needs | Secrets | Verdict |
-|---|---|---|---|---|
-| Prefilled GitHub issue link (no backend) | Free | A GitHub account | None | Too hard for most readers |
-| Google Form / Sheet | Free | Nothing | None | Works, but reports live outside our issue tracker and the form can't be styled like the app |
-| **Cloudflare Worker that opens a GitHub issue** | Free tier (100k requests a day) | Nothing | GitHub token in the Worker only | **Recommended** |
-| **Supabase** (Postgres + REST) | Free tier (about 500 MB; a project with no activity for a week is paused until restarted) | Nothing | Public "publishable" key in the app is by design; safety comes from a table rule that only allows inserts | Good alternative: no server code, reports are rows we can filter and export; but they live outside our issue tracker |
-| Firebase (Firestore) | Free tier | Nothing | Public app config; needs App Check against abuse | More setup than we need |
+Criteria, in order of importance (Dan, 2026-10-19): security, UX, cost, maintenance, scaling.
+
+| | Security | UX | Cost | Maintenance | Scaling |
+|---|---|---|---|---|---|
+| **A. Cloudflare Worker → GitHub issue** | Token only in the Worker; input checked in code; per-IP rate limit; public issues, so no private data may be asked | Reporter: no account, one form. Us: reports are issues, in our workflow | Free (100k requests a day) | ~40 lines of our code plus one secret to rotate | Plenty; but many issues clutter the tracker and GitHub limits issue creation |
+| **B. Supabase (table, direct insert)** | Public key in the app by design; safe only if the table rule is insert-only with column checks; no per-IP limit without an Edge Function | Reporter: same. Us: dashboard and queries, but outside the issue tracker (needs a sync Action) | Free tier (about 500 MB) | No server code, but SQL rules to keep right; free project pauses after a week of no activity | Best: a real database for counts and many types |
+| C. Google Form / Sheet | Google handles it; spam control is weak; form is public | Reporter: leaves the app for a Google page | Free | No code; a manual export | Fine at small scale |
+| D. Prefilled GitHub issue link | Nothing to secure | Reporter needs a GitHub account: worst | Free | None | Fine |
+| E. Firebase (Firestore) | Public config; needs App Check against abuse | Same as B | Free tier | More setup than B | Good |
+
+Verdict by criteria: A leads on security (rate limit, validation in code) and UX for us; B leads only on scaling, and loses on security (no rate limit) and maintenance (pausing). **Recommend A.** Switch to B if feedback grows beyond what an issue tracker handles. The table is from general knowledge; free-tier limits are not checked against the vendors' sites.
 
 ## Recommended design
 
@@ -26,8 +30,6 @@ Parent issue: #151. Readers send feedback from the app and the website. The feat
 - Row Level Security allows insert only for everyone (nobody can read or change rows with the public key), and column checks enforce the type list and the 1000-character limit. Reading is for us, in the Supabase dashboard or with the secret key.
 - Weak spots: no per-IP rate limit without an Edge Function (Supabase's serverless code), which brings back server code; and a week of no reports pauses the free project, which suits a rarely used form badly.
 - To get reports into the repo workflow, a scheduled GitHub Action would read new rows (secret key stored as a repo secret) and open `feedback:<type>` issues, so the rest of this plan stays the same.
-
-**Choice between the two:** the Worker is the simplest to run (nothing to pause, per-IP limits, reports are issues at once). Supabase is better if we later want queries, counts or other feedback types stored as data. Both need Dan's account.
 
 ## From reports to translation fixes
 

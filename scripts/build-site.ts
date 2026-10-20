@@ -24,7 +24,7 @@ type Labels = {
   index: string;
   menu: string;
   anotherMessage: string;
-  randomPage: string;
+  getInspired: string;
   readOriginal: string;
   original: string;
   studyGroups: string;
@@ -79,7 +79,7 @@ class Website {
     for (const content of this.contents) {
       const folder = join(outFolder, content.language);
       write(join(folder, 'index.html'), this.languagePage(content));
-      write(join(folder, 'random', 'index.html'), this.randomPage(content));
+      write(join(folder, 'random', 'index.html'), this.getInspired(content));
       for (const book of content.books) write(join(folder, 'random', book.slug, 'index.html'), this.bookRandomPage(content, book.slug));
       write(join(folder, 'study-groups', 'index.html'), this.studyGroupsPage(content));
       write(join(folder, 'favourites', 'index.html'), this.favouritesPage(content));
@@ -117,14 +117,14 @@ class Website {
   }
 
   // The "Another message" link: opens a random message of the same language.
-  randomPage(content: Content): string {
+  getInspired(content: Content): string {
     const fallback = `<a href="../">${this.names[content.language].name}</a>`;
     return this.page(content.language, content.labels.title, '../', this.randomScript(this.slugsOf(content), '../', fallback));
   }
 
   // The page button that opens a random message of the book.
   randomButton(content: Content, book: string): string {
-    const label = escapeHtml(content.labels.randomPage);
+    const label = escapeHtml(content.labels.getInspired);
     return `<a class="random-button" href="random/${book}/" title="${label}" aria-label="${label}">📄</a>`;
   }
 

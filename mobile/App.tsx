@@ -331,7 +331,7 @@ export default function App() {
               <View style={styles.bookAction}>
                 <Action title={bookNameIn(settings.language, book.slug)} onPress={() => setIndexBook(book.slug)} main={book.slug === indexBook} />
               </View>
-              <Pressable accessibilityRole="button" accessibilityLabel={t.randomPage} onPress={() => showRandomFromBook(book.slug)} style={styles.randomButton}>
+              <Pressable accessibilityRole="button" accessibilityLabel={t.getInspired} onPress={() => showRandomFromBook(book.slug)} style={styles.randomButton}>
                 <Text style={styles.randomButtonText}>📄</Text>
               </Pressable>
             </View>
@@ -340,7 +340,7 @@ export default function App() {
         {indexBook && (
           <View style={styles.bookHeading}>
             <Text style={styles.bookTitle}>{bookNameIn(settings.language, indexBook)}</Text>
-            <Pressable accessibilityRole="button" accessibilityLabel={t.randomPage} onPress={() => showRandomFromBook(indexBook)} style={styles.randomButton}>
+            <Pressable accessibilityRole="button" accessibilityLabel={t.getInspired} onPress={() => showRandomFromBook(indexBook)} style={styles.randomButton}>
               <Text style={styles.randomButtonText}>📄</Text>
             </Pressable>
           </View>

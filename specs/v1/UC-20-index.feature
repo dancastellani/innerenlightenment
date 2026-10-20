@@ -35,6 +35,12 @@ Feature: Browse the messages by book
     Then I see the books again
     And tapping "Back" again shows the message I was viewing
 
+  @UC-20.9
+  Scenario: Random message from one book, with the "Message" button
+    Given I see the messages of "Fonte Viva"
+    When I tap the "📄 Message" button next to the book name
+    Then a message of "Fonte Viva" is shown
+
   # Edge cases
 
   @UC-20.5
@@ -54,3 +60,8 @@ Feature: Browse the messages by book
     Given I opened message A from the index
     When I open the app again later that day from today's notification
     Then today's message is shown, not A
+
+  @UC-20.10
+  Scenario: The random message never comes from another book
+    Given I tap the "📄 Message" button next to the book name on "Fonte Viva" 50 times
+    Then every message shown belongs to "Fonte Viva"

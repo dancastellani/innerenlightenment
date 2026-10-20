@@ -58,6 +58,13 @@ Feature: Build and publish the website
     Then the page "pt/o-tempo/" links to "../random/"
     And the page "pt/random/" opens a random message of "../" from "o-tempo" and "fe-e-obras"
 
+  @OP-05.46
+  Scenario: Each book on a language page has a "Message" button opening a random message of that book
+    When the website is built
+    Then the page "pt/" links to "random/fonte-viva/"
+    And the page "pt/random/fonte-viva/" opens a random message of "../../" from "o-tempo" and "fe-e-obras"
+    And the page "en/" links to "random/fonte-viva/"
+
   @OP-05.11
   Scenario: Every message page has one disclaimer in its language, thanking fonteviva.org
     When the website is built

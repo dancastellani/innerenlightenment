@@ -24,6 +24,7 @@ type Labels = {
   index: string;
   menu: string;
   anotherMessage: string;
+  randomMessage: string;
   readOriginal: string;
   original: string;
   studyGroups: string;
@@ -79,6 +80,7 @@ class Website {
       const folder = join(outFolder, content.language);
       write(join(folder, 'index.html'), this.languagePage(content));
       write(join(folder, 'random', 'index.html'), this.randomPage(content));
+      for (const book of content.books) write(join(folder, 'random', book.slug, 'index.html'), this.bookRandomPage(content, book.slug));
       write(join(folder, 'study-groups', 'index.html'), this.studyGroupsPage(content));
       write(join(folder, 'favourites', 'index.html'), this.favouritesPage(content));
       for (const message of content.messages) {
@@ -94,7 +96,7 @@ class Website {
       .map((c) => `<li><a href="${c.language}/">${this.names[c.language].name}</a></li>`)
       .join('\n');
     const fallback = this.render('home', { title: content.labels.title, languages, credit: this.credit(content) });
-    return this.page(content.language, content.labels.title, '', this.randomScript(content, `${content.language}/`, fallback));
+    return this.page(content.language, content.labels.title, '', this.randomScript(this.slugsOf(content), `${content.language}/`, fallback));
   }
 
   // The books first, as links to their part of the page, then each book's messages.
@@ -107,7 +109,8 @@ class Website {
         .filter((m) => m.book === book.slug)
         .map((m) => `<li><a href="${m.slug}/">${escapeHtml(m.title)}</a></li>`)
         .join('\n');
-      return `<h2 id="${book.slug}">${escapeHtml(book.name)}</h2>\n<ul>\n${links}\n</ul>`;
+      const random = `<a class="random-button" href="random/${book.slug}/">📄 ${escapeHtml(content.labels.randomMessage)}</a>`;
+      return `<div class="book-row"><h2 id="${book.slug}">${escapeHtml(book.name)}</h2>${random}</div>\n<ul>\n${links}\n</ul>`;
     });
     const name = this.names[content.language].name;
     const body = this.render('language', { title: content.labels.title, languageName: name, bookLinks, books: books.join('\n') });
@@ -117,7 +120,14 @@ class Website {
   // The "Another message" link: opens a random message of the same language.
   randomPage(content: Content): string {
     const fallback = `<a href="../">${this.names[content.language].name}</a>`;
-    return this.page(content.language, content.labels.title, '../', this.randomScript(content, '../', fallback));
+    return this.page(content.language, content.labels.title, '../', this.randomScript(this.slugsOf(content), '../', fallback));
+  }
+
+  // The book's "Message" button on the language page: opens a random message of that book.
+  bookRandomPage(content: Content, book: string): string {
+    const fallback = `<a href="../../#${book}">${this.names[content.language].name}</a>`;
+    const slugs = content.messages.filter((m) => m.book === book).map((m) => m.slug);
+    return this.page(content.language, content.labels.title, '../../', this.randomScript(slugs, '../../', fallback));
   }
 
   // UC-19: links to Spiritist organizations that hold study meetings.
@@ -245,9 +255,12 @@ class Website {
   }
 
   // `prefix` is the path from the page to the language folder. Without JavaScript it shows `fallback`.
-  randomScript(content: Content, prefix: string, fallback: string): string {
-    const slugs = JSON.stringify(content.messages.map((m) => m.slug));
-    return this.render('random', { slugs, prefix, fallback: fallback.trimEnd() });
+  randomScript(slugs: string[], prefix: string, fallback: string): string {
+    return this.render('random', { slugs: JSON.stringify(slugs), prefix, fallback: fallback.trimEnd() });
+  }
+
+  slugsOf(content: Content): string[] {
+    return content.messages.map((m) => m.slug);
   }
 
   render(template: string, values: Record<string, string>): string {

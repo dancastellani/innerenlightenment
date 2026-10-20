@@ -145,10 +145,12 @@ footer { margin-top: 4rem; border-top: 1px solid var(--rule); padding-top: 1.5re
   nav .another, .menu-items { transition: none; animation: none; }
 }
 
-/* UC-20.9: the "Message" button next to a book's name opens a random message of that book. */
-.book-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 2.5rem 0 0.5rem; }
-.book-row h2 { margin: 0; }
-.random-button { padding: 0.2rem 0.7rem; border: 1.5px solid var(--spring); border-radius: 999px; font-size: 0.8rem; text-decoration: none; color: var(--spring); }
+/* UC-20.9: the page button beside a book in the list at the top opens a random message of that book. */
+.books li { display: flex; align-items: center; justify-content: space-between; }
+.books li a:first-child { flex: 1; }
+.book-heading { display: flex; align-items: center; justify-content: space-between; margin: 2.5rem 0 0.5rem; }
+.book-heading h2 { margin: 0; }
+.random-button { padding: 0.1rem 0.6rem; border: 1.5px solid var(--spring); border-radius: 999px; font-size: 0.8rem; text-decoration: none; }
 
 /* UC-13: the favourite star next to the message title, and the message when it can't be saved. */
 .title-row { display: flex; align-items: flex-start; gap: 0.5rem; }

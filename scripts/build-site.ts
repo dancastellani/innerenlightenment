@@ -102,15 +102,14 @@ class Website {
   // The books first, as links to their part of the page, then each book's messages.
   languagePage(content: Content): string {
     const bookLinks = content.books
-      .map((book) => `<li><a href="#${book.slug}">${escapeHtml(book.name)}</a></li>`)
+      .map((book) => `<li><a href="#${book.slug}">${escapeHtml(book.name)}</a> ${this.randomButton(content, book.slug)}</li>`)
       .join('\n');
     const books = content.books.map((book) => {
       const links = content.messages
         .filter((m) => m.book === book.slug)
         .map((m) => `<li><a href="${m.slug}/">${escapeHtml(m.title)}</a></li>`)
         .join('\n');
-      const random = `<a class="random-button" href="random/${book.slug}/">📄 ${escapeHtml(content.labels.randomMessage)}</a>`;
-      return `<div class="book-row"><h2 id="${book.slug}">${escapeHtml(book.name)}</h2>${random}</div>\n<ul>\n${links}\n</ul>`;
+      return `<div class="book-heading"><h2 id="${book.slug}">${escapeHtml(book.name)}</h2>${this.randomButton(content, book.slug)}</div>\n<ul>\n${links}\n</ul>`;
     });
     const name = this.names[content.language].name;
     const body = this.render('language', { title: content.labels.title, languageName: name, bookLinks, books: books.join('\n') });
@@ -123,7 +122,13 @@ class Website {
     return this.page(content.language, content.labels.title, '../', this.randomScript(this.slugsOf(content), '../', fallback));
   }
 
-  // The book's "Message" button on the language page: opens a random message of that book.
+  // The page button that opens a random message of the book.
+  randomButton(content: Content, book: string): string {
+    const label = escapeHtml(content.labels.randomMessage);
+    return `<a class="random-button" href="random/${book}/" title="${label}" aria-label="${label}">📄</a>`;
+  }
+
+  // The page button beside a book in the list at the top on the language page: opens a random message of that book.
   bookRandomPage(content: Content, book: string): string {
     const fallback = `<a href="../../#${book}">${this.names[content.language].name}</a>`;
     const slugs = content.messages.filter((m) => m.book === book).map((m) => m.slug);

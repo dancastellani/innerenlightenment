@@ -24,7 +24,7 @@ type Labels = {
   index: string;
   menu: string;
   anotherMessage: string;
-  randomMessage: string;
+  randomPage: string;
   readOriginal: string;
   original: string;
   studyGroups: string;
@@ -124,7 +124,7 @@ class Website {
 
   // The page button that opens a random message of the book.
   randomButton(content: Content, book: string): string {
-    const label = escapeHtml(content.labels.randomMessage);
+    const label = escapeHtml(content.labels.randomPage);
     return `<a class="random-button" href="random/${book}/" title="${label}" aria-label="${label}">📄</a>`;
   }
 

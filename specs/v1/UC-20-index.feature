@@ -36,11 +36,12 @@ Feature: Browse the messages by book
     And tapping "Back" again shows the message I was viewing
 
   @UC-20.9
-  Scenario: Random message from one book, with the "Message" button
-    Given I see the messages of "Fonte Viva"
-    When I tap the "📄 Message" button next to the book name
+  Scenario: Random message from one book with one tap
+    Given I am on the index
+    When I tap the page icon beside "Fonte Viva" in the list of books
     Then a message of "Fonte Viva" is shown
-
+    # The same icon is beside the book name above its messages, once the book is picked.
+    
   # Edge cases
 
   @UC-20.5
@@ -63,5 +64,5 @@ Feature: Browse the messages by book
 
   @UC-20.10
   Scenario: The random message never comes from another book
-    Given I tap the "📄 Message" button next to the book name on "Fonte Viva" 50 times
+    Given I tap the page icon beside "Fonte Viva" 50 times
     Then every message shown belongs to "Fonte Viva"

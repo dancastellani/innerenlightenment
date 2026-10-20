@@ -327,14 +327,21 @@ export default function App() {
         <Text style={styles.title}>{t.index}</Text>
         <View style={styles.actions}>
           {books.map((book) => (
-            <Action key={book.slug} title={bookNameIn(settings.language, book.slug)} onPress={() => setIndexBook(book.slug)} main={book.slug === indexBook} />
+            <View key={book.slug} style={styles.bookRow}>
+              <View style={styles.bookAction}>
+                <Action title={bookNameIn(settings.language, book.slug)} onPress={() => setIndexBook(book.slug)} main={book.slug === indexBook} />
+              </View>
+              <Pressable accessibilityRole="button" accessibilityLabel={t.randomMessage} onPress={() => showRandomFromBook(book.slug)} style={styles.randomButton}>
+                <Text style={styles.randomButtonText}>📄</Text>
+              </Pressable>
+            </View>
           ))}
         </View>
         {indexBook && (
-          <View style={styles.bookRow}>
+          <View style={styles.bookHeading}>
             <Text style={styles.bookTitle}>{bookNameIn(settings.language, indexBook)}</Text>
-            <Pressable accessibilityRole="button" onPress={() => showRandomFromBook(indexBook)} style={styles.randomButton}>
-              <Text style={styles.randomButtonText}>📄 {t.randomMessage}</Text>
+            <Pressable accessibilityRole="button" accessibilityLabel={t.randomMessage} onPress={() => showRandomFromBook(indexBook)} style={styles.randomButton}>
+              <Text style={styles.randomButtonText}>📄</Text>
             </Pressable>
           </View>
         )}
@@ -566,8 +573,10 @@ const styles = StyleSheet.create({
   disclaimer: { fontSize: 13, color: colors.muted, marginTop: 24 },
   backButton: { marginTop: 32 },
   bookTitle: { fontFamily: 'Literata_600SemiBold', fontSize: 24, letterSpacing: -0.3, color: colors.ink, flexShrink: 1 },
-  bookRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 36, marginBottom: 8 },
-  randomButton: { borderRadius: 16, borderWidth: 1.5, borderColor: colors.spring, paddingVertical: 4, paddingHorizontal: 12 },
-  randomButtonText: { fontSize: 14, fontWeight: '600', color: colors.spring },
+  bookHeading: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginTop: 36, marginBottom: 8 },
+  bookRow: { flexDirection: 'row', gap: 8 },
+  bookAction: { flex: 1 },
+  randomButton: { width: 52, height: 52, borderRadius: 26, borderWidth: 1.5, borderColor: colors.spring, alignItems: 'center', justifyContent: 'center' },
+  randomButtonText: { fontSize: 20 },
   indexItem: { fontFamily: 'Literata_400Regular', fontSize: 18, color: colors.spring, paddingVertical: 14, borderBottomWidth: 1, borderColor: colors.rule },
 });

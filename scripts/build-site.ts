@@ -95,7 +95,7 @@ class Website {
     const languages = this.contents
       .map((c) => `<li><a href="${c.language}/">${this.names[c.language].name}</a></li>`)
       .join('\n');
-    const fallback = this.render('home', { title: content.labels.title, languages, credit: this.credit(content) });
+    const fallback = this.render('home', { languages, credit: this.credit(content) });
     return this.page(content.language, content.labels.title, '', this.randomScript(this.slugsOf(content), `${content.language}/`, fallback));
   }
 
@@ -112,7 +112,7 @@ class Website {
       return `<div class="book-heading"><h2 id="${book.slug}">${escapeHtml(book.name)}</h2>${this.randomButton(content, book.slug)}</div>\n<ul>\n${links}\n</ul>`;
     });
     const name = this.names[content.language].name;
-    const body = this.render('language', { title: content.labels.title, languageName: name, bookLinks, books: books.join('\n') });
+    const body = this.render('language', { anotherMessage: content.labels.anotherMessage, languageName: name, bookLinks, books: books.join('\n') });
     return this.page(content.language, name, '../', body);
   }
 

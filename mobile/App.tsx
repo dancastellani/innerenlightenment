@@ -268,6 +268,13 @@ export default function App() {
     setMessageId(others[Math.floor(Math.random() * others.length)].id);
   }
 
+  // UC-20.9: show a random message of one book.
+  function showRandomFromBook(book: string) {
+    const inBook = portuguese.filter((m) => m.book === book);
+    setMessageId(inBook[Math.floor(Math.random() * inBook.length)].id);
+    setScreen('message');
+  }
+
   // UC-06: title, body, signature and link through the system share sheet.
   function share() {
     if (!message) return;
@@ -324,6 +331,7 @@ export default function App() {
           ))}
         </View>
         {indexBook && <Text style={styles.bookTitle}>{bookNameIn(settings.language, indexBook)}</Text>}
+        {indexBook && <Action title={t.randomFromBook} onPress={() => showRandomFromBook(indexBook)} />}
         {bookMessages.map((m) => (
           <Text
             key={m.id}

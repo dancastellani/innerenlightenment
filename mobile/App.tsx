@@ -334,7 +334,7 @@ export default function App() {
           <View style={styles.bookRow}>
             <Text style={styles.bookTitle}>{bookNameIn(settings.language, indexBook)}</Text>
             <Pressable accessibilityRole="button" onPress={() => showRandomFromBook(indexBook)} style={styles.randomButton}>
-              <Text style={styles.randomButtonText}>{t.randomMessage}</Text>
+              <Text style={styles.randomButtonText}>🎲 {t.randomMessage}</Text>
             </Pressable>
           </View>
         )}

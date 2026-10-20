@@ -109,7 +109,7 @@ class Website {
         .filter((m) => m.book === book.slug)
         .map((m) => `<li><a href="${m.slug}/">${escapeHtml(m.title)}</a></li>`)
         .join('\n');
-      const random = `<a class="random-button" href="random/${book.slug}/">${escapeHtml(content.labels.randomMessage)}</a>`;
+      const random = `<a class="random-button" href="random/${book.slug}/">🎲 ${escapeHtml(content.labels.randomMessage)}</a>`;
       return `<div class="book-row"><h2 id="${book.slug}">${escapeHtml(book.name)}</h2>${random}</div>\n<ul>\n${links}\n</ul>`;
     });
     const name = this.names[content.language].name;

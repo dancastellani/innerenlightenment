@@ -38,7 +38,7 @@ Feature: Browse the messages by book
   @UC-20.9
   Scenario: Random message from one book, with the "Message" button
     Given I see the messages of "Fonte Viva"
-    When I tap the "Message" button next to the book name
+    When I tap the "🎲 Message" button next to the book name
     Then a message of "Fonte Viva" is shown
 
   # Edge cases
@@ -63,5 +63,5 @@ Feature: Browse the messages by book
 
   @UC-20.10
   Scenario: The random message never comes from another book
-    Given I tap the "Message" button next to the book name on "Fonte Viva" 50 times
+    Given I tap the "🎲 Message" button next to the book name on "Fonte Viva" 50 times
     Then every message shown belongs to "Fonte Viva"

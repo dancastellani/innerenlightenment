@@ -24,7 +24,7 @@ type Labels = {
   index: string;
   menu: string;
   anotherMessage: string;
-  randomFromBook: string;
+  randomMessage: string;
   readOriginal: string;
   original: string;
   studyGroups: string;
@@ -109,8 +109,8 @@ class Website {
         .filter((m) => m.book === book.slug)
         .map((m) => `<li><a href="${m.slug}/">${escapeHtml(m.title)}</a></li>`)
         .join('\n');
-      const random = `<p><a href="random/${book.slug}/">${escapeHtml(content.labels.randomFromBook)}</a></p>`;
-      return `<h2 id="${book.slug}">${escapeHtml(book.name)}</h2>\n${random}\n<ul>\n${links}\n</ul>`;
+      const random = `<a class="random-button" href="random/${book.slug}/">${escapeHtml(content.labels.randomMessage)}</a>`;
+      return `<div class="book-row"><h2 id="${book.slug}">${escapeHtml(book.name)}</h2>${random}</div>\n<ul>\n${links}\n</ul>`;
     });
     const name = this.names[content.language].name;
     const body = this.render('language', { title: content.labels.title, languageName: name, bookLinks, books: books.join('\n') });
@@ -123,7 +123,7 @@ class Website {
     return this.page(content.language, content.labels.title, '../', this.randomScript(this.slugsOf(content), '../', fallback));
   }
 
-  // The "Random message from this book" link on the language page: opens a random message of that book.
+  // The book's "Message" button on the language page: opens a random message of that book.
   bookRandomPage(content: Content, book: string): string {
     const fallback = `<a href="../../#${book}">${this.names[content.language].name}</a>`;
     const slugs = content.messages.filter((m) => m.book === book).map((m) => m.slug);

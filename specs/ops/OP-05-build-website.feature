@@ -315,3 +315,9 @@ Feature: Build and publish the website
   Scenario: The epigraph is in italic and the disclaimer links fonteviva.org to the same message
     When the website is built
     Then the page "en/o-tempo/" contains "epigraph" and ">fonteviva.org</a>"
+
+  # Issue #185: Chrome translated a French page into English, so the selected language looked wrong.
+  @OP-05.47
+  Scenario: Browsers do not translate the pages
+    When the website is built
+    Then the page "pt/o-tempo/" contains "notranslate"

@@ -6,7 +6,6 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
   checks: write # to add the test report check run
   contents: write # to publish the test count badge on the badges branch
 
